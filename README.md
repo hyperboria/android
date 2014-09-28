@@ -27,7 +27,11 @@ Installation
 3. build cjdns
   - `PATH=$PATH:/path/to/i686-linux-android/bin CROSS_COMPILE=i686-linux-android- TARGET_ARCH=x64 ./cross-do`
   - `cp cjdroute /path/to/cjdns-android/main/src/assets/`
-4. build cjdns-android
+4. Create emulator
+  - `android create avd -n cjdns -t 1 --abi x86 --force`
+5. Start emulator
+  - `emulator -avd cjdns -qemu -m 512 -enable-kvm`
+6. build cjdns-android
   - `./gradlew installDebug`
 
 Contact
