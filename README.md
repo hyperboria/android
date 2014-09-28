@@ -7,13 +7,28 @@ TODO
 ----
 
 - [x] Hello world
-- [ ] Build cjdroute
+- [x] Build cjdroute
 - [ ] Start cjdroute from app
 - [ ] Display cjdroute logs
 - [ ] Pass VpnService descriptor to cjdroute
+- [ ] Display peer stats
 - [ ] Run as background service
 - [ ] Release on fdroid
+- [ ] Store config somewhere safe
+- [ ] Add IPv6 to contacts
+- [ ] Use root for Android < 4.0
 - [ ] tbc
+
+Installation
+------------
+
+1. Android SDK and NDK
+2. x86 toolchain
+3. build cjdns
+  - `PATH=$PATH:/path/to/i686-linux-android/bin CROSS_COMPILE=i686-linux-android- TARGET_ARCH=x64 ./cross-do`
+  - `cp cjdroute /path/to/cjdns-android/main/src/assets/`
+4. build cjdns-android
+  - `./gradlew installDebug`
 
 Contact
 -------
