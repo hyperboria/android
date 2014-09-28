@@ -12,6 +12,7 @@ TODO
 - [ ] Display cjdroute logs
 - [ ] Pass VpnService descriptor to cjdroute
 - [ ] Run as background service
+- [ ] Release on fdroid
 - [ ] tbc
 
 Contact
