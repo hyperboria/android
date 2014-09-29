@@ -32,13 +32,13 @@ public class CjdnsThread implements Runnable {
             Process process = builder.start();
 
             OutputStream stdin = process.getOutputStream();
-            byte buf[] = new byte[4096];
+            // byte buf[] = new byte[4096];
 
-            int len = cjdrouteconf.read(buf);
-            while (len > 0) {
-                stdin.write(buf, 0, len);
-                len = cjdrouteconf.read(buf);
-            }
+            // int len = cjdrouteconf.read(buf);
+            // while (len > 0) {
+            //     stdin.write(buf, 0, len);
+            //     len = cjdrouteconf.read(buf);
+            // }
             stdin.close();
 
             InputStreamReader reader = new InputStreamReader(process.getInputStream());

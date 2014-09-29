@@ -3,18 +3,24 @@ cjdns for Android
 
 Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone -- thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root.
 
+*Current state:*
+  - the app starts and shows the output of cjdroute
+  - cjdroute doesn't start because the app doesn't feed cjdroute.conf
+  - still requires root once cjdroute starts
+
 TODO
 ----
 
 - [x] Hello world
 - [x] Build cjdroute
 - [ ] Start cjdroute from app
-- [ ] Display cjdroute logs
+- [x] Display cjdroute logs
 - [ ] Pass VpnService descriptor to cjdroute
 - [ ] Display peer stats
 - [ ] Run as background service
 - [ ] Release on fdroid
-- [ ] Store config somewhere safe
+- [ ] Store cjdroute.conf on SD card
+- [ ] Store cjdroute.conf somewhere safe
 - [ ] Add IPv6 to contacts
 - [ ] Use root for Android < 4.0
 - [ ] tbc
