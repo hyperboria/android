@@ -3,6 +3,7 @@ package berlin.meshnet.cjdns;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,7 +12,6 @@ import java.io.IOException;
 
 public class MainActivity extends Activity
 {
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -19,11 +19,18 @@ public class MainActivity extends Activity
         setContentView(R.layout.main);
 
         writeCjdroute();
+        startCjdnsThread((TextView)findViewById(R.id.hello));
+    }
+
+    private void startCjdnsThread(TextView logView)
+    {
+        Thread cjdns = new Thread(new CjdnsThread(cjdroute(), logView), "CjdnsThread");
+        cjdns.start();
     }
 
     private boolean writeCjdroute()
     {
-        File target = new File(getCacheDir(), "cjdroute");
+        File target = cjdroute();
         if (target.exists() && target.canExecute()) {
             Log.i("cjdns_MainActivity", "cjdroute exists and is executable");
             return true;
@@ -52,5 +59,10 @@ public class MainActivity extends Activity
 
         Log.i("cjdns_MainActivity", "Created cjdroute and made it executable");
         return true;
+    }
+
+    private File cjdroute()
+    {
+        return new File(getCacheDir(), "cjdroute");
     }
 }
