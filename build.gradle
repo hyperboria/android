@@ -12,9 +12,4 @@ apply plugin: 'android'
 android {
     compileSdkVersion 'android-L'
     buildToolsVersion '20.0.0'
-
-    buildTypes {
-        release {
-        }
-    }
 }
