@@ -25,7 +25,7 @@ public class CjdnsThread implements Runnable {
     @Override
     public void run()
     {
-        ProcessBuilder builder = new ProcessBuilder(cjdroute.getPath());
+        ProcessBuilder builder = new ProcessBuilder(cjdroute.getPath(), "--nobg");
         builder.redirectErrorStream(true);
 
         try {
