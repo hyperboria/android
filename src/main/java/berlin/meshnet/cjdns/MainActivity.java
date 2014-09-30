@@ -12,6 +12,8 @@ import java.io.IOException;
 
 public class MainActivity extends Activity
 {
+    private CjdnsThread cjdnsThread;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -26,9 +28,17 @@ public class MainActivity extends Activity
         }
     }
 
+    @Override
+    public void onDestroy()
+    {
+        this.cjdnsThread.terminateCjdroute();
+        super.onDestroy();
+    }
+
     private void startCjdnsThread(TextView logView) throws IOException
     {
-        Thread cjdns = new Thread(new CjdnsThread(cjdroute(), cjdrouteconf(), logView), "CjdnsThread");
+        this.cjdnsThread = new CjdnsThread(cjdroute(), cjdrouteconf(), logView);
+        Thread cjdns = new Thread(this.cjdnsThread, "CjdnsThread");
         cjdns.start();
     }
 
