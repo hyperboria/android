@@ -15,6 +15,7 @@ TODO
 - [x] Build cjdroute
 - [x] Start cjdroute from app
 - [x] Display cjdroute logs
+- [ ] Properly kill cjdroute (via Admin API)
 - [ ] Pass VpnService descriptor to cjdroute
 - [ ] Display peer stats
 - [ ] Run as background service
@@ -33,7 +34,7 @@ Installation
 3. build cjdns
   - set `PREFIX` to `/data/data/berlin.meshnet.cjdns/cache/cjdns_pipe_` around line 340 in util/events/libuv/Pipe.c
   - `PATH=$PATH:/path/to/i686-linux-android/bin CROSS_COMPILE=i686-linux-android- TARGET_ARCH=x64 ./cross-do`
-  - `cp cjdroute /path/to/cjdns-android/main/src/assets/`
+  - `cp cjdroute cjdroute.conf /path/to/cjdns-android/src/main/assets/`
 4. Create emulator
   - `android create avd -n cjdns -t 1 --abi x86 --force`
 5. Start emulator
