@@ -2,6 +2,7 @@ package berlin.meshnet.cjdns;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Build;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -50,7 +51,7 @@ public class MainActivity extends Activity
             return;
         }
 
-        InputStream asset = getAssets().open("cjdroute");
+        InputStream asset = getAssets().open(Build.CPU_ABI + "/cjdroute");
         FileOutputStream cjdroute = new FileOutputStream(target);
         byte buf[] = new byte[4096];
 
