@@ -72,7 +72,7 @@ public class MainActivity extends Activity
 
     private File cjdroute()
     {
-        return new File(getCacheDir(), "cjdroute");
+        return new File(getApplicationInfo().dataDir, "cjdroute");
     }
 
     private InputStream cjdrouteconf() throws IOException
