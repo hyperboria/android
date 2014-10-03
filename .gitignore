@@ -1,6 +1,7 @@
 .gradle/
 build/
 local.properties
+*.class
 src/main/assets/x86/
 src/main/assets/armeabi/
 src/main/assets/cjdroute.conf
