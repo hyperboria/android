@@ -10,6 +10,6 @@ buildscript {
 apply plugin: 'android'
 
 android {
-    compileSdkVersion 'android-L'
+    compileSdkVersion 'android-19'
     buildToolsVersion '20.0.0'
 }
