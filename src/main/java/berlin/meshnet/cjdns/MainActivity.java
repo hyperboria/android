@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import org.json.JSONException;
+
 public class MainActivity extends Activity
 {
     private CjdnsThread cjdnsThread;
@@ -27,6 +29,8 @@ public class MainActivity extends Activity
             startCjdnsThread((TextView)findViewById(R.id.hello));
         } catch (IOException e) {
             Log.e("cjdns_MainActivity", "IOException: " + e.toString());
+        } catch (JSONException e) {
+            Log.e("cjdns_MainActivity", "JSONException: " + e.toString());
         }
     }
 
@@ -37,7 +41,7 @@ public class MainActivity extends Activity
         super.onDestroy();
     }
 
-    private void startCjdnsThread(TextView logView) throws IOException
+    private void startCjdnsThread(TextView logView) throws IOException, JSONException
     {
         this.cjdnsThread = new CjdnsThread(cjdroute(), cjdrouteconf(), logView);
         Thread cjdns = new Thread(this.cjdnsThread, "CjdnsThread");

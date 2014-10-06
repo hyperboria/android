@@ -31,6 +31,11 @@ public class AdminAPI {
         this.password = password;
     }
 
+    public String getBind()
+    {
+        return this.address.getHostAddress() + ":" + this.port;
+    }
+
     public int Core_pid() throws IOException
     {
         // try {

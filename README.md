@@ -15,6 +15,7 @@ TODO
 - [x] Build cjdroute
 - [x] Start cjdroute from app
 - [x] Properly kill cjdroute (via Admin API)
+- [x] Extract Admin API config from cjdroute.conf
 - [ ] Display cjdroute logs
 - [ ] Pass VpnService descriptor to cjdroute
 - [ ] Display peer stats
@@ -39,7 +40,7 @@ Installation
   - for armeabi devices:
     - `PATH=$PATH:/path/to/arm-linux-androideabi/bin CROSS_COMPILE=arm-linux-androideabi- TARGET_ARCH=arm ./cross-do`
     - `cp cjdroute /path/to/cjdns-android/src/main/assets/armeabi-v7a/`
-  - `cp cjdroute.conf /path/to/cjdns-android/src/main/assets/
+  - `cjdroute --genconf | cjdroute --cleanconf > /path/to/cjdns-android/src/main/assets/cjdroute.conf`
 4. Create emulator
   - `android create avd -n cjdns -t 1 --abi x86 --force`
 5. Start emulator
