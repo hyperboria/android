@@ -3,5 +3,5 @@ build/
 local.properties
 *.class
 src/main/assets/x86/
-src/main/assets/armeabi/
+src/main/assets/armeabi-v7a/
 src/main/assets/cjdroute.conf
