@@ -4,9 +4,11 @@ cjdns for Android
 Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone -- thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root.
 
 *Current state:*
-  - the app starts and shows the output of cjdroute
-  - doesn't kill cjdroute yet, ouch
-  - doesn't support ETHInterface and TUNInterface yet
+- app starts cjdroute and stops it properly
+- app crashes on real devices because of a threading issue
+- shows cjdroute's pid on the emulator
+- shows cjdroute's output in adb logcat -- with weird buffer issues though
+- doesn't support ETHInterface and TUNInterface yet
 
 TODO
 ----
@@ -16,10 +18,10 @@ TODO
 - [x] Start cjdroute from app
 - [x] Properly kill cjdroute (via Admin API)
 - [x] Extract Admin API config from cjdroute.conf
+- [ ] Run as background service
 - [ ] Display cjdroute logs
 - [ ] Pass VpnService descriptor to cjdroute
 - [ ] Display peer stats
-- [ ] Run as background service
 - [ ] Release on fdroid (finn's repo: http://h.finn.io/fdroid/)
 - [ ] Store cjdroute.conf on SD card
 - [ ] Store cjdroute.conf somewhere safe
@@ -40,7 +42,7 @@ Installation
   - for armeabi devices:
     - `PATH=$PATH:/path/to/arm-linux-androideabi/bin CROSS_COMPILE=arm-linux-androideabi- TARGET_ARCH=arm ./cross-do`
     - `cp cjdroute /path/to/cjdns-android/src/main/assets/armeabi-v7a/`
-  - `cjdroute --genconf | cjdroute --cleanconf > /path/to/cjdns-android/src/main/assets/cjdroute.conf`
+  - `cjdroute --genconf > /path/to/cjdns-android/src/main/assets/cjdroute.conf`
 4. Create emulator
   - `android create avd -n cjdns -t 1 --abi x86 --force`
 5. Start emulator
@@ -50,7 +52,7 @@ Running
 -------
 
 6. build cjdns-android (and clear app cache)
-  - `./gradlew uninstallAll installDebug`
+  - `./gradlew installDebug`
 7. tail app log
   - `adb logcat | grep cjdns`
 8. tail cjdroute crashdumps (x86)
