@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 public class MainActivity extends Activity
 {
@@ -25,7 +26,7 @@ public class MainActivity extends Activity
             writeCjdroute();
             startCjdnsThread((TextView)findViewById(R.id.hello));
         } catch (IOException e) {
-            Log.e("cjdns_MainActivity", "IOException: " + e.getMessage());
+            Log.e("cjdns_MainActivity", "IOException: " + e.toString());
         }
     }
 
