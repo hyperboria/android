@@ -97,7 +97,7 @@ public class CjdnsThread implements Runnable {
                     // the admin api is ready
                     this.pid = this.admin.Core_pid();
                     Log.i("cjdns_CjdnsThread", "Started cjdroute with pid " + this.pid);
-                    logView.setText("Started cjdroute with pid " + this.pid);
+                    // logView.setText("Started cjdroute with pid " + this.pid);
                 }
 
                 // logView.setText(log.append(line + "\n"));

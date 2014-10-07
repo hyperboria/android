@@ -1,6 +1,7 @@
 package berlin.meshnet.cjdns;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Build;
 import android.util.Log;
@@ -24,6 +25,8 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        startService(new Intent(this, MeshnetService.class));
+
         try {
             writeCjdroute();
             startCjdnsThread((TextView)findViewById(R.id.hello));
@@ -37,6 +40,7 @@ public class MainActivity extends Activity
     @Override
     public void onDestroy()
     {
+        // stopService(new Intent(this, MeshnetService.class));
         this.cjdnsThread.terminateCjdroute();
         super.onDestroy();
     }
