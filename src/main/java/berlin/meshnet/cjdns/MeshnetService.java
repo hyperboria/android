@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Process;
 import android.util.Log;
 
 import java.io.InputStream;
@@ -23,7 +24,7 @@ public class MeshnetService extends Service
 
     private Notification notification;
     private JSONObject cjdrouteconf;
-    private CjdnsThread cjdnsThread;
+    private int pid;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -37,9 +38,19 @@ public class MeshnetService extends Service
             this.notification = buildNotification();
             startForeground(NOTIFICATION_ID, notification);
 
-            this.cjdnsThread = new CjdnsThread(this);
-            Thread cjdns = new Thread(this.cjdnsThread, "CjdnsThread");
-            cjdns.start();
+            CjdrouteTask task = new CjdrouteTask() {
+                @Override
+                protected void onProgressUpdate(String... line) {
+                    Log.i("cjdns.MeshnetService", "cjdroute: " + line[0]);
+                }
+
+                @Override
+                protected void onPostExecute(Integer pid) {
+                    MeshnetService.this.pid = pid.intValue();
+                    Log.i("cjdns.MeshnetService", "pid: " + pid);
+                }
+            };
+            task.execute(this);
         } catch (IOException e) {
             Log.e("cjdns.MeshnetService", "IOException: " + e.toString());
         } catch (JSONException e) {
@@ -58,6 +69,7 @@ public class MeshnetService extends Service
     public void onDestroy()
     {
         Log.i("cjdns.MeshnetService", "onDestroy");
+        Process.sendSignal(this.pid, Process.SIGNAL_KILL);
     }
 
     public InputStream cjdroute() throws IOException
