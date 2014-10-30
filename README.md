@@ -22,6 +22,7 @@ TODO
 - [ ] Display cjdroute logs
 - [ ] Pass VpnService descriptor to cjdroute
 - [ ] Display peer stats
+- [ ] Allow peering info exchange via qr codes
 - [ ] Release on fdroid (finn's repo: http://h.finn.io/fdroid/)
 - [ ] Store cjdroute.conf on SD card
 - [ ] Store cjdroute.conf somewhere safe
