@@ -36,7 +36,9 @@ Installation
 ------------
 
 1. Android SDK and NDK
-2. x86 toolchain
+2. x86 or armeabi toolchain
+  - `android-ndk/build/tools/make-standalone-toolchain.sh --platform=android-21 --toolchain=x86-4.9 --install-dir=i686-linux-android/ --system=linux-x86_64`
+  - `android-ndk/build/tools/make-standalone-toolchain.sh --platform=android-21 --toolchain=arm-linux-androideabi-4.9 --install-dir=arm-linux-androideabi/ --system=linux-x86_64`
 3. build cjdns
   - `git clone https://github.com/lgierth/cjdns.git && cd cjdns && git checkout android-wip`
   - for the x86 emulator:
