@@ -47,6 +47,7 @@ Installation
   - for armeabi devices:
     - `PATH=$PATH:/path/to/arm-linux-androideabi/bin CROSS_COMPILE=arm-linux-androideabi- TARGET_ARCH=arm ./cross-do`
     - `cp cjdroute /path/to/cjdns-android/src/main/assets/armeabi-v7a/`
+  - for android-5.0 on x86 (and possibly other archs), you need to cross-do with `Seccomp_NO=1`
   - `cjdroute --genconf > /path/to/cjdns-android/src/main/assets/cjdroute.conf`
 4. Create emulator
   - `android create avd -n cjdns -t 1 --abi x86 --force`
@@ -71,3 +72,15 @@ Contact
 - Issue tracker: [github.com/berlinmeshnet/cjdns-android/issues](https://github.com/berlinmeshnet/cjdns-android/issues)
 - IRC: #android on [HypeIRC](https://wiki.projectmeshnet.org/HypeIRC)
 - Development updates: [www.lars.meshnet.berlin](http://www.lars.meshnet.berlin)
+
+Notes
+-----
+
+- Re: Text Relocations warning
+  - https://android-review.googlesource.com/#/c/91485/2/linker/linker.cpp
+- Re: SecComp
+  - https://code.google.com/p/chromium/issues/detail?id=308763
+  - https://wiki.mozilla.org/Security/Sandbox/Seccomp
+  - https://github.com/sigma-1/raw-android-patches
+- Setup
+  - https://gist.github.com/venkateshshukla/9736261
