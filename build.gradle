@@ -13,7 +13,7 @@ apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion 'android-21'
-    buildToolsVersion '21.0.1'
+    buildToolsVersion '21.1.1'
 
     sourceSets {
         main {
