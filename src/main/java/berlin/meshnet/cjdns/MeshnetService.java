@@ -61,7 +61,9 @@ public class MeshnetService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        Log.i("cjdns.MeshnetService", "onStartCommand action=" + intent.getAction());
+        if (intent != null) {
+            Log.i("cjdns.MeshnetService", "onStartCommand action=" + intent.getAction());
+        }
         return START_STICKY;
     }
 
