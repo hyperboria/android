@@ -42,10 +42,10 @@ Installation
 3. build cjdns
   - `git clone https://github.com/lgierth/cjdns.git && cd cjdns && git checkout android-wip`
   - for the x86 emulator:
-    - `PATH=$PATH:/path/to/i686-linux-android/bin CROSS_COMPILE=i686-linux-android- TARGET_ARCH=x64 ./cross-do`
+    - `PATH=$PATH:/path/to/i686-linux-android/bin CROSS_COMPILE=i686-linux-android- TARGET_ARCH=x64 Seccomp_NO=1 ./cross-do`
     - `cp cjdroute /path/to/cjdns-android/src/main/assets/x86/`
   - for armeabi devices:
-    - `PATH=$PATH:/path/to/arm-linux-androideabi/bin CROSS_COMPILE=arm-linux-androideabi- TARGET_ARCH=arm ./cross-do`
+    - `PATH=$PATH:/path/to/arm-linux-androideabi/bin CROSS_COMPILE=arm-linux-androideabi- TARGET_ARCH=arm Seccomp_NO=1 ./cross-do`
     - `cp cjdroute /path/to/cjdns-android/src/main/assets/armeabi-v7a/`
   - for android-5.0 on x86 (and possibly other archs), you need to cross-do with `Seccomp_NO=1`
   - `cjdroute --genconf > /path/to/cjdns-android/src/main/assets/cjdroute.conf`
