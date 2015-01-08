@@ -1,38 +1,53 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2.1'
+}
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
+allprojects {
+    repositories {
+        jcenter()
     }
 }
 
-apply plugin: 'android'
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0-rc1'
+    }
+}
+
+apply plugin: 'com.android.application'
 apply plugin: 'checkstyle'
 
 android {
-    compileSdkVersion 'android-21'
     buildToolsVersion '21.1.1'
-
-    sourceSets {
-        main {
-            manifest.srcFile 'src/main/AndroidManifest.xml'
-            java.srcDirs = ['src']
-            res.srcDirs = ['src/main/res']
-            assets.srcDirs = ['src/main/assets']
-        }
+    compileSdkVersion 21
+    defaultConfig {
+        minSdkVersion 11
+        targetSdkVersion 21
+        versionCode 1
+        versionName "0.0.1-SNAPSHOT"
     }
-
     signingConfigs {
         release
     }
-
     buildTypes {
         release {
             signingConfig signingConfigs.release
         }
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:21.0.+'
+    compile 'com.android.support:cardview-v7:21.0.+'
+    compile 'com.android.support:appcompat-v7:21.0.+'
+    compile 'com.jakewharton:butterknife:6.0.0'
 }
 
 if (project.hasProperty('keyAlias')) {
