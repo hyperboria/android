@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Toolbar -->
+    <dimen name="toolbar_switch_padding">16dp</dimen>
+
+    <!-- Drawer -->
     <dimen name="drawer_option_padding">16dp</dimen>
     <dimen name="drawer_option_text_size">22sp</dimen>
     <dimen name="drawer_option_radius">2dp</dimen>

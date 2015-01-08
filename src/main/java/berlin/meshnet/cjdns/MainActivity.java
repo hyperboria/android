@@ -6,14 +6,15 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -34,6 +35,8 @@ public class MainActivity extends ActionBarActivity {
 
     @InjectView(R.id.content_container)
     FrameLayout mContentContainer;
+
+    private SwitchCompat mCjdnsServiceSwitch;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -80,6 +83,21 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
+
+        mCjdnsServiceSwitch = (SwitchCompat) menu.findItem(R.id.switch_cjdns_service).getActionView();
+        // TODO Init with current CjdnsService state
+        mCjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Toast.makeText(getApplicationContext(), "Starting CjdnsService", Toast.LENGTH_SHORT).show();
+                    startService(new Intent(getApplicationContext(), MeshnetService.class));
+                } else {
+                    Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
+                    // TODO Stop CjdnsService
+                }
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -87,15 +105,5 @@ public class MainActivity extends ActionBarActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.toggle_cjdns) {
-            Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
-            startService(new Intent(this, MeshnetService.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
