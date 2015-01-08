@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MyTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorAccent">@color/my_accent</item>
+        <item name="colorPrimary">@color/my_primary</item>
+        <item name="colorPrimaryDark">@color/my_primary_dark</item>
+    </style>
+</resources>

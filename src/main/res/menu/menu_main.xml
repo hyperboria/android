@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/toggle_cjdns"
+        android:title="@string/toolbar_toggle_cjdns"
+        android:checkable="true"
+        app:showAsAction="always" />
+</menu>
