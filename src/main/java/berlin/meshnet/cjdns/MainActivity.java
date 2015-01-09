@@ -24,6 +24,7 @@ import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
+import berlin.meshnet.cjdns.events.ContentChangeEvent;
 import berlin.meshnet.cjdns.events.StartCjdnsServiceEvent;
 import berlin.meshnet.cjdns.events.StopCjdnsServiceEvent;
 import butterknife.ButterKnife;
@@ -50,6 +51,10 @@ public class MainActivity extends ActionBarActivity {
 
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private ArrayAdapter<String> mDrawerAdapter;
+
+    private String mSelectedContent;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,14 +66,19 @@ public class MainActivity extends ActionBarActivity {
 
         setSupportActionBar(mToolbar);
 
-        final ArrayAdapter<String> drawerOptions = new ArrayAdapter<String>(this, R.layout.view_drawer_option, getResources().getStringArray(R.array.drawer_options));
-        mDrawer.setAdapter(drawerOptions);
-        mDrawer.setItemChecked(1, true); // TODO Create state provider
+        mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.view_drawer_option, getResources().getStringArray(R.array.drawer_options));
+        mDrawer.setAdapter(mDrawerAdapter);
+        mDrawer.setItemChecked(1, true); // TODO Create state producer
         mDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mDrawerLayout.closeDrawer(Gravity.START);
-                Toast.makeText(getApplicationContext(), drawerOptions.getItem(position), Toast.LENGTH_SHORT).show();
+
+                final String selectedOption = mDrawerAdapter.getItem(position);
+                if (!selectedOption.equals(mSelectedContent)) {
+                    mSelectedContent = selectedOption;
+                    mBus.post(new ContentChangeEvent(selectedOption));
+                }
             }
         });
 
@@ -76,12 +86,14 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
+                mToolbar.setTitle(mDrawerAdapter.getItem(mDrawer.getCheckedItemPosition()));
                 supportInvalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+                mToolbar.setTitle(getString(R.string.app_name));
                 supportInvalidateOptionsMenu();
             }
         };
@@ -142,5 +154,11 @@ public class MainActivity extends ActionBarActivity {
     public void handleEvent(StopCjdnsServiceEvent event) {
         Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
         // TODO Stop CjdnsService
+    }
+
+    @Subscribe
+    public void handleEvent(ContentChangeEvent event) {
+        Toast.makeText(getApplicationContext(), "Changing content", Toast.LENGTH_SHORT).show();
+        // TODO Swap content
     }
 }
