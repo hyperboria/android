@@ -63,6 +63,7 @@ public class MainActivity extends ActionBarActivity {
 
         final ArrayAdapter<String> drawerOptions = new ArrayAdapter<String>(this, R.layout.view_drawer_option, getResources().getStringArray(R.array.drawer_options));
         mDrawer.setAdapter(drawerOptions);
+        mDrawer.setItemChecked(1, true); // TODO Create state provider
         mDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

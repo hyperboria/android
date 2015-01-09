@@ -32,7 +32,8 @@
                 android:layout_height="match_parent"
                 android:divider="@null"
                 android:background="@color/my_primary_dark"
-                android:listSelector="@drawable/selector_drawer_option" />
+                android:choiceMode="singleChoice"
+                android:listSelector="@drawable/selector_drawer_option_overlay" />
         </RelativeLayout>
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>
