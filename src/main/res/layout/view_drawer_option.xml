@@ -4,5 +4,8 @@
     android:layout_height="wrap_content"
     android:shadowColor="@color/my_accent"
     android:background="@drawable/selector_drawer_option_background"
-    android:padding="@dimen/drawer_option_padding"
+    android:paddingLeft="@dimen/drawer_option_padding"
+    android:paddingRight="@dimen/drawer_option_padding_half"
+    android:paddingTop="@dimen/drawer_option_padding"
+    android:paddingBottom="@dimen/drawer_option_padding"
     android:textSize="@dimen/drawer_option_text_size" />

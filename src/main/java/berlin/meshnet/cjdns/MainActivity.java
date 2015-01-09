@@ -2,6 +2,7 @@ package berlin.meshnet.cjdns;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -12,11 +13,13 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -66,7 +69,23 @@ public class MainActivity extends ActionBarActivity {
 
         setSupportActionBar(mToolbar);
 
-        mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.view_drawer_option, getResources().getStringArray(R.array.drawer_options));
+        final TypedArray drawerIcons = getResources().obtainTypedArray(R.array.drawer_icons);
+        mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.view_drawer_option, getResources().getStringArray(R.array.drawer_options)) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getView(position, convertView, parent);
+                view.setCompoundDrawablesWithIntrinsicBounds(null, null, drawerIcons.getDrawable(position), null);
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+                view.setCompoundDrawablesWithIntrinsicBounds(null, null, drawerIcons.getDrawable(position), null);
+                return view;
+            }
+        };
         mDrawer.setAdapter(mDrawerAdapter);
         mDrawer.setItemChecked(1, true); // TODO Create state producer
         mDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
