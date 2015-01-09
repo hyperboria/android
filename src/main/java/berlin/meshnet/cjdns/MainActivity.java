@@ -19,10 +19,20 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
+import javax.inject.Inject;
+
+import berlin.meshnet.cjdns.events.StartCjdnsServiceEvent;
+import berlin.meshnet.cjdns.events.StopCjdnsServiceEvent;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class MainActivity extends ActionBarActivity {
+
+    @Inject
+    Bus mBus;
 
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
@@ -44,7 +54,11 @@ public class MainActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Inject dependencies.
+        ((CjdnsApplication) getApplication()).inject(this);
         ButterKnife.inject(this);
+
         setSupportActionBar(mToolbar);
 
         final ArrayAdapter<String> drawerOptions = new ArrayAdapter<String>(this, R.layout.view_drawer_option, getResources().getStringArray(R.array.drawer_options));
@@ -90,11 +104,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    Toast.makeText(getApplicationContext(), "Starting CjdnsService", Toast.LENGTH_SHORT).show();
-                    startService(new Intent(getApplicationContext(), MeshnetService.class));
+                    mBus.post(new StartCjdnsServiceEvent());
                 } else {
-                    Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
-                    // TODO Stop CjdnsService
+                    mBus.post(new StopCjdnsServiceEvent());
                 }
             }
         });
@@ -105,5 +117,29 @@ public class MainActivity extends ActionBarActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        mBus.unregister(this);
+        super.onPause();
+    }
+
+    @Subscribe
+    public void handleEvent(StartCjdnsServiceEvent event) {
+        Toast.makeText(getApplicationContext(), "Starting CjdnsService", Toast.LENGTH_SHORT).show();
+        startService(new Intent(getApplicationContext(), CjdnsService.class));
+    }
+
+    @Subscribe
+    public void handleEvent(StopCjdnsServiceEvent event) {
+        Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
+        // TODO Stop CjdnsService
     }
 }
