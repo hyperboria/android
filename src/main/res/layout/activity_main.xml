@@ -18,7 +18,8 @@
         <FrameLayout
             android:id="@+id/content_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/my_primary_dark" />
 
         <!-- Drawer -->
         <RelativeLayout
@@ -27,12 +28,18 @@
             android:layout_gravity="start">
 
             <ListView
+                android:paddingTop="@dimen/drawer_option_padding"
+                android:paddingBottom="@dimen/drawer_option_padding"
                 android:id="@+id/drawer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:divider="@null"
                 android:background="@color/my_primary_dark"
-                android:listSelector="@drawable/selector_drawer_option" />
+                android:choiceMode="singleChoice"
+                android:fadingEdge="vertical"
+                android:requiresFadingEdge="vertical"
+                android:scrollbars="none"
+                android:listSelector="@drawable/selector_drawer_option_overlay" />
         </RelativeLayout>
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>

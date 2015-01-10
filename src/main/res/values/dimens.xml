@@ -5,6 +5,8 @@
 
     <!-- Drawer -->
     <dimen name="drawer_option_padding">16dp</dimen>
-    <dimen name="drawer_option_text_size">22sp</dimen>
-    <dimen name="drawer_option_radius">2dp</dimen>
+    <dimen name="drawer_option_padding_half">8dp</dimen>
+    <dimen name="drawer_option_radius">4dp</dimen>
+    <dimen name="drawer_option_check_width">8dp</dimen>
+    <dimen name="drawer_option_text_size">18sp</dimen>
 </resources>

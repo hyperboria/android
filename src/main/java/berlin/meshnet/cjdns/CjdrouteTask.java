@@ -13,9 +13,9 @@ import java.io.OutputStream;
 
 import org.json.JSONException;
 
-public class CjdrouteTask extends AsyncTask<MeshnetService, String, Integer> {
+public class CjdrouteTask extends AsyncTask<CjdnsService, String, Integer> {
     @Override
-    protected Integer doInBackground(MeshnetService... service) {
+    protected Integer doInBackground(CjdnsService... service) {
         Integer pid = new Integer(0);
 
         try {

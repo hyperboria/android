@@ -7,19 +7,22 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Process;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
-import java.io.InputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class MeshnetService extends Service
-{
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+public class CjdnsService extends Service {
+
+    private static final String TAG = CjdnsService.class.getSimpleName();
+
     private static final int NOTIFICATION_ID = 1;
 
     private Notification notification;
@@ -27,8 +30,7 @@ public class MeshnetService extends Service
     private int pid;
 
     @Override
-    public IBinder onBind(Intent intent)
-    {
+    public IBinder onBind(Intent intent) {
         return null;
     }
 
@@ -41,51 +43,46 @@ public class MeshnetService extends Service
             CjdrouteTask task = new CjdrouteTask() {
                 @Override
                 protected void onProgressUpdate(String... line) {
-                    Log.i("cjdns.MeshnetService", "cjdroute: " + line[0]);
+                    Log.i(TAG, "cjdroute: " + line[0]);
                 }
 
                 @Override
                 protected void onPostExecute(Integer pid) {
-                    MeshnetService.this.pid = pid.intValue();
-                    Log.i("cjdns.MeshnetService", "pid: " + pid);
+                    CjdnsService.this.pid = pid.intValue();
+                    Log.i(TAG, "pid: " + pid);
                 }
             };
             task.execute(this);
         } catch (IOException e) {
-            Log.e("cjdns.MeshnetService", "IOException: " + e.toString());
+            Log.e(TAG, "IOException: " + e.toString());
         } catch (JSONException e) {
-            Log.e("cjdns.MeshnetService", "JSONException: " + e.toString());
+            Log.e(TAG, "JSONException: " + e.toString());
         }
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            Log.i("cjdns.MeshnetService", "onStartCommand action=" + intent.getAction());
+            Log.i(TAG, "onStartCommand action=" + intent.getAction());
         }
         return START_STICKY;
     }
 
     @Override
-    public void onDestroy()
-    {
-        Log.i("cjdns.MeshnetService", "onDestroy");
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
         Process.sendSignal(this.pid, Process.SIGNAL_KILL);
     }
 
-    public InputStream cjdroute() throws IOException
-    {
+    public InputStream cjdroute() throws IOException {
         return getAssets().open(Build.CPU_ABI + "/cjdroute");
     }
 
-    public InputStream cjdrouteconf() throws IOException
-    {
+    public InputStream cjdrouteconf() throws IOException {
         return getAssets().open("cjdroute.conf");
     }
 
-    public JSONObject config() throws IOException, JSONException
-    {
+    public JSONObject config() throws IOException, JSONException {
         if (this.cjdrouteconf == null) {
             InputStream stream = cjdrouteconf();
             StringBuilder json = new StringBuilder();
@@ -98,14 +95,13 @@ public class MeshnetService extends Service
             }
 
             this.cjdrouteconf = (JSONObject) new JSONTokener(json.toString()).nextValue();
-            Log.i("cjdns.MeshnetService", "parsed cjdrouteconf");
+            Log.i(TAG, "parsed cjdrouteconf");
         }
 
         return this.cjdrouteconf;
     }
 
-    public AdminAPI admin() throws IOException, JSONException, UnknownHostException
-    {
+    public AdminAPI admin() throws IOException, JSONException, UnknownHostException {
         JSONObject admin = config().getJSONObject("admin");
         String[] bind = admin.getString("bind").split(":");
 
@@ -116,16 +112,15 @@ public class MeshnetService extends Service
         return new AdminAPI(address, port, password);
     }
 
-    protected Notification buildNotification() throws IOException, JSONException
-    {
+    protected Notification buildNotification() throws IOException, JSONException {
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        return new Notification.Builder(this)
-            .setContentTitle("Meshnet")
-            .setContentText(config().getString("ipv6"))
-            .setContentIntent(contentIntent)
-            .setSmallIcon(R.drawable.ic_launcher)
-            // .setLargeIcon(R.drawable.ic_launcher)
-            .build();
+        return new NotificationCompat.Builder(this)
+                .setContentTitle("Meshnet")
+                .setContentText(config().getString("ipv6"))
+                .setContentIntent(contentIntent)
+                .setSmallIcon(R.drawable.ic_launcher)
+                        // .setLargeIcon(R.drawable.ic_launcher)
+                .build();
     }
 }
