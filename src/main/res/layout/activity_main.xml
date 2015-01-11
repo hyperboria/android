@@ -25,21 +25,35 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="start">
+            android:layout_gravity="start"
+            android:background="@color/my_primary_dark">
 
             <ListView
                 android:paddingTop="@dimen/drawer_option_padding"
                 android:paddingBottom="@dimen/drawer_option_padding"
                 android:id="@+id/drawer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:divider="@null"
-                android:background="@color/my_primary_dark"
                 android:choiceMode="singleChoice"
                 android:fadingEdge="vertical"
                 android:requiresFadingEdge="vertical"
                 android:scrollbars="none"
                 android:listSelector="@drawable/selector_drawer_option_overlay" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/drawer">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:src="@drawable/drawer_watermark"
+                    android:scaleType="fitEnd" />
+            </RelativeLayout>
         </RelativeLayout>
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>
