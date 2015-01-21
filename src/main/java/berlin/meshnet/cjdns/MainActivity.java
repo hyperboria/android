@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,9 +30,10 @@ import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
-import berlin.meshnet.cjdns.events.ContentChangeEvent;
-import berlin.meshnet.cjdns.events.StartCjdnsServiceEvent;
-import berlin.meshnet.cjdns.events.StopCjdnsServiceEvent;
+import berlin.meshnet.cjdns.event.PageChangeEvent;
+import berlin.meshnet.cjdns.event.StartCjdnsServiceEvent;
+import berlin.meshnet.cjdns.event.StopCjdnsServiceEvent;
+import berlin.meshnet.cjdns.page.MePageFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -96,7 +100,7 @@ public class MainActivity extends ActionBarActivity {
                 final String selectedOption = mDrawerAdapter.getItem(position);
                 if (!selectedOption.equals(mSelectedContent)) {
                     mSelectedContent = selectedOption;
-                    mBus.post(new ContentChangeEvent(selectedOption));
+                    mBus.post(new PageChangeEvent(selectedOption));
                 }
             }
         });
@@ -176,8 +180,21 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Subscribe
-    public void handleEvent(ContentChangeEvent event) {
+    public void handleEvent(PageChangeEvent event) {
         Toast.makeText(getApplicationContext(), "Changing content", Toast.LENGTH_SHORT).show();
-        // TODO Swap content
+
+        // Get page corresponding to selection.
+        Fragment fragment = null;
+        if (getString(R.string.drawer_option_me).equals(event.mSelectedContent)) {
+            fragment = MePageFragment.newInstance();
+        }
+
+        // Swap page.
+        if (fragment != null) {
+            final FragmentManager fragmentManager = getSupportFragmentManager();
+            final FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.content_container, fragment);
+            ft.commit();
+        }
     }
 }
