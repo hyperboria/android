@@ -7,4 +7,23 @@
         <item name="colorPrimaryDark">@color/my_primary_dark</item>
         <item name="colorControlActivated">@color/my_control_activated</item>
     </style>
+
+    <style name="MyText">
+        <item name="android:textColor">@color/my_accent</item>
+        <item name="android:shadowColor">@color/my_shadow</item>
+        <item name="android:shadowDy">6</item>
+        <item name="android:shadowRadius">6</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="MyText.Icon">
+        <item name="android:textColor">@color/my_primary</item>
+        <item name="android:textSize">22dp</item>
+        <item name="android:minWidth">22dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="MyText.Small">
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>

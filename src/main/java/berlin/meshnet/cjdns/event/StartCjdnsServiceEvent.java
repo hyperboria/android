@@ -1,4 +1,4 @@
-package berlin.meshnet.cjdns.events;
+package berlin.meshnet.cjdns.event;
 
 public class StartCjdnsServiceEvent {
 }

@@ -6,6 +6,10 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
 
+import berlin.meshnet.cjdns.model.Theme;
+import berlin.meshnet.cjdns.page.MePageFragment;
+import berlin.meshnet.cjdns.producer.MeProducer;
+import berlin.meshnet.cjdns.producer.ThemeProducer;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
@@ -36,7 +40,10 @@ public class CjdnsApplication extends Application {
      * {@link dagger.Module} providing default dependencies.
      */
     @Module(
-            injects = {MainActivity.class}
+            injects = {
+                    MainActivity.class,
+                    MePageFragment.class
+            }
     )
     public static class DefaultModule {
 
@@ -44,6 +51,18 @@ public class CjdnsApplication extends Application {
         @Provides
         public Bus provideBus() {
             return new Bus();
+        }
+
+        @Singleton
+        @Provides
+        public ThemeProducer provideThemeProducer(Bus bus) {
+            return new ThemeProducer.VerboseMock(bus);
+        }
+
+        @Singleton
+        @Provides
+        public MeProducer provideMeProducer(Bus bus) {
+            return new MeProducer.Mock(bus);
         }
     }
 }

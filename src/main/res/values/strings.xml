@@ -22,4 +22,10 @@
         <item>@string/drawer_option_settings</item>
         <item>@string/drawer_option_about</item>
     </string-array>
+
+    <!-- Me page -->
+    <string name="me_page_name_icon">{fa-user}</string>
+    <string name="me_page_address_icon">{fa-home}</string>
+    <string name="me_page_public_key_icon">{fa-lock}</string>
+
 </resources>
