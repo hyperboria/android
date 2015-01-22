@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_margin"
             android:text="@string/me_page_name_icon"
-            style="@style/MyText.Small.Icon" />
+            style="@style/MyText.Icon" />
 
         <TextView
             android:id="@+id/me_page_name_text"
@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_margin"
             android:ellipsize="none"
-            style="@style/MyText.Small" />
+            style="@style/MyText" />
     </LinearLayout>
 
     <LinearLayout
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_margin"
             android:text="@string/me_page_address_icon"
-            style="@style/MyText.Small.Icon" />
+            style="@style/MyText.Icon" />
 
         <TextView
             android:id="@+id/me_page_address_text"
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_margin"
             android:ellipsize="none"
-            style="@style/MyText.Small" />
+            style="@style/MyText" />
     </LinearLayout>
 
     <LinearLayout
@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_margin"
             android:text="@string/me_page_public_key_icon"
-            style="@style/MyText.Small.Icon" />
+            style="@style/MyText.Icon" />
 
         <TextView
             android:id="@+id/me_page_public_key_text"
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_margin"
             android:ellipsize="none"
-            style="@style/MyText.Small" />
+            style="@style/MyText" />
     </LinearLayout>
 
 </LinearLayout>
