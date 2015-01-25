@@ -6,7 +6,6 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -15,6 +14,8 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.HashMap;
+
+import berlin.meshnet.cjdns.model.Node;
 
 public class AdminAPI {
     public static final int TIMEOUT = 5000;
@@ -49,6 +50,11 @@ public class AdminAPI {
         // } catch (IOException e) {
         //     return 0;
         // }
+    }
+
+    public Node NodeStore_nodeForAddr() throws IOException
+    {
+        return new Node("foo.k", 123);
     }
 
     public Map perform(Map request) throws IOException
