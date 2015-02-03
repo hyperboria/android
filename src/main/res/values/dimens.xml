@@ -13,4 +13,7 @@
     <dimen name="drawer_option_radius">4dp</dimen>
     <dimen name="drawer_option_check_width">8dp</dimen>
     <dimen name="drawer_option_text_size">18sp</dimen>
+
+    <!-- Card -->
+    <dimen name="card_radius">4dp</dimen>
 </resources>

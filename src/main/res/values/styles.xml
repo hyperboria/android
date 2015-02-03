@@ -17,7 +17,7 @@
     </style>
 
     <style name="MyText.Icon">
-        <item name="android:textColor">@color/my_primary</item>
+        <item name="android:textColor">@color/my_accent_dark</item>
         <item name="android:textSize">22dp</item>
         <item name="android:minWidth">22dp</item>
         <item name="android:gravity">center</item>
@@ -25,5 +25,12 @@
 
     <style name="MyText.Small">
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="MyText.Small.Icon">
+        <item name="android:textColor">@color/my_accent_dark</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:minWidth">18dp</item>
+        <item name="android:gravity">center</item>
     </style>
 </resources>

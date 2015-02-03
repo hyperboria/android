@@ -28,4 +28,15 @@
     <string name="me_page_address_icon">{fa-home}</string>
     <string name="me_page_public_key_icon">{fa-lock}</string>
 
+    <!-- Credential card -->
+    <string name="credential_card_protocol_icon">{fa-exchange}</string>
+    <string name="credential_card_password_icon">{fa-key}</string>
+
+    <!-- Protocol -->
+    <string name="protocol_description" formatted="false">%s via %s</string>
+    <string name="interface_udp">UDP</string>
+    <string name="interface_eth">ETH</string>
+    <string name="link_wifi_direct">WiFi Direct</string>
+    <string name="link_bluetooth">Bluetooth</string>
+    <string name="link_overlay">Clearnet Overlay</string>
 </resources>

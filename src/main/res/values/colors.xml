@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="my_accent">#D7CCC8</color>
+    <color name="my_accent_dark">#A1887F</color>
     <color name="my_primary">#795548</color>
     <color name="my_primary_dark">#5D4037</color>
     <color name="my_control_activated">#FF9800</color>
     <color name="my_shadow">#32212121</color>
+
+    <color name="my_card_background">@color/my_primary</color>
 </resources>

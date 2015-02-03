@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import berlin.meshnet.cjdns.event.PageChangeEvent;
 import berlin.meshnet.cjdns.event.StartCjdnsServiceEvent;
 import berlin.meshnet.cjdns.event.StopCjdnsServiceEvent;
+import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -187,6 +188,8 @@ public class MainActivity extends ActionBarActivity {
         Fragment fragment = null;
         if (getString(R.string.drawer_option_me).equals(event.mSelectedContent)) {
             fragment = MePageFragment.newInstance();
+        } else if (getString(R.string.drawer_option_credentials).equals(event.mSelectedContent)) {
+            fragment = CredentialsPageFragment.newInstance();
         }
 
         // Swap page.
