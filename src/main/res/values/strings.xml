@@ -31,6 +31,9 @@
     <!-- Credential card -->
     <string name="credential_card_protocol_icon">{fa-exchange}</string>
     <string name="credential_card_password_icon">{fa-key}</string>
+    <string name="credential_card_allow_button_on">{fa-toggle-on}</string>
+    <string name="credential_card_allow_button_off">{fa-toggle-off}</string>
+    <string name="credential_card_share_button">{fa-share-alt}</string>
 
     <!-- Protocol -->
     <string name="protocol_description" formatted="false">%s via %s</string>

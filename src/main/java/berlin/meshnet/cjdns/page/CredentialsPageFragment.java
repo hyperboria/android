@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.IconTextView;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -125,6 +126,9 @@ public class CredentialsPageFragment extends Fragment {
             holder.label.setText(credential.label);
             holder.protocol.setText(credential.protocol.getDescription(mResources));
             holder.password.setText(credential.password);
+            holder.allow.setText(credential.isAllowed()
+                    ? mResources.getString(R.string.credential_card_allow_button_on)
+                    : mResources.getString(R.string.credential_card_allow_button_off));
             holder.itemView.setAlpha(credential.isAllowed() ? ALPHA_ALLOWED : ALPHA_REVOKED);
         }
 
@@ -144,6 +148,9 @@ public class CredentialsPageFragment extends Fragment {
 
         @InjectView(R.id.credential_card_password)
         TextView password;
+
+        @InjectView(R.id.credential_card_allow)
+        IconTextView allow;
 
         public ViewHolder(View itemView) {
             super(itemView);
