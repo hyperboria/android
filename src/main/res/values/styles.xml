@@ -34,6 +34,6 @@
     </style>
 
     <style name="MyText.Icon.Small.Active">
-        <item name="android:textColor">@color/my_accent</item>
+        <item name="android:textColor">@color/selector_icon_active</item>
     </style>
 </resources>

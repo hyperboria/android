@@ -126,9 +126,27 @@ public class CredentialsPageFragment extends Fragment {
             holder.label.setText(credential.label);
             holder.protocol.setText(credential.protocol.getDescription(mResources));
             holder.password.setText(credential.password);
+            holder.broadcast.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            holder.target.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
             holder.allow.setText(credential.isAllowed()
                     ? mResources.getString(R.string.credential_card_allow_button_on)
                     : mResources.getString(R.string.credential_card_allow_button_off));
+            holder.allow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
             holder.itemView.setAlpha(credential.isAllowed() ? ALPHA_ALLOWED : ALPHA_REVOKED);
         }
 
@@ -148,6 +166,12 @@ public class CredentialsPageFragment extends Fragment {
 
         @InjectView(R.id.credential_card_password)
         TextView password;
+
+        @InjectView(R.id.credential_card_broadcast)
+        IconTextView broadcast;
+
+        @InjectView(R.id.credential_card_target)
+        IconTextView target;
 
         @InjectView(R.id.credential_card_allow)
         IconTextView allow;

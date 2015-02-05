@@ -33,7 +33,8 @@
     <string name="credential_card_password_icon">{fa-key}</string>
     <string name="credential_card_allow_button_on">{fa-toggle-on}</string>
     <string name="credential_card_allow_button_off">{fa-toggle-off}</string>
-    <string name="credential_card_share_button">{fa-share-alt}</string>
+    <string name="credential_card_target_button">{fa-street-view}</string>
+    <string name="credential_card_broadcast_button">{fa-rss}</string>
 
     <!-- Protocol -->
     <string name="protocol_description" formatted="false">%s via %s</string>
@@ -42,4 +43,28 @@
     <string name="link_wifi_direct">WiFi Direct</string>
     <string name="link_bluetooth">Bluetooth</string>
     <string name="link_overlay">Clearnet Overlay</string>
+
+    <!-- Exchange medium -->
+    <string name="exchange_medium_nfc">{fa-tag} NFC</string>
+    <string name="exchange_medium_qrcode">{fa-qrcode} QR code</string>
+    <string name="exchange_medium_clipboard">{fa-clipboard} Copy to clipboard</string>
+    <string name="exchange_medium_share">{fa-share-alt} Share…</string>
+
+    <!-- Credential target share -->
+    <string name="credential_target_share_title">Share via</string>
+
+    <string-array name="credential_target_share_exchange_options">
+        <item>@string/exchange_medium_nfc</item>
+        <item>@string/exchange_medium_qrcode</item>
+        <item>@string/exchange_medium_clipboard</item>
+        <item>@string/exchange_medium_share</item>
+    </string-array>
+
+    <!-- Credential broadcast share -->
+    <string name="credential_broadcast_share_title">Broadcast via</string>
+
+    <string-array name="credential_broadcast_share_exchange_options">
+        <item>@string/exchange_medium_nfc</item>
+    </string-array>
+
 </resources>
