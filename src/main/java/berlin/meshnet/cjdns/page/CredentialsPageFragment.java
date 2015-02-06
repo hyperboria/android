@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.IconTextView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -44,7 +45,9 @@ public class CredentialsPageFragment extends Fragment {
     @InjectView(R.id.credentials_page_recycler_view)
     RecyclerView mCredentialsRecyclerView;
 
-    private RecyclerView.Adapter mAdapter;
+    private Boolean mIsInternalsVisible = null;
+
+    private CredentialListProducer.CredentialList mCredentialList = null;
 
     public static final Fragment newInstance() {
         return new CredentialsPageFragment();
@@ -91,12 +94,24 @@ public class CredentialsPageFragment extends Fragment {
 
     @Subscribe
     public void handleTheme(Theme theme) {
+        mIsInternalsVisible = theme.isInternalsVisible;
+        loadCredentialList();
     }
 
     @Subscribe
     public void handleCredentialList(CredentialListProducer.CredentialList credentialList) {
-        mAdapter = new CredentialListAdapter(getActivity(), credentialList);
-        mCredentialsRecyclerView.setAdapter(mAdapter);
+        mCredentialList = credentialList;
+        loadCredentialList();
+    }
+
+    /**
+     * Loads the list of credentials.
+     */
+    private void loadCredentialList() {
+        if (mCredentialList != null && mIsInternalsVisible != null) {
+            RecyclerView.Adapter adapter = new CredentialListAdapter(getActivity(), mCredentialList, mIsInternalsVisible);
+            mCredentialsRecyclerView.setAdapter(adapter);
+        }
     }
 
     static class CredentialListAdapter extends RecyclerView.Adapter<ViewHolder> {
@@ -109,9 +124,12 @@ public class CredentialsPageFragment extends Fragment {
 
         private CredentialListProducer.CredentialList mCredentialList;
 
-        private CredentialListAdapter(Context context, CredentialListProducer.CredentialList credentialList) {
+        private boolean mIsInternalsVisible;
+
+        private CredentialListAdapter(Context context, CredentialListProducer.CredentialList credentialList, boolean isInternalsVisible) {
             mResources = context.getApplicationContext().getResources();
             mCredentialList = credentialList;
+            mIsInternalsVisible = isInternalsVisible;
         }
 
         @Override
@@ -125,7 +143,12 @@ public class CredentialsPageFragment extends Fragment {
             Credential credential = mCredentialList.get(position);
             holder.label.setText(credential.label);
             holder.protocol.setText(credential.protocol.getDescription(mResources));
-            holder.password.setText(credential.password);
+            if (mIsInternalsVisible) {
+                holder.password.setText(credential.password);
+                holder.passwordContainer.setVisibility(View.VISIBLE);
+            } else {
+                holder.passwordContainer.setVisibility(View.GONE);
+            }
             holder.broadcast.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -163,6 +186,9 @@ public class CredentialsPageFragment extends Fragment {
 
         @InjectView(R.id.credential_card_protocol)
         TextView protocol;
+
+        @InjectView(R.id.credential_card_password_container)
+        LinearLayout passwordContainer;
 
         @InjectView(R.id.credential_card_password)
         TextView password;

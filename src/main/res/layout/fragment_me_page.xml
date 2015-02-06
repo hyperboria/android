@@ -69,5 +69,4 @@
             android:ellipsize="none"
             style="@style/MyText" />
     </LinearLayout>
-
 </LinearLayout>
