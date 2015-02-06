@@ -16,4 +16,7 @@
 
     <!-- Card -->
     <dimen name="card_radius">4dp</dimen>
+
+    <!-- Dialog -->
+    <dimen name="dialog_list_item_padding">16dp</dimen>
 </resources>

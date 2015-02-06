@@ -45,13 +45,13 @@
     <string name="link_overlay">Clearnet Overlay</string>
 
     <!-- Exchange medium -->
-    <string name="exchange_medium_nfc">{fa-tag} NFC</string>
-    <string name="exchange_medium_qrcode">{fa-qrcode} QR code</string>
-    <string name="exchange_medium_clipboard">{fa-clipboard} Copy to clipboard</string>
-    <string name="exchange_medium_share">{fa-share-alt} Share…</string>
+    <string name="exchange_medium_nfc">{fa-tag}&#160;&#160;&#160;NFC</string>
+    <string name="exchange_medium_qrcode">{fa-qrcode}&#160;&#160;&#160;QR code</string>
+    <string name="exchange_medium_clipboard">{fa-clipboard}&#160;&#160;&#160;Copy to clipboard</string>
+    <string name="exchange_medium_share">{fa-share-alt}&#160;&#160;&#160;Share…</string>
 
     <!-- Credential target share -->
-    <string name="credential_target_share_title">Share via</string>
+    <string name="credential_target_share_title">Send via</string>
 
     <string-array name="credential_target_share_exchange_options">
         <item>@string/exchange_medium_nfc</item>

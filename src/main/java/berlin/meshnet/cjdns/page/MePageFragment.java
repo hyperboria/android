@@ -48,7 +48,7 @@ public class MePageFragment extends Fragment {
     @InjectView(R.id.me_page_public_key_text)
     TextView mPublicKeyTextView;
 
-    public static final Fragment newInstance() {
+    public static Fragment newInstance() {
         return new MePageFragment();
     }
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,6 +31,8 @@ import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
+import berlin.meshnet.cjdns.dialog.ExchangeDialogFragment;
+import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.event.PageChangeEvent;
 import berlin.meshnet.cjdns.event.StartCjdnsServiceEvent;
 import berlin.meshnet.cjdns.event.StopCjdnsServiceEvent;
@@ -199,5 +202,11 @@ public class MainActivity extends ActionBarActivity {
             ft.replace(R.id.content_container, fragment);
             ft.commit();
         }
+    }
+
+    @Subscribe
+    public void handleEvent(ExchangeEvent event) {
+        DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, "http://wrbt.hyperboria.net");
+        fragment.show(getSupportFragmentManager(), null);
     }
 }

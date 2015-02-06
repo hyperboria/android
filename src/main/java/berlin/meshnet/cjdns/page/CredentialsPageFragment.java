@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
+import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.CredentialListProducer;
@@ -49,7 +50,7 @@ public class CredentialsPageFragment extends Fragment {
 
     private CredentialListProducer.CredentialList mCredentialList = null;
 
-    public static final Fragment newInstance() {
+    public static Fragment newInstance() {
         return new CredentialsPageFragment();
     }
 
@@ -109,7 +110,7 @@ public class CredentialsPageFragment extends Fragment {
      */
     private void loadCredentialList() {
         if (mCredentialList != null && mIsInternalsVisible != null) {
-            RecyclerView.Adapter adapter = new CredentialListAdapter(getActivity(), mCredentialList, mIsInternalsVisible);
+            RecyclerView.Adapter adapter = new CredentialListAdapter(getActivity(), mBus, mCredentialList, mIsInternalsVisible);
             mCredentialsRecyclerView.setAdapter(adapter);
         }
     }
@@ -122,25 +123,30 @@ public class CredentialsPageFragment extends Fragment {
 
         private Resources mResources;
 
+        private Bus mBus;
+
         private CredentialListProducer.CredentialList mCredentialList;
 
         private boolean mIsInternalsVisible;
 
-        private CredentialListAdapter(Context context, CredentialListProducer.CredentialList credentialList, boolean isInternalsVisible) {
+        private CredentialListAdapter(Context context, Bus bus, CredentialListProducer.CredentialList credentialList,
+                                      boolean isInternalsVisible) {
             mResources = context.getApplicationContext().getResources();
+            mBus = bus;
             mCredentialList = credentialList;
             mIsInternalsVisible = isInternalsVisible;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            final View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_credential, parent, false);
+            final View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.card_view_credential, parent, false);
             return new ViewHolder(itemView);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            Credential credential = mCredentialList.get(position);
+            final Credential credential = mCredentialList.get(position);
             holder.label.setText(credential.label);
             holder.protocol.setText(credential.protocol.getDescription(mResources));
             if (mIsInternalsVisible) {
@@ -152,13 +158,13 @@ public class CredentialsPageFragment extends Fragment {
             holder.broadcast.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    mBus.post(new ExchangeEvent(ExchangeEvent.Type.broadcast));
                 }
             });
             holder.target.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    mBus.post(new ExchangeEvent(ExchangeEvent.Type.target));
                 }
             });
             holder.allow.setText(credential.isAllowed()
@@ -167,7 +173,9 @@ public class CredentialsPageFragment extends Fragment {
             holder.allow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    // TODO
+                    credential.setAllowed(!credential.isAllowed());
+                    notifyDataSetChanged();
                 }
             });
             holder.itemView.setAlpha(credential.isAllowed() ? ALPHA_ALLOWED : ALPHA_REVOKED);

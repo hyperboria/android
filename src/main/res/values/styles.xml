@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/my_primary</item>
         <item name="colorPrimaryDark">@color/my_primary_dark</item>
         <item name="colorControlActivated">@color/my_control_activated</item>
+        <item name="md_background_color">@color/my_primary_dark</item>
+        <item name="md_title_color">@color/my_accent</item>
+        <item name="md_list_selector">@drawable/selector_dialog_list_item</item>
     </style>
 
     <style name="MyText">
@@ -16,6 +19,9 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="MyText.Large">
+        <item name="android:textSize">22sp</item>
+    </style>
 
     <style name="MyText.Small">
         <item name="android:textSize">14sp</item>
