@@ -14,6 +14,9 @@
     <dimen name="drawer_option_check_width">8dp</dimen>
     <dimen name="drawer_option_text_size">18sp</dimen>
 
+    <!-- Floating Action Button -->
+    <dimen name="fab_margin">16dp</dimen>
+
     <!-- Card -->
     <dimen name="card_radius">4dp</dimen>
 

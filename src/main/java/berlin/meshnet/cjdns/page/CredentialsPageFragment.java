@@ -2,6 +2,7 @@ package berlin.meshnet.cjdns.page;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,9 @@ import android.widget.IconTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
+import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -45,6 +49,9 @@ public class CredentialsPageFragment extends Fragment {
 
     @InjectView(R.id.credentials_page_recycler_view)
     RecyclerView mCredentialsRecyclerView;
+
+    @InjectView(R.id.credentials_page_add)
+    FloatingActionButton mAdd;
 
     private Boolean mIsInternalsVisible = null;
 
@@ -79,6 +86,12 @@ public class CredentialsPageFragment extends Fragment {
             }
         });
         mCredentialsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        IconDrawable addIcon = new IconDrawable(getActivity(), Iconify.IconValue.fa_plus)
+                .colorRes(R.color.my_primary)
+                .actionBarSize();
+        addIcon.setStyle(Paint.Style.FILL);
+        mAdd.setImageDrawable(addIcon);
     }
 
     @Override
