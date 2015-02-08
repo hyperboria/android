@@ -206,7 +206,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Subscribe
     public void handleEvent(ExchangeEvent event) {
-        DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, "http://wrbt.hyperboria.net");
+        DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, event.mMessage);
         fragment.show(getSupportFragmentManager(), null);
     }
 }
