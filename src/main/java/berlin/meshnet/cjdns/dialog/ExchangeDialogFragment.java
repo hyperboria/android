@@ -36,6 +36,7 @@ public class ExchangeDialogFragment extends DialogFragment {
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(titleResId)
                 .adapter(new ArrayAdapter<>(getActivity(), R.layout.view_exchange_item, options))
+                .autoDismiss(true)
                 .build();
 
         ListView listView = dialog.getListView();
@@ -46,8 +47,6 @@ public class ExchangeDialogFragment extends DialogFragment {
                     // TODO
                     String text = options[position] + " " + message;
                     Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
-
-                    ExchangeDialogFragment.this.dismiss();
                 }
             });
         }
