@@ -51,7 +51,7 @@
     <string name="exchange_medium_share">{fa-share-alt}&#160;&#160;&#160;Share…</string>
 
     <!-- Credential target share -->
-    <string name="credential_target_share_title">Send via</string>
+    <string name="credential_target_share_title">Send Encrypted Credential via</string>
 
     <string-array name="credential_target_share_exchange_options">
         <item>@string/exchange_medium_nfc</item>
@@ -61,7 +61,7 @@
     </string-array>
 
     <!-- Credential broadcast share -->
-    <string name="credential_broadcast_share_title">Broadcast via</string>
+    <string name="credential_broadcast_share_title">Broadcast Unencrypted Credential via</string>
 
     <string-array name="credential_broadcast_share_exchange_options">
         <item>@string/exchange_medium_nfc</item>
