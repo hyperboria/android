@@ -5,6 +5,6 @@
         <corners
             android:topRightRadius="@dimen/drawer_option_radius"
             android:bottomRightRadius="@dimen/drawer_option_radius" />
-        <solid android:color="@color/my_primary" />
+        <solid android:color="@color/my_accent_dark" />
     </shape>
 </inset>
