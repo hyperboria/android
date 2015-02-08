@@ -30,6 +30,7 @@ import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.CredentialListProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
+import brnunes.swipeablecardview.SwipeableRecyclerViewTouchListener;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -123,8 +124,33 @@ public class CredentialsPageFragment extends Fragment {
      */
     private void loadCredentialList() {
         if (mCredentialList != null && mIsInternalsVisible != null) {
-            RecyclerView.Adapter adapter = new CredentialListAdapter(getActivity(), mBus, mCredentialList, mIsInternalsVisible);
+            final RecyclerView.Adapter adapter = new CredentialListAdapter(getActivity(), mBus, mCredentialList, mIsInternalsVisible);
             mCredentialsRecyclerView.setAdapter(adapter);
+            mCredentialsRecyclerView.addOnItemTouchListener(new SwipeableRecyclerViewTouchListener(mCredentialsRecyclerView,
+                    new SwipeableRecyclerViewTouchListener.SwipeListener() {
+                        @Override
+                        public boolean canSwipe(int position) {
+                            return !mCredentialList.get(position).isAllowed();
+                        }
+
+                        @Override
+                        public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                            for (int position : reverseSortedPositions) {
+                                mCredentialList.remove(position);
+                                adapter.notifyItemRemoved(position);
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                            for (int position : reverseSortedPositions) {
+                                mCredentialList.remove(position);
+                                adapter.notifyItemRemoved(position);
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+                    }));
         }
     }
 
