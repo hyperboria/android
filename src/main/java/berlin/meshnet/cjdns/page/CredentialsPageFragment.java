@@ -219,13 +219,21 @@ public class CredentialsPageFragment extends Fragment {
             holder.broadcast.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mBus.post(new ExchangeEvent(ExchangeEvent.Type.broadcast));
+                    String message = "http://wrbt.hyperboria.net?type=credentials" +
+                            "&interface=" + credential.protocol.transportInterface +
+                            "&link=" + credential.protocol.link +
+                            "&message=" + credential.label + "+" + credential.password;
+                    mBus.post(new ExchangeEvent(ExchangeEvent.Type.broadcast, message));
                 }
             });
             holder.target.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mBus.post(new ExchangeEvent(ExchangeEvent.Type.target));
+                    String message = "http://wrbt.hyperboria.net?type=credentials" +
+                            "&interface=" + credential.protocol.transportInterface +
+                            "&link=" + credential.protocol.link +
+                            "&message=" + credential.label + "+" + credential.password;
+                    mBus.post(new ExchangeEvent(ExchangeEvent.Type.target, message));
                 }
             });
             holder.allow.setText(credential.isAllowed()

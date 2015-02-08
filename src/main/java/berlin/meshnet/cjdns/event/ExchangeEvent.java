@@ -4,8 +4,11 @@ public class ExchangeEvent {
 
     public final Type mType;
 
-    public ExchangeEvent(Type type) {
+    public final String mMessage;
+
+    public ExchangeEvent(Type type, String message) {
         mType = type;
+        mMessage = message;
     }
 
     public enum Type {
