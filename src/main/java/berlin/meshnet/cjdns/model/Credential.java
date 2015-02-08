@@ -5,6 +5,8 @@ package berlin.meshnet.cjdns.model;
  */
 public class Credential {
 
+    public final int id;
+
     public final String label;
 
     public final Protocol protocol;
@@ -13,7 +15,8 @@ public class Credential {
 
     private boolean isAllowed;
 
-    public Credential(String label, Protocol protocol, String password, boolean isAllowed) {
+    public Credential(int id, String label, Protocol protocol, String password, boolean isAllowed) {
+        this.id = id;
         this.label = label;
         this.protocol = protocol;
         this.password = password;

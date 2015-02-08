@@ -1,6 +1,7 @@
 package berlin.meshnet.cjdns;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.squareup.otto.Bus;
 
@@ -25,7 +26,7 @@ public class CjdnsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mObjectGraph = ObjectGraph.create(new DefaultModule());
+        mObjectGraph = ObjectGraph.create(new DefaultModule(this));
     }
 
     /**
@@ -48,6 +49,12 @@ public class CjdnsApplication extends Application {
             }
     )
     public static class DefaultModule {
+
+        private Context mContext;
+
+        private DefaultModule(Context context) {
+            mContext = context;
+        }
 
         @Singleton
         @Provides

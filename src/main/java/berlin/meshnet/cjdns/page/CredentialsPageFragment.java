@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
+import berlin.meshnet.cjdns.event.CredentialEvents;
 import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Theme;
@@ -93,6 +94,12 @@ public class CredentialsPageFragment extends Fragment {
                 .actionBarSize();
         addIcon.setStyle(Paint.Style.FILL);
         mAdd.setImageDrawable(addIcon);
+        mAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBus.post(new CredentialEvents.Create());
+            }
+        });
     }
 
     @Override
@@ -119,6 +126,17 @@ public class CredentialsPageFragment extends Fragment {
         loadCredentialList();
     }
 
+    @Subscribe
+    public void handleNewCredential(CredentialEvents.New event) {
+        if (mCredentialList != null) {
+            mCredentialList.add(event.mCredential);
+            RecyclerView.Adapter adapter = mCredentialsRecyclerView.getAdapter();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+        }
+    }
+
     /**
      * Loads the list of credentials.
      */
@@ -136,8 +154,10 @@ public class CredentialsPageFragment extends Fragment {
                         @Override
                         public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
                             for (int position : reverseSortedPositions) {
+                                int credentialId = mCredentialList.get(position).id;
                                 mCredentialList.remove(position);
                                 adapter.notifyItemRemoved(position);
+                                mBus.post(new CredentialEvents.Remove(credentialId));
                             }
                             adapter.notifyDataSetChanged();
                         }
@@ -145,8 +165,10 @@ public class CredentialsPageFragment extends Fragment {
                         @Override
                         public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
                             for (int position : reverseSortedPositions) {
+                                int credentialId = mCredentialList.get(position).id;
                                 mCredentialList.remove(position);
                                 adapter.notifyItemRemoved(position);
+                                mBus.post(new CredentialEvents.Remove(credentialId));
                             }
                             adapter.notifyDataSetChanged();
                         }
@@ -212,8 +234,8 @@ public class CredentialsPageFragment extends Fragment {
             holder.allow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO
                     credential.setAllowed(!credential.isAllowed());
+                    mBus.post(new CredentialEvents.Update(credential));
                     notifyDataSetChanged();
                 }
             });
