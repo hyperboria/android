@@ -1,13 +1,15 @@
 package berlin.meshnet.cjdns;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
 
-import berlin.meshnet.cjdns.model.Theme;
+import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
+import berlin.meshnet.cjdns.producer.CredentialListProducer;
 import berlin.meshnet.cjdns.producer.MeProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import dagger.Module;
@@ -24,7 +26,7 @@ public class CjdnsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mObjectGraph = ObjectGraph.create(new DefaultModule());
+        mObjectGraph = ObjectGraph.create(new DefaultModule(this));
     }
 
     /**
@@ -42,10 +44,17 @@ public class CjdnsApplication extends Application {
     @Module(
             injects = {
                     MainActivity.class,
-                    MePageFragment.class
+                    MePageFragment.class,
+                    CredentialsPageFragment.class
             }
     )
     public static class DefaultModule {
+
+        private Context mContext;
+
+        private DefaultModule(Context context) {
+            mContext = context;
+        }
 
         @Singleton
         @Provides
@@ -63,6 +72,12 @@ public class CjdnsApplication extends Application {
         @Provides
         public MeProducer provideMeProducer(Bus bus) {
             return new MeProducer.Mock(bus);
+        }
+
+        @Singleton
+        @Provides
+        public CredentialListProducer provideCredentialProducer(Bus bus) {
+            return new CredentialListProducer.Mock(bus);
         }
     }
 }

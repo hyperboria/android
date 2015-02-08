@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/my_primary</item>
         <item name="colorPrimaryDark">@color/my_primary_dark</item>
         <item name="colorControlActivated">@color/my_control_activated</item>
+        <item name="md_background_color">@color/my_primary_dark</item>
+        <item name="md_title_color">@color/my_accent</item>
+        <item name="md_list_selector">@drawable/selector_dialog_list_item</item>
     </style>
 
     <style name="MyText">
@@ -16,14 +19,27 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="MyText.Large">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="MyText.Small">
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="MyText.Icon">
-        <item name="android:textColor">@color/my_primary</item>
+        <item name="android:textColor">@color/my_accent_dark</item>
         <item name="android:textSize">22dp</item>
         <item name="android:minWidth">22dp</item>
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="MyText.Small">
-        <item name="android:textSize">14sp</item>
+    <style name="MyText.Icon.Small">
+        <item name="android:textSize">18dp</item>
+        <item name="android:minWidth">18dp</item>
+    </style>
+
+    <style name="MyText.Icon.Small.Active">
+        <item name="android:textColor">@color/selector_icon_active</item>
     </style>
 </resources>

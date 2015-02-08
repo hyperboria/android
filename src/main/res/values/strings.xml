@@ -28,4 +28,43 @@
     <string name="me_page_address_icon">{fa-home}</string>
     <string name="me_page_public_key_icon">{fa-lock}</string>
 
+    <!-- Credential card -->
+    <string name="credential_card_protocol_icon">{fa-exchange}</string>
+    <string name="credential_card_password_icon">{fa-key}</string>
+    <string name="credential_card_allow_button_on">{fa-toggle-on}</string>
+    <string name="credential_card_allow_button_off">{fa-toggle-off}</string>
+    <string name="credential_card_target_button">{fa-street-view}</string>
+    <string name="credential_card_broadcast_button">{fa-rss}</string>
+
+    <!-- Protocol -->
+    <string name="protocol_description" formatted="false">%s via %s</string>
+    <string name="interface_udp">UDP</string>
+    <string name="interface_eth">ETH</string>
+    <string name="link_wifi_direct">WiFi Direct</string>
+    <string name="link_bluetooth">Bluetooth</string>
+    <string name="link_overlay">Clearnet Overlay</string>
+
+    <!-- Exchange medium -->
+    <string name="exchange_medium_nfc">{fa-tag}&#160;&#160;&#160;NFC</string>
+    <string name="exchange_medium_qrcode">{fa-qrcode}&#160;&#160;&#160;QR code</string>
+    <string name="exchange_medium_clipboard">{fa-clipboard}&#160;&#160;&#160;Copy to clipboard</string>
+    <string name="exchange_medium_share">{fa-share-alt}&#160;&#160;&#160;Share…</string>
+
+    <!-- Credential target share -->
+    <string name="credential_target_share_title">Send Encrypted Credential via</string>
+
+    <string-array name="credential_target_share_exchange_options">
+        <item>@string/exchange_medium_nfc</item>
+        <item>@string/exchange_medium_qrcode</item>
+        <item>@string/exchange_medium_clipboard</item>
+        <item>@string/exchange_medium_share</item>
+    </string-array>
+
+    <!-- Credential broadcast share -->
+    <string name="credential_broadcast_share_title">Broadcast Unencrypted Credential via</string>
+
+    <string-array name="credential_broadcast_share_exchange_options">
+        <item>@string/exchange_medium_nfc</item>
+    </string-array>
+
 </resources>
