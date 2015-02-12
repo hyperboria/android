@@ -2,6 +2,7 @@ package berlin.meshnet.cjdns;
 
 import android.app.Application;
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.squareup.otto.Bus;
 
@@ -27,6 +28,7 @@ public class CjdnsApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mObjectGraph = ObjectGraph.create(new DefaultModule(this));
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }
 
     /**

@@ -1,13 +1,13 @@
 package berlin.meshnet.cjdns;
 
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,6 +38,7 @@ import berlin.meshnet.cjdns.event.StartCjdnsServiceEvent;
 import berlin.meshnet.cjdns.event.StopCjdnsServiceEvent;
 import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
+import berlin.meshnet.cjdns.page.SettingsPageFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -193,11 +194,13 @@ public class MainActivity extends ActionBarActivity {
             fragment = MePageFragment.newInstance();
         } else if (getString(R.string.drawer_option_credentials).equals(event.mSelectedContent)) {
             fragment = CredentialsPageFragment.newInstance();
+        } else if (getString(R.string.drawer_option_settings).equals(event.mSelectedContent)) {
+            fragment = SettingsPageFragment.newInstance();
         }
 
         // Swap page.
         if (fragment != null) {
-            final FragmentManager fragmentManager = getSupportFragmentManager();
+            final FragmentManager fragmentManager = getFragmentManager();
             final FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.replace(R.id.content_container, fragment);
             ft.commit();
@@ -207,6 +210,6 @@ public class MainActivity extends ActionBarActivity {
     @Subscribe
     public void handleEvent(ExchangeEvent event) {
         DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, event.mMessage);
-        fragment.show(getSupportFragmentManager(), null);
+        fragment.show(getFragmentManager(), null);
     }
 }
