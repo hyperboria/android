@@ -36,6 +36,7 @@ import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.event.PageChangeEvent;
 import berlin.meshnet.cjdns.event.StartCjdnsServiceEvent;
 import berlin.meshnet.cjdns.event.StopCjdnsServiceEvent;
+import berlin.meshnet.cjdns.page.AboutPageFragment;
 import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
 import berlin.meshnet.cjdns.page.SettingsPageFragment;
@@ -196,6 +197,8 @@ public class MainActivity extends ActionBarActivity {
             fragment = CredentialsPageFragment.newInstance();
         } else if (getString(R.string.drawer_option_settings).equals(event.mSelectedContent)) {
             fragment = SettingsPageFragment.newInstance();
+        } else if (getString(R.string.drawer_option_about).equals(event.mSelectedContent)) {
+            fragment = AboutPageFragment.newInstance();
         }
 
         // Swap page.
