@@ -7,13 +7,10 @@ public class Me {
 
     public final String name;
 
-    public final String address;
+    public final Node node;
 
-    public final String publicKey;
-
-    public Me(String name, String address, String publicKey) {
+    public Me(String name, Node node) {
         this.name = name;
-        this.address = address;
-        this.publicKey = publicKey;
+        this.node = node;
     }
 }

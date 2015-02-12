@@ -4,6 +4,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 
 import berlin.meshnet.cjdns.model.Me;
+import berlin.meshnet.cjdns.model.Node;
 
 /**
  * Abstract class that produces {@link berlin.meshnet.cjdns.model.Me}.
@@ -33,7 +34,7 @@ public abstract class MeProducer {
         @Override
         @Produce
         public Me produce() {
-            return new Me("Hyperborean", "fc00:0000:0000:0000:0000:0000:0000:0000", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k");
+            return new Me("Hyperborean", new Node("Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", 3));
         }
     }
 }
