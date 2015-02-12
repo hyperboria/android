@@ -5,7 +5,25 @@ package berlin.meshnet.cjdns.model;
  */
 public class Me extends Node {
 
-    public Me(String name, String publicKey, int linkCount) {
-        super(name, publicKey, linkCount);
+    public final String privateKey;
+
+    public final Me.Stats stats;
+
+    public Me(String name, String publicKey, String privateKey) {
+        super(name, publicKey);
+        this.privateKey = privateKey;
+        this.stats = new Stats();
+    }
+
+    /**
+     * Transient statistics about the self node.
+     */
+    public static class Stats extends Node.Stats {
+
+        private int linkCountActive;
+
+        public int getLinkCountActive() {
+            return linkCountActive;
+        }
     }
 }
