@@ -11,6 +11,8 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
+import javax.inject.Inject;
+
 import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
 
@@ -18,6 +20,9 @@ import berlin.meshnet.cjdns.R;
  * The page to configure application settings.
  */
 public class SettingsPageFragment extends PreferenceFragment {
+
+    @Inject
+    SharedPreferences mSharedPreferences;
 
     public static Fragment newInstance() {
         return new SettingsPageFragment();
@@ -32,8 +37,10 @@ public class SettingsPageFragment extends PreferenceFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ((CjdnsApplication) getActivity().getApplication()).inject(this);
+
         String encryptEnabledKey = getString(R.string.setting_encrypt_enabled_key);
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).edit();
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
         Preference preference = getPreferenceManager().findPreference(encryptEnabledKey);
         DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getActivity().getSystemService(Context.DEVICE_POLICY_SERVICE);
         if (devicePolicyManager != null) {
