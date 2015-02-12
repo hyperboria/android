@@ -54,7 +54,7 @@ public class AdminAPI {
 
     public Node NodeStore_nodeForAddr() throws IOException
     {
-        return new Node("foo.k", 123);
+        return new Node("Some Peer Node", "foo.k", 123);
     }
 
     public Map perform(Map request) throws IOException
