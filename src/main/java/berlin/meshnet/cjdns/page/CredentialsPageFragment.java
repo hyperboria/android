@@ -1,11 +1,11 @@
 package berlin.meshnet.cjdns.page;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,7 +23,6 @@ import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
-import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.event.CredentialEvents;
 import berlin.meshnet.cjdns.event.ExchangeEvent;
@@ -38,10 +37,7 @@ import butterknife.InjectView;
 /**
  * The page representing the list of credentials known to the self node.
  */
-public class CredentialsPageFragment extends Fragment {
-
-    @Inject
-    Bus mBus;
+public class CredentialsPageFragment extends BasePageFragment {
 
     @Inject
     ThemeProducer mThemeProducer;
@@ -73,7 +69,6 @@ public class CredentialsPageFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((CjdnsApplication) getActivity().getApplication()).inject(this);
         mCredentialsRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -100,18 +95,6 @@ public class CredentialsPageFragment extends Fragment {
                 mBus.post(new CredentialEvents.Create());
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mBus.register(this);
-    }
-
-    @Override
-    public void onPause() {
-        mBus.unregister(this);
-        super.onPause();
     }
 
     @Subscribe

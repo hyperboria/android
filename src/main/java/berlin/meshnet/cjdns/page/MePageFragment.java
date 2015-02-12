@@ -1,19 +1,17 @@
 package berlin.meshnet.cjdns.page;
 
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
-import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.model.Me;
 import berlin.meshnet.cjdns.model.Theme;
@@ -25,10 +23,7 @@ import butterknife.InjectView;
 /**
  * The page representing the self node.
  */
-public class MePageFragment extends Fragment {
-
-    @Inject
-    Bus mBus;
+public class MePageFragment extends BasePageFragment {
 
     @Inject
     ThemeProducer mThemeProducer;
@@ -57,24 +52,6 @@ public class MePageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_me_page, container, false);
         ButterKnife.inject(this, view);
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        ((CjdnsApplication) getActivity().getApplication()).inject(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mBus.register(this);
-    }
-
-    @Override
-    public void onPause() {
-        mBus.unregister(this);
-        super.onPause();
     }
 
     @Subscribe
