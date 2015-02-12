@@ -34,7 +34,7 @@ public abstract class MeProducer {
         @Override
         @Produce
         public Me produce() {
-            return new Me("Hyperborean", new Node("Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", 3));
+            return new Me("Hyperborean", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", "LoremipsumdolorsitametpraesentconsequatliberolacusmagnisEratgrav");
         }
     }
 }

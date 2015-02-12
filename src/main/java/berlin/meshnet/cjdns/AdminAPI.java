@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 import berlin.meshnet.cjdns.model.Node;
+import berlin.meshnet.cjdns.model.Peer;
+import berlin.meshnet.cjdns.model.Protocol;
 
 public class AdminAPI {
     public static final int TIMEOUT = 5000;
@@ -25,40 +27,35 @@ public class AdminAPI {
     private int port;
     private byte[] password;
 
-    public AdminAPI(InetAddress address, int port, byte[] password)
-    {
+    public AdminAPI(InetAddress address, int port, byte[] password) {
         this.address = address;
         this.port = port;
         this.password = password;
     }
 
-    public String getBind()
-    {
+    public String getBind() {
         return this.address.getHostAddress() + ":" + this.port;
     }
 
-    public int Core_pid() throws IOException
-    {
+    public int Core_pid() throws IOException {
         // try {
-            HashMap<ByteBuffer, Object> request = new HashMap<ByteBuffer, Object>();
-            request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));
+        HashMap<ByteBuffer, Object> request = new HashMap<ByteBuffer, Object>();
+        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));
 
-            Map response = perform(request);
-            Long pid = (Long)response.get(ByteBuffer.wrap("pid".getBytes()));
+        Map response = perform(request);
+        Long pid = (Long) response.get(ByteBuffer.wrap("pid".getBytes()));
 
-            return pid.intValue();
+        return pid.intValue();
         // } catch (IOException e) {
         //     return 0;
         // }
     }
 
-    public Node NodeStore_nodeForAddr() throws IOException
-    {
-        return new Node("foo.k", 123);
+    public Node NodeStore_nodeForAddr() throws IOException {
+        return new Peer("Some Peer Node", "foo.k", new Protocol[]{new Protocol(Protocol.Interface.eth, Protocol.Link.overlay)});
     }
 
-    public Map perform(Map request) throws IOException
-    {
+    public Map perform(Map request) throws IOException {
         DatagramSocket socket = newSocket();
 
         byte[] data = serialize(request);
@@ -74,8 +71,7 @@ public class AdminAPI {
         return response;
     }
 
-    protected byte[] serialize(Map request) throws IOException
-    {
+    protected byte[] serialize(Map request) throws IOException {
         Bencode serializer = new Bencode();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         serializer.setRootElement(request);
@@ -84,16 +80,14 @@ public class AdminAPI {
         return output.toByteArray();
     }
 
-    protected Map parse(byte[] data) throws IOException
-    {
+    protected Map parse(byte[] data) throws IOException {
         StringReader input = new StringReader(new String(data));
         Bencode parser = new Bencode(input);
 
-        return (Map)parser.getRootElement();
+        return (Map) parser.getRootElement();
     }
 
-    protected DatagramSocket newSocket() throws SocketException
-    {
+    protected DatagramSocket newSocket() throws SocketException {
         DatagramSocket socket = new DatagramSocket();
         socket.setSoTimeout(TIMEOUT);
         return socket;
