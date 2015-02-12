@@ -29,14 +29,16 @@
     <string name="me_page_public_key_icon">{fa-lock}</string>
 
     <!-- Settings page -->
-    <string name="settings_page_setting_verbose_title">Verbose mode</string>
+    <string name="settings_page_category_general_title">General</string>
+    <string name="settings_page_setting_encrypt_title">Data Encryption</string>
+    <string name="settings_page_setting_encrypt_summary_enabled">Enabled</string>
+    <string name="settings_page_setting_encrypt_summary_disabled">Configure device storage encryption</string>
+    <string name="settings_page_setting_encrypt_summary_unsupported">Not supported</string>
+    <string name="settings_page_setting_verbose_title">Verbose Mode</string>
     <string name="settings_page_setting_verbose_summary_on">Display detailed node information</string>
     <string name="settings_page_setting_verbose_summary_off">Display minimal node information</string>
-    <string name="settings_page_setting_encrypt_title">Enable data encryption</string>
-    <string name="settings_page_setting_encrypt_summary_on">Encrypt with pass code</string>
-    <string name="settings_page_setting_encrypt_summary_off">Store credentials unencrypted</string>
 
-    <string name="settings_page_category_protocol_title">Connectivity</string>
+    <string name="settings_page_category_connectivity_title">Connectivity</string>
     <string name="settings_page_setting_link_summary_on">On</string>
     <string name="settings_page_setting_link_summary_off">Off</string>
     <string name="settings_page_setting_link_wifi_direct_title">@string/link_wifi_direct</string>
