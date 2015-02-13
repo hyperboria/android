@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +44,8 @@ import butterknife.InjectView;
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final String BUNDLE_KEY_SELECTED_CONTENT = "selectedContent";
+
     @Inject
     Bus mBus;
 
@@ -56,9 +57,6 @@ public class MainActivity extends ActionBarActivity {
 
     @InjectView(R.id.drawer)
     ListView mDrawer;
-
-    @InjectView(R.id.content_container)
-    FrameLayout mContentContainer;
 
     private SwitchCompat mCjdnsServiceSwitch;
 
@@ -105,7 +103,6 @@ public class MainActivity extends ActionBarActivity {
 
                 final String selectedOption = mDrawerAdapter.getItem(position);
                 if (!selectedOption.equals(mSelectedContent)) {
-                    mSelectedContent = selectedOption;
                     mBus.post(new PageChangeEvent(selectedOption));
                 }
             }
@@ -115,7 +112,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                mToolbar.setTitle(mDrawerAdapter.getItem(mDrawer.getCheckedItemPosition()));
+                mToolbar.setTitle(mSelectedContent);
                 supportInvalidateOptionsMenu();
             }
 
@@ -133,6 +130,15 @@ public class MainActivity extends ActionBarActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
+
+        // Show Me page on first launch.
+        if (savedInstanceState == null) {
+            changePage(getString(R.string.drawer_option_me));
+        } else {
+            final String selectedPage = savedInstanceState.getString(BUNDLE_KEY_SELECTED_CONTENT, getString(R.string.drawer_option_me));
+            mSelectedContent = selectedPage;
+            mToolbar.setTitle(selectedPage);
+        }
     }
 
     @Override
@@ -168,6 +174,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_KEY_SELECTED_CONTENT, mSelectedContent);
+    }
+
+    @Override
     public void onPause() {
         mBus.unregister(this);
         super.onPause();
@@ -187,17 +199,32 @@ public class MainActivity extends ActionBarActivity {
 
     @Subscribe
     public void handleEvent(PageChangeEvent event) {
-        Toast.makeText(getApplicationContext(), "Changing content", Toast.LENGTH_SHORT).show();
+        changePage(event.mSelectedContent);
+    }
 
-        // Get page corresponding to selection.
+    @Subscribe
+    public void handleEvent(ExchangeEvent event) {
+        DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, event.mMessage);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    /**
+     * Change page to selection.
+     *
+     * @param selectedPage The selected page.
+     */
+    private void changePage(final String selectedPage) {
+        mSelectedContent = selectedPage;
+        mToolbar.setTitle(selectedPage);
+
         Fragment fragment = null;
-        if (getString(R.string.drawer_option_me).equals(event.mSelectedContent)) {
+        if (getString(R.string.drawer_option_me).equals(selectedPage)) {
             fragment = MePageFragment.newInstance();
-        } else if (getString(R.string.drawer_option_credentials).equals(event.mSelectedContent)) {
+        } else if (getString(R.string.drawer_option_credentials).equals(selectedPage)) {
             fragment = CredentialsPageFragment.newInstance();
-        } else if (getString(R.string.drawer_option_settings).equals(event.mSelectedContent)) {
+        } else if (getString(R.string.drawer_option_settings).equals(selectedPage)) {
             fragment = SettingsPageFragment.newInstance();
-        } else if (getString(R.string.drawer_option_about).equals(event.mSelectedContent)) {
+        } else if (getString(R.string.drawer_option_about).equals(selectedPage)) {
             fragment = AboutPageFragment.newInstance();
         }
 
@@ -208,11 +235,5 @@ public class MainActivity extends ActionBarActivity {
             ft.replace(R.id.content_container, fragment);
             ft.commit();
         }
-    }
-
-    @Subscribe
-    public void handleEvent(ExchangeEvent event) {
-        DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, event.mMessage);
-        fragment.show(getFragmentManager(), null);
     }
 }
