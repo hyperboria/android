@@ -2,6 +2,10 @@
 <resources>
     <string name="app_name">cjdns</string>
 
+    <!-- cjdns service -->
+    <string name="cjdns_service_notification_title">@string/app_name</string>
+    <string name="cjdns_service_notification_text">Node %1$s running</string>
+
     <!-- Toolbar -->
     <string name="toolbar_switch_cjdns_service_title"></string>
 

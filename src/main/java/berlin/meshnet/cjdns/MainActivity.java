@@ -194,7 +194,7 @@ public class MainActivity extends ActionBarActivity {
     @Subscribe
     public void handleEvent(StopCjdnsServiceEvent event) {
         Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
-        // TODO Stop CjdnsService
+        stopService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
     @Subscribe
