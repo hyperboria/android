@@ -9,11 +9,10 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
 
-import berlin.meshnet.cjdns.page.BasePageFragment;
 import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
 import berlin.meshnet.cjdns.page.SettingsPageFragment;
-import berlin.meshnet.cjdns.producer.CredentialListProducer;
+import berlin.meshnet.cjdns.producer.AuthorizedCredentialListProducer;
 import berlin.meshnet.cjdns.producer.MeProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import dagger.Module;
@@ -94,8 +93,8 @@ public class CjdnsApplication extends Application {
 
         @Singleton
         @Provides
-        public CredentialListProducer provideCredentialProducer(Bus bus) {
-            return new CredentialListProducer.Mock(bus);
+        public AuthorizedCredentialListProducer provideCredentialProducer(Bus bus) {
+            return new AuthorizedCredentialListProducer.Mock(bus);
         }
     }
 }

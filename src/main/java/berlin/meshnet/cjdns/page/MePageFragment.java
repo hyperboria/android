@@ -13,7 +13,7 @@ import com.squareup.otto.Subscribe;
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.R;
-import berlin.meshnet.cjdns.model.Me;
+import berlin.meshnet.cjdns.model.Node;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.MeProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
@@ -60,7 +60,7 @@ public class MePageFragment extends BasePageFragment {
     }
 
     @Subscribe
-    public void handleMe(Me me) {
+    public void handleMe(Node.Me me) {
         mNameTextView.setText(me.name);
         mAddressTextView.setText(me.address);
         mPublicKeyTextView.setText(me.publicKey);

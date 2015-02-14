@@ -1,12 +1,7 @@
 package berlin.meshnet.cjdns.model;
 
-import android.content.Context;
-import android.text.format.DateFormat;
-
-import java.util.Date;
-
 /**
- * Base representation of a node.
+ * Model for a node.
  */
 public abstract class Node {
 
@@ -23,60 +18,34 @@ public abstract class Node {
     }
 
     /**
-     * Transient statistics about a node.
+     * Model for the self node.
      */
-    public static class Stats {
+    public static class Me extends Node {
 
-        private String version;
+        public final String privateKey;
 
-        private boolean isActive;
+        public final Stats.Me stats;
 
-        private long lastActive;
-
-        private int linkCount;
-
-        private int bytesIn;
-
-        private int bytesOut;
-
-        private int bandwidthIn;
-
-        private int bandwidthOut;
-
-        public String getVersion() {
-            return version;
+        public Me(String name, String publicKey, String privateKey) {
+            super(name, publicKey);
+            this.privateKey = privateKey;
+            this.stats = new Stats.Me();
         }
+    }
 
-        public boolean isActive() {
-            return isActive;
-        }
+    /**
+     * Model for a peer node.
+     */
+    public static class Peer extends Node {
 
-        public long getLastActive() {
-            return lastActive;
-        }
+        public final Credential[] outgoingCredentials;
 
-        public String getLastActive(Context context) {
-            return DateFormat.getTimeFormat(context).format(new Date(lastActive));
-        }
+        public final Stats stats;
 
-        public int getLinkCount() {
-            return linkCount;
-        }
-
-        public int getBytesIn() {
-            return bytesIn;
-        }
-
-        public int getBytesOut() {
-            return bytesOut;
-        }
-
-        public int getBandwidthIn() {
-            return bandwidthIn;
-        }
-
-        public int getBandwidthOut() {
-            return getBandwidthOut();
+        public Peer(String name, String publicKey, Credential[] outgoingCredentials) {
+            super(name, publicKey);
+            this.outgoingCredentials = outgoingCredentials;
+            this.stats = new Stats();
         }
     }
 }

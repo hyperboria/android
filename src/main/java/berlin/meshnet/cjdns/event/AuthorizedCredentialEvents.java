@@ -2,16 +2,16 @@ package berlin.meshnet.cjdns.event;
 
 import berlin.meshnet.cjdns.model.Credential;
 
-public class CredentialEvents {
+public class AuthorizedCredentialEvents {
 
     public static class Create {
     }
 
     public static class Update {
 
-        public final Credential mCredential;
+        public final Credential.Authorized mCredential;
 
-        public Update(Credential credential) {
+        public Update(Credential.Authorized credential) {
             mCredential = credential;
         }
     }
@@ -27,9 +27,9 @@ public class CredentialEvents {
 
     public static class New {
 
-        public final Credential mCredential;
+        public final Credential.Authorized mCredential;
 
-        public New(Credential credential) {
+        public New(Credential.Authorized credential) {
             mCredential = credential;
         }
     }

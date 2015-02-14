@@ -3,11 +3,10 @@ package berlin.meshnet.cjdns.producer;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 
-import berlin.meshnet.cjdns.model.Me;
 import berlin.meshnet.cjdns.model.Node;
 
 /**
- * Abstract class that produces {@link berlin.meshnet.cjdns.model.Me}.
+ * Abstract class that produces {@link berlin.meshnet.cjdns.model.Node.Me}.
  */
 public abstract class MeProducer {
 
@@ -16,11 +15,11 @@ public abstract class MeProducer {
     }
 
     /**
-     * Produces {@link berlin.meshnet.cjdns.model.Me} to any subscribers. Must be annotated with {@link @Produce}.
+     * Produces {@link berlin.meshnet.cjdns.model.Node.Me} to any subscribers. Must be annotated with {@link @Produce}.
      *
-     * @return A {@link berlin.meshnet.cjdns.model.Me}.
+     * @return A {@link berlin.meshnet.cjdns.model.Node.Me}.
      */
-    public abstract Me produce();
+    public abstract Node.Me produce();
 
     /**
      * Mock implementation of a {@link berlin.meshnet.cjdns.producer.MeProducer}.
@@ -33,8 +32,8 @@ public abstract class MeProducer {
 
         @Override
         @Produce
-        public Me produce() {
-            return new Me("Hyperborean", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", "LoremipsumdolorsitametpraesentconsequatliberolacusmagnisEratgrav");
+        public Node.Me produce() {
+            return new Node.Me("Hyperborean", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", "LoremipsumdolorsitametpraesentconsequatliberolacusmagnisEratgrav");
         }
     }
 }
