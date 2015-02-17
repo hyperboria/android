@@ -2,6 +2,10 @@
 <resources>
     <string name="app_name">cjdns</string>
 
+    <!-- cjdns service -->
+    <string name="cjdns_service_notification_title">@string/app_name</string>
+    <string name="cjdns_service_notification_text">Node %1$s running</string>
+
     <!-- Toolbar -->
     <string name="toolbar_switch_cjdns_service_title"></string>
 
@@ -45,6 +49,11 @@
     <string name="settings_page_setting_link_bluetooth_title">@string/link_bluetooth</string>
     <string name="settings_page_setting_link_overlay_title">@string/link_overlay</string>
 
+    <!-- Peer card -->
+    <string name="peer_card_address_icon">{fa-home}</string>
+    <string name="peer_card_public_key_icon">{fa-lock}</string>
+    <string name="peer_card_connections_button">{fa-plug}</string>
+
     <!-- Credential card -->
     <string name="credential_card_protocol_icon">{fa-exchange}</string>
     <string name="credential_card_password_icon">{fa-key}</string>
@@ -52,6 +61,12 @@
     <string name="credential_card_allow_button_off">{fa-toggle-off}</string>
     <string name="credential_card_target_button">{fa-street-view}</string>
     <string name="credential_card_broadcast_button">{fa-rss}</string>
+
+    <!-- Outgoing connections -->
+    <string name="connections_list_title">Outgoing Connections</string>
+    <string name="connections_list_item_protocol">{fa-exchange}&#160;&#160;&#160;%s</string>
+    <string name="connections_list_item_password">{fa-key}&#160;&#160;&#160;%s</string>
+    <string name="connections_list_item_delete">{fa-remove}</string>
 
     <!-- Protocol -->
     <string name="protocol_description" formatted="false">%s via %s</string>

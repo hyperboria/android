@@ -25,9 +25,18 @@ public class CjdnsService extends Service {
 
     private static final int NOTIFICATION_ID = 1;
 
-    private Notification notification;
-    private JSONObject cjdrouteconf;
-    private int pid;
+    private JSONObject mCjdrouteConf;
+
+    private int mPid;
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        if (intent != null) {
+            Log.i(TAG, "onStartCommand action=" + intent.getAction());
+        }
+        return START_STICKY;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -36,8 +45,9 @@ public class CjdnsService extends Service {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         try {
-            this.notification = buildNotification();
+            final Notification notification = buildNotification();
             startForeground(NOTIFICATION_ID, notification);
 
             CjdrouteTask task = new CjdrouteTask() {
@@ -48,8 +58,8 @@ public class CjdnsService extends Service {
 
                 @Override
                 protected void onPostExecute(Integer pid) {
-                    CjdnsService.this.pid = pid.intValue();
-                    Log.i(TAG, "pid: " + pid);
+                    CjdnsService.this.mPid = pid.intValue();
+                    Log.i(TAG, "mPid: " + pid);
                 }
             };
             task.execute(this);
@@ -61,17 +71,11 @@ public class CjdnsService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null) {
-            Log.i(TAG, "onStartCommand action=" + intent.getAction());
-        }
-        return START_STICKY;
-    }
-
-    @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
-        Process.sendSignal(this.pid, Process.SIGNAL_KILL);
+        Process.sendSignal(mPid, Process.SIGNAL_KILL);
+        stopForeground(true);
+        super.onDestroy();
     }
 
     public InputStream cjdroute() throws IOException {
@@ -83,7 +87,7 @@ public class CjdnsService extends Service {
     }
 
     public JSONObject config() throws IOException, JSONException {
-        if (this.cjdrouteconf == null) {
+        if (mCjdrouteConf == null) {
             InputStream stream = cjdrouteconf();
             StringBuilder json = new StringBuilder();
 
@@ -94,11 +98,11 @@ public class CjdnsService extends Service {
                 len = stream.read(buf);
             }
 
-            this.cjdrouteconf = (JSONObject) new JSONTokener(json.toString()).nextValue();
-            Log.i(TAG, "parsed cjdrouteconf");
+            mCjdrouteConf = (JSONObject) new JSONTokener(json.toString()).nextValue();
+            Log.i(TAG, "parsed mCjdrouteConf");
         }
 
-        return this.cjdrouteconf;
+        return mCjdrouteConf;
     }
 
     public AdminAPI admin() throws IOException, JSONException, UnknownHostException {
@@ -112,15 +116,14 @@ public class CjdnsService extends Service {
         return new AdminAPI(address, port, password);
     }
 
-    protected Notification buildNotification() throws IOException, JSONException {
+    private Notification buildNotification() throws IOException, JSONException {
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
         return new NotificationCompat.Builder(this)
-                .setContentTitle("Meshnet")
-                .setContentText(config().getString("ipv6"))
-                .setContentIntent(contentIntent)
                 .setSmallIcon(R.drawable.ic_launcher)
-                        // .setLargeIcon(R.drawable.ic_launcher)
+                .setContentTitle(getString(R.string.cjdns_service_notification_title))
+                .setContentText(getString(R.string.cjdns_service_notification_text, config().getString("ipv6")))
+                .setContentIntent(contentIntent)
                 .build();
     }
 }

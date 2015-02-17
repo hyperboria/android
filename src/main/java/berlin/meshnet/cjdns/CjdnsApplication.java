@@ -9,12 +9,14 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
 
-import berlin.meshnet.cjdns.page.BasePageFragment;
+import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
 import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
+import berlin.meshnet.cjdns.page.PeersPageFragment;
 import berlin.meshnet.cjdns.page.SettingsPageFragment;
-import berlin.meshnet.cjdns.producer.CredentialListProducer;
+import berlin.meshnet.cjdns.producer.AuthorizedCredentialListProducer;
 import berlin.meshnet.cjdns.producer.MeProducer;
+import berlin.meshnet.cjdns.producer.PeerListProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import dagger.Module;
 import dagger.ObjectGraph;
@@ -50,8 +52,10 @@ public class CjdnsApplication extends Application {
             injects = {
                     MainActivity.class,
                     MePageFragment.class,
+                    PeersPageFragment.class,
                     CredentialsPageFragment.class,
-                    SettingsPageFragment.class
+                    SettingsPageFragment.class,
+                    ConnectionsDialogFragment.class
             }
     )
     public static class DefaultModule {
@@ -94,8 +98,14 @@ public class CjdnsApplication extends Application {
 
         @Singleton
         @Provides
-        public CredentialListProducer provideCredentialProducer(Bus bus) {
-            return new CredentialListProducer.Mock(bus);
+        public PeerListProducer providePeerListProducer(Bus bus) {
+            return new PeerListProducer.Mock(bus);
+        }
+
+        @Singleton
+        @Provides
+        public AuthorizedCredentialListProducer provideCredentialListProducer(Bus bus) {
+            return new AuthorizedCredentialListProducer.Mock(bus);
         }
     }
 }

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/dialog_list_item_padding">
+
+    <IconTextView
+        android:id="@+id/connection_item_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/connections_list_item_delete"
+        style="@style/MyText.Icon.Large.Active" />
+
+    <TextView
+        android:id="@+id/connection_item_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/connection_item_delete"
+        android:layout_toStartOf="@id/connection_item_delete"
+        android:singleLine="true"
+        android:ellipsize="end"
+        style="@style/MyText.Large" />
+
+    <IconTextView
+        android:id="@+id/connection_item_protocol"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/connection_item_label"
+        android:layout_marginLeft="@dimen/global_margin"
+        android:layout_marginStart="@dimen/global_margin"
+        android:layout_marginTop="@dimen/global_margin"
+        android:singleLine="true"
+        android:ellipsize="middle"
+        style="@style/MyText.Small" />
+
+    <IconTextView
+        android:id="@+id/connection_item_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/connection_item_protocol"
+        android:layout_marginLeft="@dimen/global_margin"
+        android:layout_marginStart="@dimen/global_margin"
+        android:layout_marginTop="@dimen/global_margin"
+        android:singleLine="true"
+        android:ellipsize="middle"
+        android:visibility="gone"
+        style="@style/MyText.Small" />
+</RelativeLayout>

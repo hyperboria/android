@@ -1,12 +1,7 @@
 package berlin.meshnet.cjdns.model;
 
-import android.content.Context;
-import android.text.format.DateFormat;
-
-import java.util.Date;
-
 /**
- * Base representation of a node.
+ * Model for a node.
  */
 public abstract class Node {
 
@@ -23,60 +18,45 @@ public abstract class Node {
     }
 
     /**
-     * Transient statistics about a node.
+     * Model for the self node.
      */
-    public static class Stats {
+    public static class Me extends Node {
 
-        private String version;
+        public final String privateKey;
 
-        private boolean isActive;
+        public final Stats.Me stats;
 
-        private long lastActive;
+        public Me(String name, String publicKey, String privateKey) {
+            super(name, publicKey);
+            this.privateKey = privateKey;
+            this.stats = new Stats.Me();
+        }
+    }
 
-        private int linkCount;
+    /**
+     * Model for a peer node.
+     */
+    public static class Peer extends Node {
 
-        private int bytesIn;
+        public final int id;
 
-        private int bytesOut;
+        private Credential[] outgoingConnections;
 
-        private int bandwidthIn;
+        public final Stats stats;
 
-        private int bandwidthOut;
-
-        public String getVersion() {
-            return version;
+        public Peer(int id, String name, String publicKey, Credential[] outgoingConnections) {
+            super(name, publicKey);
+            this.id = id;
+            this.outgoingConnections = outgoingConnections;
+            this.stats = new Stats();
         }
 
-        public boolean isActive() {
-            return isActive;
+        public Credential[] getOutgoingConnections() {
+            return outgoingConnections;
         }
 
-        public long getLastActive() {
-            return lastActive;
-        }
-
-        public String getLastActive(Context context) {
-            return DateFormat.getTimeFormat(context).format(new Date(lastActive));
-        }
-
-        public int getLinkCount() {
-            return linkCount;
-        }
-
-        public int getBytesIn() {
-            return bytesIn;
-        }
-
-        public int getBytesOut() {
-            return bytesOut;
-        }
-
-        public int getBandwidthIn() {
-            return bandwidthIn;
-        }
-
-        public int getBandwidthOut() {
-            return getBandwidthOut();
+        public void setOutgoingConnections(Credential[] outgoingConnections) {
+            this.outgoingConnections = outgoingConnections;
         }
     }
 }

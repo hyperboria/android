@@ -1,8 +1,8 @@
 package berlin.meshnet.cjdns;
 
-import org.bitlet.wetorrent.bencode.Bencode;
-
 import android.util.Log;
+
+import org.bitlet.wetorrent.bencode.Bencode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,12 +12,10 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import berlin.meshnet.cjdns.model.Node;
-import berlin.meshnet.cjdns.model.Peer;
-import berlin.meshnet.cjdns.model.Protocol;
 
 public class AdminAPI {
     public static final int TIMEOUT = 5000;
@@ -52,7 +50,7 @@ public class AdminAPI {
     }
 
     public Node NodeStore_nodeForAddr() throws IOException {
-        return new Peer("Some Peer Node", "foo.k", new Protocol[]{new Protocol(Protocol.Interface.eth, Protocol.Link.overlay)});
+        return new Node.Peer(0, "Some Peer Node", "foo.k", null);
     }
 
     public Map perform(Map request) throws IOException {

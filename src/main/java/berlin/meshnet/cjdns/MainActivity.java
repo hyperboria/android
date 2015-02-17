@@ -30,7 +30,9 @@ import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
+import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
 import berlin.meshnet.cjdns.dialog.ExchangeDialogFragment;
+import berlin.meshnet.cjdns.event.ConnectionEvents;
 import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.event.PageChangeEvent;
 import berlin.meshnet.cjdns.event.StartCjdnsServiceEvent;
@@ -38,6 +40,7 @@ import berlin.meshnet.cjdns.event.StopCjdnsServiceEvent;
 import berlin.meshnet.cjdns.page.AboutPageFragment;
 import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
+import berlin.meshnet.cjdns.page.PeersPageFragment;
 import berlin.meshnet.cjdns.page.SettingsPageFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -194,12 +197,18 @@ public class MainActivity extends ActionBarActivity {
     @Subscribe
     public void handleEvent(StopCjdnsServiceEvent event) {
         Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
-        // TODO Stop CjdnsService
+        stopService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
     @Subscribe
     public void handleEvent(PageChangeEvent event) {
         changePage(event.mSelectedContent);
+    }
+
+    @Subscribe
+    public void handleEvent(ConnectionEvents.List event) {
+        DialogFragment fragment = ConnectionsDialogFragment.newInstance(event.mPeerId);
+        fragment.show(getFragmentManager(), null);
     }
 
     @Subscribe
@@ -220,6 +229,8 @@ public class MainActivity extends ActionBarActivity {
         Fragment fragment = null;
         if (getString(R.string.drawer_option_me).equals(selectedPage)) {
             fragment = MePageFragment.newInstance();
+        } else if (getString(R.string.drawer_option_peers).equals(selectedPage)) {
+            fragment = PeersPageFragment.newInstance();
         } else if (getString(R.string.drawer_option_credentials).equals(selectedPage)) {
             fragment = CredentialsPageFragment.newInstance();
         } else if (getString(R.string.drawer_option_settings).equals(selectedPage)) {

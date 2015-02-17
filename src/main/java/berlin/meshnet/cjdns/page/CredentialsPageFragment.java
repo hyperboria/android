@@ -24,11 +24,11 @@ import com.squareup.otto.Subscribe;
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.R;
-import berlin.meshnet.cjdns.event.CredentialEvents;
+import berlin.meshnet.cjdns.event.AuthorizedCredentialEvents;
 import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Theme;
-import berlin.meshnet.cjdns.producer.CredentialListProducer;
+import berlin.meshnet.cjdns.producer.AuthorizedCredentialListProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import brnunes.swipeablecardview.SwipeableRecyclerViewTouchListener;
 import butterknife.ButterKnife;
@@ -43,7 +43,7 @@ public class CredentialsPageFragment extends BasePageFragment {
     ThemeProducer mThemeProducer;
 
     @Inject
-    CredentialListProducer mCredentialListProducer;
+    AuthorizedCredentialListProducer mCredentialListProducer;
 
     @InjectView(R.id.credentials_page_recycler_view)
     RecyclerView mCredentialsRecyclerView;
@@ -53,7 +53,7 @@ public class CredentialsPageFragment extends BasePageFragment {
 
     private Boolean mIsInternalsVisible = null;
 
-    private CredentialListProducer.CredentialList mCredentialList = null;
+    private AuthorizedCredentialListProducer.CredentialList mCredentialList = null;
 
     public static Fragment newInstance() {
         return new CredentialsPageFragment();
@@ -92,7 +92,7 @@ public class CredentialsPageFragment extends BasePageFragment {
         mAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mBus.post(new CredentialEvents.Create());
+                mBus.post(new AuthorizedCredentialEvents.Create());
             }
         });
     }
@@ -104,13 +104,13 @@ public class CredentialsPageFragment extends BasePageFragment {
     }
 
     @Subscribe
-    public void handleCredentialList(CredentialListProducer.CredentialList credentialList) {
+    public void handleCredentialList(AuthorizedCredentialListProducer.CredentialList credentialList) {
         mCredentialList = credentialList;
         loadCredentialList();
     }
 
     @Subscribe
-    public void handleNewCredential(CredentialEvents.New event) {
+    public void handleNewCredential(AuthorizedCredentialEvents.New event) {
         if (mCredentialList != null) {
             mCredentialList.add(event.mCredential);
             RecyclerView.Adapter adapter = mCredentialsRecyclerView.getAdapter();
@@ -140,7 +140,7 @@ public class CredentialsPageFragment extends BasePageFragment {
                                 int credentialId = mCredentialList.get(position).id;
                                 mCredentialList.remove(position);
                                 adapter.notifyItemRemoved(position);
-                                mBus.post(new CredentialEvents.Remove(credentialId));
+                                mBus.post(new AuthorizedCredentialEvents.Remove(credentialId));
                             }
                             adapter.notifyDataSetChanged();
                         }
@@ -151,7 +151,7 @@ public class CredentialsPageFragment extends BasePageFragment {
                                 int credentialId = mCredentialList.get(position).id;
                                 mCredentialList.remove(position);
                                 adapter.notifyItemRemoved(position);
-                                mBus.post(new CredentialEvents.Remove(credentialId));
+                                mBus.post(new AuthorizedCredentialEvents.Remove(credentialId));
                             }
                             adapter.notifyDataSetChanged();
                         }
@@ -159,7 +159,7 @@ public class CredentialsPageFragment extends BasePageFragment {
         }
     }
 
-    static class CredentialListAdapter extends RecyclerView.Adapter<ViewHolder> {
+    private static class CredentialListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private static final float ALPHA_ALLOWED = 1f;
 
@@ -169,11 +169,11 @@ public class CredentialsPageFragment extends BasePageFragment {
 
         private Bus mBus;
 
-        private CredentialListProducer.CredentialList mCredentialList;
+        private AuthorizedCredentialListProducer.CredentialList mCredentialList;
 
         private boolean mIsInternalsVisible;
 
-        private CredentialListAdapter(Context context, Bus bus, CredentialListProducer.CredentialList credentialList,
+        private CredentialListAdapter(Context context, Bus bus, AuthorizedCredentialListProducer.CredentialList credentialList,
                                       boolean isInternalsVisible) {
             mResources = context.getApplicationContext().getResources();
             mBus = bus;
@@ -190,7 +190,7 @@ public class CredentialsPageFragment extends BasePageFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final Credential credential = mCredentialList.get(position);
+            final Credential.Authorized credential = mCredentialList.get(position);
             holder.label.setText(credential.label);
             holder.protocol.setText(credential.protocol.getDescription(mResources));
             if (mIsInternalsVisible) {
@@ -226,7 +226,7 @@ public class CredentialsPageFragment extends BasePageFragment {
                 @Override
                 public void onClick(View v) {
                     credential.setAllowed(!credential.isAllowed());
-                    mBus.post(new CredentialEvents.Update(credential));
+                    mBus.post(new AuthorizedCredentialEvents.Update(credential));
                     notifyDataSetChanged();
                 }
             });

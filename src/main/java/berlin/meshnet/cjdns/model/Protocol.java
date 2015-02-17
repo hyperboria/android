@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import berlin.meshnet.cjdns.R;
 
 /**
- * Model for connectivity protocol.
+ * Model for a connectivity protocol.
  */
 public class Protocol {
 
@@ -44,7 +44,7 @@ public class Protocol {
     }
 
     /**
-     * The transport interface.
+     * The list of transport interfaces.
      */
     public enum Interface {
         udp,
@@ -52,7 +52,7 @@ public class Protocol {
     }
 
     /**
-     * The physical link.
+     * The list of physical links.
      */
     public enum Link {
         wifiDirect,
