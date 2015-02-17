@@ -30,7 +30,9 @@ import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
+import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
 import berlin.meshnet.cjdns.dialog.ExchangeDialogFragment;
+import berlin.meshnet.cjdns.event.ConnectionEvents;
 import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.event.PageChangeEvent;
 import berlin.meshnet.cjdns.event.StartCjdnsServiceEvent;
@@ -201,6 +203,12 @@ public class MainActivity extends ActionBarActivity {
     @Subscribe
     public void handleEvent(PageChangeEvent event) {
         changePage(event.mSelectedContent);
+    }
+
+    @Subscribe
+    public void handleEvent(ConnectionEvents.List event) {
+        DialogFragment fragment = ConnectionsDialogFragment.newInstance(event.mPeerId);
+        fragment.show(getFragmentManager(), null);
     }
 
     @Subscribe

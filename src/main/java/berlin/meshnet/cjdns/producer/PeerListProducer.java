@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
-import berlin.meshnet.cjdns.event.AuthorizedCredentialEvents;
 import berlin.meshnet.cjdns.event.PeerEvents;
 import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Node;
@@ -43,11 +42,11 @@ public abstract class PeerListProducer {
 
         private PeerList mPeerList = new PeerList() {{
             add(new Node.Peer(0, "Alice", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", new Credential[]{
-                    new Credential(0, "Alice", new Protocol(Protocol.Interface.udp, Protocol.Link.wifiDirect), "Loremipsumdolorsitametpharetrae"),
-                    new Credential(1, "Alice", new Protocol(Protocol.Interface.eth, Protocol.Link.bluetooth), "Loremipsumdolorsitametpharetrae")
+                    new Credential(0, "Alice credential 0", new Protocol(Protocol.Interface.udp, Protocol.Link.wifiDirect), "Loremipsumdolorsitametpharetrae"),
+                    new Credential(1, "Alice credential 1", new Protocol(Protocol.Interface.eth, Protocol.Link.bluetooth), "Loremipsumdolorsitametpharetrae")
             }));
             add(new Node.Peer(1, "Bob", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", new Credential[]{
-                    new Credential(2, "Bob", new Protocol(Protocol.Interface.udp, Protocol.Link.overlay), "Loremipsumdolorsitametpharetrae")
+                    new Credential(2, "Bob credential 0", new Protocol(Protocol.Interface.udp, Protocol.Link.overlay), "Loremipsumdolorsitametpharetrae")
             }));
             add(new Node.Peer(2, "Caleb", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", new Credential[]{}));
             add(new Node.Peer(3, "Danielle", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", null));
@@ -82,7 +81,7 @@ public abstract class PeerListProducer {
             while (itr.hasNext()) {
                 Node.Peer peer = itr.next();
                 if (event.mPeer.id == peer.id) {
-                    // TODO
+                    peer.setOutgoingConnections(event.mPeer.getOutgoingConnections());
                     break;
                 }
             }

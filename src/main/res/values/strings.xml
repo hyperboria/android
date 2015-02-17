@@ -62,6 +62,12 @@
     <string name="credential_card_target_button">{fa-street-view}</string>
     <string name="credential_card_broadcast_button">{fa-rss}</string>
 
+    <!-- Outgoing connections -->
+    <string name="connections_list_title">Outgoing Connections</string>
+    <string name="connections_list_item_protocol">{fa-exchange}&#160;&#160;&#160;%s</string>
+    <string name="connections_list_item_password">{fa-key}&#160;&#160;&#160;%s</string>
+    <string name="connections_list_item_delete">{fa-remove}</string>
+
     <!-- Protocol -->
     <string name="protocol_description" formatted="false">%s via %s</string>
     <string name="interface_udp">UDP</string>

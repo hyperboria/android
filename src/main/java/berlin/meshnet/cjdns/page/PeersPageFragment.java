@@ -2,7 +2,6 @@ package berlin.meshnet.cjdns.page;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.IconTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
@@ -22,12 +20,12 @@ import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.R;
+import berlin.meshnet.cjdns.event.ConnectionEvents;
 import berlin.meshnet.cjdns.event.PeerEvents;
+import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Node;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.PeerListProducer;
@@ -137,8 +135,6 @@ public class PeersPageFragment extends BasePageFragment {
 
         private static final float ALPHA_INACTIVE = 0.3f;
 
-        private Context mContext;
-
         private Bus mBus;
 
         private PeerListProducer.PeerList mPeerList;
@@ -147,7 +143,6 @@ public class PeersPageFragment extends BasePageFragment {
 
         private PeerListAdapter(Context context, Bus bus, PeerListProducer.PeerList peerList,
                                 boolean isInternalsVisible) {
-            mContext = context.getApplicationContext();
             mBus = bus;
             mPeerList = peerList;
             mIsInternalsVisible = isInternalsVisible;
@@ -171,11 +166,12 @@ public class PeersPageFragment extends BasePageFragment {
             } else {
                 holder.publicKeyContainer.setVisibility(View.GONE);
             }
-            if (peer.outgoingCredentials != null && peer.outgoingCredentials.length > 0) {
+            Credential[] outgoingConnections = peer.getOutgoingConnections();
+            if (outgoingConnections != null && outgoingConnections.length > 0) {
                 holder.connections.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(mContext, "Connections " + Arrays.toString(peer.outgoingCredentials), Toast.LENGTH_SHORT).show();
+                        mBus.post(new ConnectionEvents.List(peer.id));
                     }
                 });
                 holder.connections.setVisibility(View.VISIBLE);

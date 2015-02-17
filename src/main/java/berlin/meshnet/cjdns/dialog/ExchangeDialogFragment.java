@@ -15,6 +15,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.event.ExchangeEvent;
 
+/**
+ * Dialog that facilitates the exchange of credentials across different medium.
+ */
 public class ExchangeDialogFragment extends DialogFragment {
 
     private static final String FRAGMENT_BUNDLE_KEY_TITLE_RES_ID = "titleResId";

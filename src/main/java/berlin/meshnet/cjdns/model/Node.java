@@ -40,15 +40,23 @@ public abstract class Node {
 
         public final int id;
 
-        public final Credential[] outgoingCredentials;
+        private Credential[] outgoingConnections;
 
         public final Stats stats;
 
-        public Peer(int id, String name, String publicKey, Credential[] outgoingCredentials) {
+        public Peer(int id, String name, String publicKey, Credential[] outgoingConnections) {
             super(name, publicKey);
             this.id = id;
-            this.outgoingCredentials = outgoingCredentials;
+            this.outgoingConnections = outgoingConnections;
             this.stats = new Stats();
+        }
+
+        public Credential[] getOutgoingConnections() {
+            return outgoingConnections;
+        }
+
+        public void setOutgoingConnections(Credential[] outgoingConnections) {
+            this.outgoingConnections = outgoingConnections;
         }
     }
 }
