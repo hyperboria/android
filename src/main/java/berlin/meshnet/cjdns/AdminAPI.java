@@ -50,7 +50,7 @@ public class AdminAPI {
     }
 
     public Node NodeStore_nodeForAddr() throws IOException {
-        return new Node.Peer("Some Peer Node", "foo.k", null);
+        return new Node.Peer(0, "Some Peer Node", "foo.k", null);
     }
 
     public Map perform(Map request) throws IOException {

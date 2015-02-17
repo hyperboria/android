@@ -38,12 +38,15 @@ public abstract class Node {
      */
     public static class Peer extends Node {
 
+        public final int id;
+
         public final Credential[] outgoingCredentials;
 
         public final Stats stats;
 
-        public Peer(String name, String publicKey, Credential[] outgoingCredentials) {
+        public Peer(int id, String name, String publicKey, Credential[] outgoingCredentials) {
             super(name, publicKey);
+            this.id = id;
             this.outgoingCredentials = outgoingCredentials;
             this.stats = new Stats();
         }

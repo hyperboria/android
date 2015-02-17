@@ -159,7 +159,7 @@ public class CredentialsPageFragment extends BasePageFragment {
         }
     }
 
-    static class CredentialListAdapter extends RecyclerView.Adapter<ViewHolder> {
+    private static class CredentialListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private static final float ALPHA_ALLOWED = 1f;
 

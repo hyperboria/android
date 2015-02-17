@@ -49,6 +49,11 @@
     <string name="settings_page_setting_link_bluetooth_title">@string/link_bluetooth</string>
     <string name="settings_page_setting_link_overlay_title">@string/link_overlay</string>
 
+    <!-- Peer card -->
+    <string name="peer_card_address_icon">{fa-home}</string>
+    <string name="peer_card_public_key_icon">{fa-lock}</string>
+    <string name="peer_card_connections_button">{fa-plug}</string>
+
     <!-- Credential card -->
     <string name="credential_card_protocol_icon">{fa-exchange}</string>
     <string name="credential_card_password_icon">{fa-key}</string>

@@ -31,14 +31,14 @@ public class MePageFragment extends BasePageFragment {
     @Inject
     MeProducer mMeProducer;
 
-    @InjectView(R.id.me_page_public_key)
-    LinearLayout mPublicKey;
-
     @InjectView(R.id.me_page_name_text)
     TextView mNameTextView;
 
     @InjectView(R.id.me_page_address_text)
     TextView mAddressTextView;
+
+    @InjectView(R.id.me_page_public_key)
+    LinearLayout mPublicKey;
 
     @InjectView(R.id.me_page_public_key_text)
     TextView mPublicKeyTextView;

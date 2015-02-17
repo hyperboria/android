@@ -20,42 +20,24 @@
             android:layout_height="wrap_content">
 
             <IconTextView
-                android:id="@+id/credential_card_allow"
+                android:id="@+id/peer_card_connections"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:padding="@dimen/global_padding"
-                style="@style/MyText.Icon.Small.Active" />
-
-            <IconTextView
-                android:id="@+id/credential_card_target"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/credential_card_allow"
-                android:layout_toStartOf="@id/credential_card_allow"
-                android:padding="@dimen/global_padding"
-                android:text="@string/credential_card_target_button"
-                style="@style/MyText.Icon.Small.Active" />
-
-            <IconTextView
-                android:id="@+id/credential_card_broadcast"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/credential_card_target"
-                android:layout_toStartOf="@id/credential_card_target"
-                android:padding="@dimen/global_padding"
-                android:text="@string/credential_card_broadcast_button"
+                android:text="@string/peer_card_connections_button"
+                android:visibility="gone"
                 style="@style/MyText.Icon.Small.Active" />
 
             <TextView
-                android:id="@+id/credential_card_label"
+                android:id="@+id/peer_card_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_toLeftOf="@id/credential_card_broadcast"
-                android:layout_toStartOf="@id/credential_card_broadcast"
+                android:layout_toLeftOf="@id/peer_card_connections"
+                android:layout_toStartOf="@id/peer_card_connections"
                 android:layout_margin="@dimen/global_margin"
                 android:singleLine="true"
                 android:ellipsize="end"
@@ -71,11 +53,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/global_margin"
-                android:text="@string/credential_card_protocol_icon"
+                android:text="@string/peer_card_address_icon"
                 style="@style/MyText.Icon.Small" />
 
             <TextView
-                android:id="@+id/credential_card_protocol"
+                android:id="@+id/peer_card_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/global_margin"
@@ -85,7 +67,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/credential_card_password_container"
+            android:id="@+id/peer_card_public_key_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -95,11 +77,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/global_margin"
-                android:text="@string/credential_card_password_icon"
+                android:text="@string/peer_card_public_key_icon"
                 style="@style/MyText.Icon.Small" />
 
             <TextView
-                android:id="@+id/credential_card_password"
+                android:id="@+id/peer_card_public_key"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/global_margin"

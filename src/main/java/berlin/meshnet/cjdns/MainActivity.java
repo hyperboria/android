@@ -38,6 +38,7 @@ import berlin.meshnet.cjdns.event.StopCjdnsServiceEvent;
 import berlin.meshnet.cjdns.page.AboutPageFragment;
 import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
+import berlin.meshnet.cjdns.page.PeersPageFragment;
 import berlin.meshnet.cjdns.page.SettingsPageFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -220,6 +221,8 @@ public class MainActivity extends ActionBarActivity {
         Fragment fragment = null;
         if (getString(R.string.drawer_option_me).equals(selectedPage)) {
             fragment = MePageFragment.newInstance();
+        } else if (getString(R.string.drawer_option_peers).equals(selectedPage)) {
+            fragment = PeersPageFragment.newInstance();
         } else if (getString(R.string.drawer_option_credentials).equals(selectedPage)) {
             fragment = CredentialsPageFragment.newInstance();
         } else if (getString(R.string.drawer_option_settings).equals(selectedPage)) {
