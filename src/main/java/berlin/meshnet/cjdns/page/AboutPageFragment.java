@@ -9,7 +9,7 @@ import android.webkit.WebViewFragment;
  */
 public class AboutPageFragment extends WebViewFragment {
 
-    private static final String ABOUT_URL = "http://hyperboria.github.io/cjdns-android/";
+    private static final String ABOUT_URL = "http://hyperboria.github.io/android/";
 
     public static Fragment newInstance() {
         return new AboutPageFragment();
