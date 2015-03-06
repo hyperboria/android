@@ -18,18 +18,9 @@ public class AuthorizedCredentialEvents {
 
     public static class Remove {
 
-        public final int mId;
-
-        public Remove(int id) {
-            mId = id;
-        }
-    }
-
-    public static class New {
-
         public final Credential.Authorized mCredential;
 
-        public New(Credential.Authorized credential) {
+        public Remove(Credential.Authorized credential) {
             mCredential = credential;
         }
     }

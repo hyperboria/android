@@ -19,7 +19,9 @@ import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,12 +29,16 @@ import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.event.AuthorizedCredentialEvents;
 import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.model.Credential;
+import berlin.meshnet.cjdns.model.Protocol;
 import berlin.meshnet.cjdns.model.Theme;
-import berlin.meshnet.cjdns.producer.AuthorizedCredentialListProducer;
+import berlin.meshnet.cjdns.producer.CredentialsProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import brnunes.swipeablecardview.SwipeableRecyclerViewTouchListener;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Observable;
+import rx.android.app.AppObservable;
+import rx.functions.Action1;
 
 /**
  * The page representing the list of credentials known to the self node.
@@ -40,20 +46,19 @@ import butterknife.InjectView;
 public class CredentialsPageFragment extends BasePageFragment {
 
     @Inject
+    Bus mBus;
+
+    @Inject
     ThemeProducer mThemeProducer;
 
     @Inject
-    AuthorizedCredentialListProducer mCredentialListProducer;
+    CredentialsProducer mCredentialProducer;
 
     @InjectView(R.id.credentials_page_recycler_view)
     RecyclerView mCredentialsRecyclerView;
 
     @InjectView(R.id.credentials_page_add)
     FloatingActionButton mAdd;
-
-    private Boolean mIsInternalsVisible = null;
-
-    private AuthorizedCredentialListProducer.CredentialList mCredentialList = null;
 
     public static Fragment newInstance() {
         return new CredentialsPageFragment();
@@ -84,6 +89,34 @@ public class CredentialsPageFragment extends BasePageFragment {
         });
         mCredentialsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        final CredentialListAdapter adapter = new CredentialListAdapter(getActivity(), mBus,
+                AppObservable.bindFragment(this, mThemeProducer.stream()),
+                AppObservable.bindFragment(this, mCredentialProducer.createStream()),
+                AppObservable.bindFragment(this, mCredentialProducer.updateStream()),
+                AppObservable.bindFragment(this, mCredentialProducer.removeStream()));
+        mCredentialsRecyclerView.setAdapter(adapter);
+        mCredentialsRecyclerView.addOnItemTouchListener(new SwipeableRecyclerViewTouchListener(mCredentialsRecyclerView,
+                new SwipeableRecyclerViewTouchListener.SwipeListener() {
+                    @Override
+                    public boolean canSwipe(int position) {
+                        return !adapter.getItem(position).isAllowed;
+                    }
+
+                    @Override
+                    public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                        for (int position : reverseSortedPositions) {
+                            mBus.post(new AuthorizedCredentialEvents.Remove(adapter.getItem(position)));
+                        }
+                    }
+
+                    @Override
+                    public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                        for (int position : reverseSortedPositions) {
+                            mBus.post(new AuthorizedCredentialEvents.Remove(adapter.getItem(position)));
+                        }
+                    }
+                }));
+
         IconDrawable addIcon = new IconDrawable(getActivity(), Iconify.IconValue.fa_plus)
                 .colorRes(R.color.my_primary)
                 .actionBarSize();
@@ -97,68 +130,6 @@ public class CredentialsPageFragment extends BasePageFragment {
         });
     }
 
-    @Subscribe
-    public void handleTheme(Theme theme) {
-        mIsInternalsVisible = theme.isInternalsVisible;
-        loadCredentialList();
-    }
-
-    @Subscribe
-    public void handleCredentialList(AuthorizedCredentialListProducer.CredentialList credentialList) {
-        mCredentialList = credentialList;
-        loadCredentialList();
-    }
-
-    @Subscribe
-    public void handleNewCredential(AuthorizedCredentialEvents.New event) {
-        if (mCredentialList != null) {
-            mCredentialList.add(event.mCredential);
-            RecyclerView.Adapter adapter = mCredentialsRecyclerView.getAdapter();
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }
-        }
-    }
-
-    /**
-     * Loads the list of credentials.
-     */
-    private void loadCredentialList() {
-        if (mCredentialList != null && mIsInternalsVisible != null) {
-            final RecyclerView.Adapter adapter = new CredentialListAdapter(getActivity(), mBus, mCredentialList, mIsInternalsVisible);
-            mCredentialsRecyclerView.setAdapter(adapter);
-            mCredentialsRecyclerView.addOnItemTouchListener(new SwipeableRecyclerViewTouchListener(mCredentialsRecyclerView,
-                    new SwipeableRecyclerViewTouchListener.SwipeListener() {
-                        @Override
-                        public boolean canSwipe(int position) {
-                            return !mCredentialList.get(position).isAllowed();
-                        }
-
-                        @Override
-                        public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                            for (int position : reverseSortedPositions) {
-                                int credentialId = mCredentialList.get(position).id;
-                                mCredentialList.remove(position);
-                                adapter.notifyItemRemoved(position);
-                                mBus.post(new AuthorizedCredentialEvents.Remove(credentialId));
-                            }
-                            adapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                            for (int position : reverseSortedPositions) {
-                                int credentialId = mCredentialList.get(position).id;
-                                mCredentialList.remove(position);
-                                adapter.notifyItemRemoved(position);
-                                mBus.post(new AuthorizedCredentialEvents.Remove(credentialId));
-                            }
-                            adapter.notifyDataSetChanged();
-                        }
-                    }));
-        }
-    }
-
     private static class CredentialListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private static final float ALPHA_ALLOWED = 1f;
@@ -169,16 +140,60 @@ public class CredentialsPageFragment extends BasePageFragment {
 
         private Bus mBus;
 
-        private AuthorizedCredentialListProducer.CredentialList mCredentialList;
-
         private boolean mIsInternalsVisible;
 
-        private CredentialListAdapter(Context context, Bus bus, AuthorizedCredentialListProducer.CredentialList credentialList,
-                                      boolean isInternalsVisible) {
+        private List<Credential.Authorized> mCredentials;
+
+        private CredentialListAdapter(Context context, Bus bus,
+                                      Observable<Theme> themeStream,
+                                      Observable<Credential.Authorized> createStream,
+                                      Observable<Credential.Authorized> updateStream,
+                                      Observable<Credential.Authorized> removeStream) {
+            mCredentials = new ArrayList<>();
             mResources = context.getApplicationContext().getResources();
             mBus = bus;
-            mCredentialList = credentialList;
-            mIsInternalsVisible = isInternalsVisible;
+
+            themeStream.subscribe(new Action1<Theme>() {
+                @Override
+                public void call(Theme theme) {
+                    mIsInternalsVisible = theme.isInternalsVisible;
+                    notifyDataSetChanged();
+                }
+            });
+
+            createStream.subscribe(new Action1<Credential.Authorized>() {
+                @Override
+                public void call(Credential.Authorized credential) {
+                    mCredentials.add(credential);
+                    notifyDataSetChanged();
+                }
+            });
+
+            updateStream.subscribe(new Action1<Credential.Authorized>() {
+                @Override
+                public void call(Credential.Authorized credential) {
+                    int position = mCredentials.indexOf(credential);
+                    if (mCredentials.remove(credential)) {
+                        mCredentials.add(position, credential);
+                        notifyDataSetChanged();
+                    }
+                }
+            });
+
+            removeStream.subscribe(new Action1<Credential.Authorized>() {
+                @Override
+                public void call(Credential.Authorized credential) {
+                    int position = mCredentials.indexOf(credential);
+                    if (mCredentials.remove(credential)) {
+                        notifyItemRemoved(position);
+                        notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+
+        private Credential.Authorized getItem(int position) {
+            return mCredentials.get(position);
         }
 
         @Override
@@ -190,9 +205,9 @@ public class CredentialsPageFragment extends BasePageFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final Credential.Authorized credential = mCredentialList.get(position);
+            final Credential.Authorized credential = mCredentials.get(position);
             holder.label.setText(credential.label);
-            holder.protocol.setText(credential.protocol.getDescription(mResources));
+            holder.protocol.setText(Protocol.formatDescription(mResources, credential.protocol));
             if (mIsInternalsVisible) {
                 holder.password.setText(credential.password);
                 holder.passwordContainer.setVisibility(View.VISIBLE);
@@ -219,23 +234,23 @@ public class CredentialsPageFragment extends BasePageFragment {
                     mBus.post(new ExchangeEvent(ExchangeEvent.Type.target, message));
                 }
             });
-            holder.allow.setText(credential.isAllowed()
+            holder.allow.setText(credential.isAllowed
                     ? mResources.getString(R.string.credential_card_allow_button_on)
                     : mResources.getString(R.string.credential_card_allow_button_off));
             holder.allow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    credential.setAllowed(!credential.isAllowed());
-                    mBus.post(new AuthorizedCredentialEvents.Update(credential));
-                    notifyDataSetChanged();
+                    Credential.Authorized update = new Credential.Authorized(credential.id,
+                            credential.label, credential.protocol, credential.password, !credential.isAllowed);
+                    mBus.post(new AuthorizedCredentialEvents.Update(update));
                 }
             });
-            holder.itemView.setAlpha(credential.isAllowed() ? ALPHA_ALLOWED : ALPHA_REVOKED);
+            holder.itemView.setAlpha(credential.isAllowed ? ALPHA_ALLOWED : ALPHA_REVOKED);
         }
 
         @Override
         public int getItemCount() {
-            return mCredentialList.size();
+            return mCredentials.size();
         }
     }
 

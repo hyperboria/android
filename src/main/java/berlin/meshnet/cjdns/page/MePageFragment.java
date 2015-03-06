@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.squareup.otto.Subscribe;
-
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.R;
@@ -19,6 +17,8 @@ import berlin.meshnet.cjdns.producer.MeProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.android.app.AppObservable;
+import rx.functions.Action1;
 
 /**
  * The page representing the self node.
@@ -54,15 +54,26 @@ public class MePageFragment extends BasePageFragment {
         return view;
     }
 
-    @Subscribe
-    public void handleTheme(Theme theme) {
-        mPublicKey.setVisibility(theme.isInternalsVisible ? View.VISIBLE : View.GONE);
-    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-    @Subscribe
-    public void handleMe(Node.Me me) {
-        mNameTextView.setText(me.name);
-        mAddressTextView.setText(me.address);
-        mPublicKeyTextView.setText(me.publicKey);
+        AppObservable.bindFragment(this, mThemeProducer.stream())
+                .subscribe(new Action1<Theme>() {
+                    @Override
+                    public void call(Theme theme) {
+                        mPublicKey.setVisibility(theme.isInternalsVisible ? View.VISIBLE : View.GONE);
+                    }
+                });
+
+        AppObservable.bindFragment(this, mMeProducer.stream())
+                .subscribe(new Action1<Node.Me>() {
+                    @Override
+                    public void call(Node.Me me) {
+                        mNameTextView.setText(me.name);
+                        mAddressTextView.setText(me.address);
+                        mPublicKeyTextView.setText(me.publicKey);
+                    }
+                });
     }
 }

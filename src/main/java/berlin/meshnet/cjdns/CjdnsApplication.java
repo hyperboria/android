@@ -14,9 +14,9 @@ import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
 import berlin.meshnet.cjdns.page.PeersPageFragment;
 import berlin.meshnet.cjdns.page.SettingsPageFragment;
-import berlin.meshnet.cjdns.producer.AuthorizedCredentialListProducer;
+import berlin.meshnet.cjdns.producer.CredentialsProducer;
 import berlin.meshnet.cjdns.producer.MeProducer;
-import berlin.meshnet.cjdns.producer.PeerListProducer;
+import berlin.meshnet.cjdns.producer.PeersProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import dagger.Module;
 import dagger.ObjectGraph;
@@ -84,28 +84,28 @@ public class CjdnsApplication extends Application {
             return new Bus();
         }
 
-        @Singleton
         @Provides
-        public ThemeProducer provideThemeProducer(Context context, SharedPreferences sharedPreferences, Bus bus) {
-            return new ThemeProducer.Default(context, sharedPreferences, bus);
+        public ThemeProducer provideThemeProducer(Context context, SharedPreferences sharedPreferences) {
+            return new ThemeProducer.Default(context, sharedPreferences);
         }
 
-        @Singleton
         @Provides
-        public MeProducer provideMeProducer(Bus bus) {
-            return new MeProducer.Mock(bus);
+        public MeProducer provideMeProducer() {
+            return new MeProducer.Mock();
         }
 
-        @Singleton
         @Provides
-        public PeerListProducer providePeerListProducer(Bus bus) {
-            return new PeerListProducer.Mock(bus);
+        public PeersProducer providePeerListProducer(Bus bus) {
+            PeersProducer producer = new PeersProducer.Mock();
+            bus.register(producer);
+            return producer;
         }
 
-        @Singleton
         @Provides
-        public AuthorizedCredentialListProducer provideCredentialListProducer(Bus bus) {
-            return new AuthorizedCredentialListProducer.Mock(bus);
+        public CredentialsProducer provideCredentialListProducer(Bus bus) {
+            CredentialsProducer producer = new CredentialsProducer.Mock();
+            bus.register(producer);
+            return producer;
         }
     }
 }

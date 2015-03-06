@@ -3,79 +3,63 @@ package berlin.meshnet.cjdns.producer;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.Produce;
-
 import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.model.Theme;
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 /**
  * Abstract class that produces {@link berlin.meshnet.cjdns.model.Theme}.
  */
-public abstract class ThemeProducer {
-
-    public ThemeProducer(Bus bus) {
-        bus.register(this);
-    }
+public interface ThemeProducer {
 
     /**
      * Produces {@link berlin.meshnet.cjdns.model.Theme} to any subscribers. Must be annotated with {@link @Produce}.
      *
      * @return A {@link berlin.meshnet.cjdns.model.Theme}.
      */
-    public abstract Theme produce();
+    Observable<Theme> stream();
 
     /**
-     * Minimalist implementation of a {@link berlin.meshnet.cjdns.producer.ThemeProducer}.
+     * Minimalist implementation of a {@link ThemeProducer}.
      */
-    public static class MinimalMock extends ThemeProducer {
-
-        public MinimalMock(Bus bus) {
-            super(bus);
-        }
+    public static class MinimalMock implements ThemeProducer {
 
         @Override
-        @Produce
-        public Theme produce() {
-            return new Theme(false);
+        public Observable<Theme> stream() {
+            return Observable.just(new Theme(false));
         }
     }
 
     /**
-     * Verbose implementation of a {@link berlin.meshnet.cjdns.producer.ThemeProducer}.
+     * Verbose implementation of a {@link ThemeProducer}.
      */
-    public static class VerboseMock extends ThemeProducer {
-
-        public VerboseMock(Bus bus) {
-            super(bus);
-        }
+    public static class VerboseMock implements ThemeProducer {
 
         @Override
-        @Produce
-        public Theme produce() {
-            return new Theme(true);
+        public Observable<Theme> stream() {
+            return Observable.just(new Theme(true));
         }
     }
 
     /**
-     * Verbose implementation of a {@link berlin.meshnet.cjdns.producer.ThemeProducer}.
+     * Verbose implementation of a {@link ThemeProducer}.
      */
-    public static class Default extends ThemeProducer {
+    public static class Default implements ThemeProducer {
 
         private Context mContext;
 
         private SharedPreferences mSharedPreferences;
 
-        public Default(Context context, SharedPreferences sharedPreferences, Bus bus) {
-            super(bus);
+        public Default(Context context, SharedPreferences sharedPreferences) {
             mContext = context;
             mSharedPreferences = sharedPreferences;
         }
 
         @Override
-        @Produce
-        public Theme produce() {
-            return new Theme(mSharedPreferences.getBoolean(mContext.getString(R.string.setting_verbose_enabled_key), false));
+        public Observable<Theme> stream() {
+            BehaviorSubject<Theme> stream = BehaviorSubject.create();
+            return stream.startWith(new Theme(mSharedPreferences.getBoolean(mContext.getString(R.string.setting_verbose_enabled_key), false)));
         }
     }
 }

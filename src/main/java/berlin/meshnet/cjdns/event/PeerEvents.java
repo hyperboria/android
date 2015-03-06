@@ -18,18 +18,9 @@ public class PeerEvents {
 
     public static class Remove {
 
-        public final int mId;
-
-        public Remove(int id) {
-            mId = id;
-        }
-    }
-
-    public static class New {
-
         public final Node.Peer mPeer;
 
-        public New(Node.Peer peer) {
+        public Remove(Node.Peer peer) {
             mPeer = peer;
         }
     }

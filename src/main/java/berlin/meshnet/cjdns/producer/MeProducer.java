@@ -1,39 +1,30 @@
 package berlin.meshnet.cjdns.producer;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.Produce;
-
 import berlin.meshnet.cjdns.model.Node;
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 /**
  * Abstract class that produces {@link berlin.meshnet.cjdns.model.Node.Me}.
  */
-public abstract class MeProducer {
-
-    public MeProducer(Bus bus) {
-        bus.register(this);
-    }
+public interface MeProducer {
 
     /**
      * Produces {@link berlin.meshnet.cjdns.model.Node.Me} to any subscribers. Must be annotated with {@link @Produce}.
      *
      * @return A {@link berlin.meshnet.cjdns.model.Node.Me}.
      */
-    public abstract Node.Me produce();
+    Observable<Node.Me> stream();
 
     /**
-     * Mock implementation of a {@link berlin.meshnet.cjdns.producer.MeProducer}.
+     * Mock implementation of a {@link MeProducer}.
      */
-    public static class Mock extends MeProducer {
-
-        public Mock(Bus bus) {
-            super(bus);
-        }
+    public static class Mock implements MeProducer {
 
         @Override
-        @Produce
-        public Node.Me produce() {
-            return new Node.Me("Hyperborean", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", "LoremipsumdolorsitametpraesentconsequatliberolacusmagnisEratgrav");
+        public Observable<Node.Me> stream() {
+            BehaviorSubject<Node.Me> stream = BehaviorSubject.create();
+            return stream.startWith(new Node.Me("Hyperborean", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", "LoremipsumdolorsitametpraesentconsequatliberolacusmagnisEratgrav"));
         }
     }
 }

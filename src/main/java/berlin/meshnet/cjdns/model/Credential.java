@@ -20,23 +20,29 @@ public class Credential {
         this.password = password;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Credential that = (Credential) o;
+        if (id != that.id) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     /**
      * Model for a peering credential authorized for the self node.
      */
     public static class Authorized extends Credential {
 
-        private boolean isAllowed;
+        public final boolean isAllowed;
 
         public Authorized(int id, String label, Protocol protocol, String password, boolean isAllowed) {
             super(id, label, protocol, password);
-            this.isAllowed = isAllowed;
-        }
-
-        public boolean isAllowed() {
-            return isAllowed;
-        }
-
-        public void setAllowed(boolean isAllowed) {
             this.isAllowed = isAllowed;
         }
     }

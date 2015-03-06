@@ -10,16 +10,12 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.IconTextView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,11 +28,16 @@ import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.event.PeerEvents;
 import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Node;
+import berlin.meshnet.cjdns.model.Protocol;
 import berlin.meshnet.cjdns.model.Theme;
-import berlin.meshnet.cjdns.producer.PeerListProducer;
+import berlin.meshnet.cjdns.producer.PeersProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Observable;
+import rx.android.app.AppObservable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Dialog that facilitates the management of outgoing connections to a peer node.
@@ -52,89 +53,43 @@ public class ConnectionsDialogFragment extends DialogFragment {
     ThemeProducer mThemeProducer;
 
     @Inject
-    PeerListProducer mPeerListProducer;
-
-    private int mPeerId;
-
-    private Boolean mIsInternalsVisible = null;
-
-    private Node.Peer mPeer = null;
-
-    private ListView mListView = null;
+    PeersProducer mPeersProducer;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        mPeerId = args.getInt(FRAGMENT_BUNDLE_KEY_PEER_ID);
-
-        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .title(R.string.connections_list_title)
-                .adapter(new ConnectionAdapter(getActivity(), mBus, null, false))
-                .dividerColor(R.color.material_blue_500)
-                .build();
-        mListView = dialog.getListView();
-
-        return dialog;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         ((CjdnsApplication) getActivity().getApplication()).inject(this);
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mBus.register(this);
-    }
+        Bundle args = getArguments();
+        final int peerId = args.getInt(FRAGMENT_BUNDLE_KEY_PEER_ID);
 
-    @Override
-    public void onPause() {
-        mBus.unregister(this);
-        super.onPause();
-    }
-
-    @Subscribe
-    public void handleTheme(Theme theme) {
-        mIsInternalsVisible = theme.isInternalsVisible;
-        loadConnectionsList();
-    }
-
-    @Subscribe
-    public void handlePeerList(PeerListProducer.PeerList peerList) {
-        for (Node.Peer peer : peerList) {
-            if (peer.id == mPeerId) {
-                mPeer = peer;
-                loadConnectionsList();
-                break;
-            }
-        }
-    }
-
-    /**
-     * Loads the list of outgoing connections.
-     */
-    private void loadConnectionsList() {
-        if (mListView != null && mPeer != null && mIsInternalsVisible != null) {
-            final Credential[] outgoingConnections = mPeer.getOutgoingConnections();
-            if (outgoingConnections != null && outgoingConnections.length > 0) {
-                final ListAdapter adapter = new ConnectionAdapter(getActivity(), mBus, mPeer, mIsInternalsVisible);
-                mListView.setAdapter(adapter);
-                adapter.registerDataSetObserver(new DataSetObserver() {
+        final Observable<Node.Peer> peerStream = mPeersProducer.createStream()
+                .mergeWith(mPeersProducer.updateStream())
+                .filter(new Func1<Node.Peer, Boolean>() {
                     @Override
-                    public void onChanged() {
-                        super.onChanged();
-                        if (adapter.getCount() <= 0) {
-                            dismiss();
-                        }
+                    public Boolean call(Node.Peer peer) {
+                        return peer.id == peerId;
                     }
                 });
-            } else {
-                dismiss();
+
+        final ConnectionAdapter adapter = new ConnectionAdapter(getActivity(), mBus,
+                AppObservable.bindFragment(this, mThemeProducer.stream()),
+                AppObservable.bindFragment(this, peerStream));
+        adapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                if (adapter.hasData() && adapter.getCount() <= 0) {
+                    dismiss();
+                }
             }
-        }
+        });
+
+        return new MaterialDialog.Builder(getActivity())
+                .title(R.string.connections_list_title)
+                .adapter(adapter)
+                .listSelector(R.drawable.md_transparent)
+                .build();
     }
 
     public static DialogFragment newInstance(int peerId) {
@@ -149,46 +104,66 @@ public class ConnectionsDialogFragment extends DialogFragment {
 
     private static class ConnectionAdapter extends BaseAdapter {
 
-        private Bus mBus;
-
         private Resources mRes;
 
         private LayoutInflater mInflater;
+
+        private Bus mBus;
 
         private Node.Peer mPeer;
 
         private boolean mIsInternalsVisible;
 
-        private ConnectionAdapter(Context context, Bus bus, Node.Peer peer, boolean isInternalsVisible) {
+        private ConnectionAdapter(Context context, Bus bus,
+                                  Observable<Theme> themeStream,
+                                  Observable<Node.Peer> peerStream) {
             mRes = context.getResources();
             mInflater = LayoutInflater.from(context);
             mBus = bus;
-            mPeer = peer;
-            mIsInternalsVisible = isInternalsVisible;
+
+            themeStream.subscribe(new Action1<Theme>() {
+                @Override
+                public void call(Theme theme) {
+                    mIsInternalsVisible = theme.isInternalsVisible;
+                    notifyDataSetChanged();
+                }
+            });
+
+            peerStream.subscribe(new Action1<Node.Peer>() {
+                @Override
+                public void call(Node.Peer peer) {
+                    mPeer = peer;
+                    notifyDataSetChanged();
+                }
+            });
+        }
+
+        private boolean hasData() {
+            return mPeer != null;
         }
 
         @Override
         public int getCount() {
-            if (mPeer == null || mPeer.getOutgoingConnections() == null) {
+            if (mPeer == null || mPeer.outgoingConnections == null) {
                 return 0;
             }
-            return mPeer.getOutgoingConnections().length;
+            return mPeer.outgoingConnections.length;
         }
 
         @Override
         public Credential getItem(int position) {
-            if (mPeer == null || mPeer.getOutgoingConnections() == null) {
+            if (mPeer == null || mPeer.outgoingConnections == null) {
                 return null;
             }
-            return mPeer.getOutgoingConnections()[position];
+            return mPeer.outgoingConnections[position];
         }
 
         @Override
         public long getItemId(int position) {
-            if (mPeer == null || mPeer.getOutgoingConnections() == null) {
+            if (mPeer == null || mPeer.outgoingConnections == null) {
                 return -1L;
             }
-            return mPeer.getOutgoingConnections()[position].id;
+            return mPeer.outgoingConnections[position].id;
         }
 
         @Override
@@ -201,7 +176,7 @@ public class ConnectionsDialogFragment extends DialogFragment {
             final Credential credential = getItem(position);
             ViewHolder holder = new ViewHolder(itemView);
             holder.label.setText(credential.label);
-            holder.protocol.setText(mRes.getString(R.string.connections_list_item_protocol, credential.protocol.getDescription(mRes)));
+            holder.protocol.setText(mRes.getString(R.string.connections_list_item_protocol, Protocol.formatDescription(mRes, credential.protocol)));
             if (mIsInternalsVisible) {
                 holder.password.setText(mRes.getString(R.string.connections_list_item_password, credential.password));
                 holder.password.setVisibility(View.VISIBLE);
@@ -211,12 +186,11 @@ public class ConnectionsDialogFragment extends DialogFragment {
             holder.delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    List<Credential> connections = new ArrayList<>(Arrays.asList(mPeer.getOutgoingConnections()));
+                    List<Credential> connections = new ArrayList<>(Arrays.asList(mPeer.outgoingConnections));
                     connections.remove(credential);
-                    mPeer.setOutgoingConnections(connections.toArray(new Credential[connections.size()]));
-                    notifyDataSetChanged();
-
-                    mBus.post(new PeerEvents.Update(mPeer));
+                    Node.Peer update = new Node.Peer(mPeer.id, mPeer.name, mPeer.publicKey,
+                            connections.toArray(new Credential[connections.size()]));
+                    mBus.post(new PeerEvents.Update(update));
                 }
             });
 

@@ -18,7 +18,9 @@ import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -28,10 +30,13 @@ import berlin.meshnet.cjdns.event.PeerEvents;
 import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Node;
 import berlin.meshnet.cjdns.model.Theme;
-import berlin.meshnet.cjdns.producer.PeerListProducer;
+import berlin.meshnet.cjdns.producer.PeersProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Observable;
+import rx.android.app.AppObservable;
+import rx.functions.Action1;
 
 /**
  * The page representing the list of peers.
@@ -39,20 +44,19 @@ import butterknife.InjectView;
 public class PeersPageFragment extends BasePageFragment {
 
     @Inject
+    Bus mBus;
+
+    @Inject
     ThemeProducer mThemeProducer;
 
     @Inject
-    PeerListProducer mPeerListProducer;
+    PeersProducer mPeersProducer;
 
     @InjectView(R.id.peers_page_recycler_view)
     RecyclerView mPeersRecyclerView;
 
     @InjectView(R.id.peers_page_add)
     FloatingActionButton mAdd;
-
-    private Boolean mIsInternalsVisible = null;
-
-    private PeerListProducer.PeerList mPeerList = null;
 
     public static Fragment newInstance() {
         return new PeersPageFragment();
@@ -83,6 +87,13 @@ public class PeersPageFragment extends BasePageFragment {
         });
         mPeersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        final PeerListAdapter adapter = new PeerListAdapter(getActivity(), mBus,
+                AppObservable.bindFragment(this, mThemeProducer.stream()),
+                AppObservable.bindFragment(this, mPeersProducer.createStream()),
+                AppObservable.bindFragment(this, mPeersProducer.updateStream()),
+                AppObservable.bindFragment(this, mPeersProducer.removeStream()));
+        mPeersRecyclerView.setAdapter(adapter);
+
         IconDrawable addIcon = new IconDrawable(getActivity(), Iconify.IconValue.fa_plus)
                 .colorRes(R.color.my_primary)
                 .actionBarSize();
@@ -96,39 +107,6 @@ public class PeersPageFragment extends BasePageFragment {
         });
     }
 
-    @Subscribe
-    public void handleTheme(Theme theme) {
-        mIsInternalsVisible = theme.isInternalsVisible;
-        loadPeerList();
-    }
-
-    @Subscribe
-    public void handlePeerList(PeerListProducer.PeerList peerList) {
-        mPeerList = peerList;
-        loadPeerList();
-    }
-
-    @Subscribe
-    public void handleNewPeer(PeerEvents.New event) {
-        if (mPeerList != null) {
-            mPeerList.add(event.mPeer);
-            RecyclerView.Adapter adapter = mPeersRecyclerView.getAdapter();
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }
-        }
-    }
-
-    /**
-     * Loads the list of peers.
-     */
-    private void loadPeerList() {
-        if (mPeerList != null && mIsInternalsVisible != null) {
-            final RecyclerView.Adapter adapter = new PeerListAdapter(getActivity(), mBus, mPeerList, mIsInternalsVisible);
-            mPeersRecyclerView.setAdapter(adapter);
-        }
-    }
-
     private static class PeerListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private static final float ALPHA_ACTIVE = 1f;
@@ -137,15 +115,55 @@ public class PeersPageFragment extends BasePageFragment {
 
         private Bus mBus;
 
-        private PeerListProducer.PeerList mPeerList;
-
         private boolean mIsInternalsVisible;
 
-        private PeerListAdapter(Context context, Bus bus, PeerListProducer.PeerList peerList,
-                                boolean isInternalsVisible) {
+        private List<Node.Peer> mPeers;
+
+        private PeerListAdapter(Context context, Bus bus,
+                                Observable<Theme> themeStream,
+                                Observable<Node.Peer> createStream,
+                                Observable<Node.Peer> updateStream,
+                                Observable<Node.Peer> removeStream) {
+            mPeers = new ArrayList<>();
             mBus = bus;
-            mPeerList = peerList;
-            mIsInternalsVisible = isInternalsVisible;
+
+            themeStream.subscribe(new Action1<Theme>() {
+                @Override
+                public void call(Theme theme) {
+                    mIsInternalsVisible = theme.isInternalsVisible;
+                    notifyDataSetChanged();
+                }
+            });
+
+            createStream.subscribe(new Action1<Node.Peer>() {
+                @Override
+                public void call(Node.Peer peer) {
+                    mPeers.add(peer);
+                    notifyDataSetChanged();
+                }
+            });
+
+            updateStream.subscribe(new Action1<Node.Peer>() {
+                @Override
+                public void call(Node.Peer peer) {
+                    int position = mPeers.indexOf(peer);
+                    if (mPeers.remove(peer)) {
+                        mPeers.add(position, peer);
+                        notifyDataSetChanged();
+                    }
+                }
+            });
+
+            removeStream.subscribe(new Action1<Node.Peer>() {
+                @Override
+                public void call(Node.Peer peer) {
+                    int position = mPeers.indexOf(peer);
+                    if (mPeers.remove(peer)) {
+                        notifyItemRemoved(position);
+                        notifyDataSetChanged();
+                    }
+                }
+            });
         }
 
         @Override
@@ -157,7 +175,7 @@ public class PeersPageFragment extends BasePageFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final Node.Peer peer = mPeerList.get(position);
+            final Node.Peer peer = mPeers.get(position);
             holder.name.setText(peer.name);
             holder.address.setText(peer.address);
             if (mIsInternalsVisible) {
@@ -166,7 +184,7 @@ public class PeersPageFragment extends BasePageFragment {
             } else {
                 holder.publicKeyContainer.setVisibility(View.GONE);
             }
-            Credential[] outgoingConnections = peer.getOutgoingConnections();
+            Credential[] outgoingConnections = peer.outgoingConnections;
             if (outgoingConnections != null && outgoingConnections.length > 0) {
                 holder.connections.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -178,12 +196,12 @@ public class PeersPageFragment extends BasePageFragment {
             } else {
                 holder.connections.setVisibility(View.GONE);
             }
-            holder.itemView.setAlpha(peer.stats.isActive() ? ALPHA_ACTIVE : ALPHA_INACTIVE);
+            holder.itemView.setAlpha(peer.stats.isActive ? ALPHA_ACTIVE : ALPHA_INACTIVE);
         }
 
         @Override
         public int getItemCount() {
-            return mPeerList.size();
+            return mPeers.size();
         }
     }
 

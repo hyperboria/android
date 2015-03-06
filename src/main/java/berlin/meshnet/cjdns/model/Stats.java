@@ -1,65 +1,36 @@
 package berlin.meshnet.cjdns.model;
 
-import android.content.Context;
-import android.text.format.DateFormat;
-
-import java.util.Date;
-
 /**
  * Model for the transient statistics about a node.
  */
 public class Stats {
 
-    private String version;
+    public final String version;
 
-    private boolean isActive;
+    public final boolean isActive;
 
-    private long lastActive;
+    public final long lastActive;
 
-    private int linkCount;
+    public final int linkCount;
 
-    private int bytesIn;
+    public final int bytesIn;
 
-    private int bytesOut;
+    public final int bytesOut;
 
-    private int bandwidthIn;
+    public final int bandwidthIn;
 
-    private int bandwidthOut;
+    public final int bandwidthOut;
 
-    public String getVersion() {
-        return version;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public long getLastActive() {
-        return lastActive;
-    }
-
-    public String getLastActive(Context context) {
-        return DateFormat.getTimeFormat(context).format(new Date(lastActive));
-    }
-
-    public int getLinkCount() {
-        return linkCount;
-    }
-
-    public int getBytesIn() {
-        return bytesIn;
-    }
-
-    public int getBytesOut() {
-        return bytesOut;
-    }
-
-    public int getBandwidthIn() {
-        return bandwidthIn;
-    }
-
-    public int getBandwidthOut() {
-        return bandwidthOut;
+    public Stats(String version, boolean isActive, long lastActive, int linkCount,
+                 int bytesIn, int bytesOut, int bandwidthIn, int bandwidthOut) {
+        this.version = version;
+        this.isActive = isActive;
+        this.lastActive = lastActive;
+        this.linkCount = linkCount;
+        this.bytesIn = bytesIn;
+        this.bytesOut = bytesOut;
+        this.bandwidthIn = bandwidthIn;
+        this.bandwidthOut = bandwidthOut;
     }
 
     /**
@@ -67,10 +38,12 @@ public class Stats {
      */
     public static class Me extends Stats {
 
-        private int linkCountActive;
+        public final int linkCountActive;
 
-        public int getLinkCountActive() {
-            return linkCountActive;
+        public Me(String version, boolean isActive, long lastActive, int linkCount,
+                  int bytesIn, int bytesOut, int bandwidthIn, int bandwidthOut, int linkCountActive) {
+            super(version, isActive, lastActive, linkCount, bytesIn, bytesOut, bandwidthIn, bandwidthOut);
+            this.linkCountActive = linkCountActive;
         }
     }
 }

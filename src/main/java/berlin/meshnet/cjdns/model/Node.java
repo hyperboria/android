@@ -29,7 +29,7 @@ public abstract class Node {
         public Me(String name, String publicKey, String privateKey) {
             super(name, publicKey);
             this.privateKey = privateKey;
-            this.stats = new Stats.Me();
+            this.stats = new Stats.Me("", true, 0L, 0, 0, 0, 0, 0, 0);
         }
     }
 
@@ -40,7 +40,7 @@ public abstract class Node {
 
         public final int id;
 
-        private Credential[] outgoingConnections;
+        public final Credential[] outgoingConnections;
 
         public final Stats stats;
 
@@ -48,15 +48,21 @@ public abstract class Node {
             super(name, publicKey);
             this.id = id;
             this.outgoingConnections = outgoingConnections;
-            this.stats = new Stats();
+            this.stats = new Stats("", true, 0L, 0, 0, 0, 0, 0);
         }
 
-        public Credential[] getOutgoingConnections() {
-            return outgoingConnections;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Peer peer = (Peer) o;
+            if (id != peer.id) return false;
+            return true;
         }
 
-        public void setOutgoingConnections(Credential[] outgoingConnections) {
-            this.outgoingConnections = outgoingConnections;
+        @Override
+        public int hashCode() {
+            return id;
         }
     }
 }
