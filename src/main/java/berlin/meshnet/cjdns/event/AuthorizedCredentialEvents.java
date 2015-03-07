@@ -2,12 +2,21 @@ package berlin.meshnet.cjdns.event;
 
 import berlin.meshnet.cjdns.model.Credential;
 
-public class AuthorizedCredentialEvents {
+/**
+ * Events associated with {@link berlin.meshnet.cjdns.model.Credential.Authorized}.
+ */
+public interface AuthorizedCredentialEvents {
 
-    public static class Create {
+    /**
+     * Request to create a new {@link berlin.meshnet.cjdns.model.Credential.Authorized}.
+     */
+    static class Create {
     }
 
-    public static class Update {
+    /**
+     * Request to update a {@link berlin.meshnet.cjdns.model.Credential.Authorized}.
+     */
+    static class Update {
 
         public final Credential.Authorized mCredential;
 
@@ -16,7 +25,10 @@ public class AuthorizedCredentialEvents {
         }
     }
 
-    public static class Remove {
+    /**
+     * Request to remove a {@link berlin.meshnet.cjdns.model.Credential.Authorized}.
+     */
+    static class Remove {
 
         public final Credential.Authorized mCredential;
 

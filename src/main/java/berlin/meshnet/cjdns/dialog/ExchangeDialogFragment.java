@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import berlin.meshnet.cjdns.R;
-import berlin.meshnet.cjdns.event.ExchangeEvent;
+import berlin.meshnet.cjdns.event.ApplicationEvents;
 
 /**
  * Dialog that facilitates the exchange of credentials across different medium.
@@ -58,7 +58,7 @@ public class ExchangeDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    public static DialogFragment newInstance(ExchangeEvent.Type type, String message) {
+    public static DialogFragment newInstance(ApplicationEvents.ExchangeCredential.Type type, String message) {
         DialogFragment fragment = new ExchangeDialogFragment();
 
         int titleResId;

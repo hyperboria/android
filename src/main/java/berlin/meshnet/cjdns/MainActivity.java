@@ -32,11 +32,7 @@ import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
 import berlin.meshnet.cjdns.dialog.ExchangeDialogFragment;
-import berlin.meshnet.cjdns.event.ConnectionEvents;
-import berlin.meshnet.cjdns.event.ExchangeEvent;
-import berlin.meshnet.cjdns.event.PageChangeEvent;
-import berlin.meshnet.cjdns.event.StartCjdnsServiceEvent;
-import berlin.meshnet.cjdns.event.StopCjdnsServiceEvent;
+import berlin.meshnet.cjdns.event.ApplicationEvents;
 import berlin.meshnet.cjdns.page.AboutPageFragment;
 import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
@@ -103,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
 
                 final String selectedOption = mDrawerAdapter.getItem(position);
                 if (!selectedOption.equals(mSelectedContent)) {
-                    mBus.post(new PageChangeEvent(selectedOption));
+                    mBus.post(new ApplicationEvents.ChangePage(selectedOption));
                 }
             }
         });
@@ -161,9 +157,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mBus.post(new StartCjdnsServiceEvent());
+                    mBus.post(new ApplicationEvents.StartCjdnsService());
                 } else {
-                    mBus.post(new StopCjdnsServiceEvent());
+                    mBus.post(new ApplicationEvents.StopCjdnsService());
                 }
             }
         });
@@ -195,30 +191,30 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Subscribe
-    public void handleEvent(StartCjdnsServiceEvent event) {
+    public void handleEvent(ApplicationEvents.StartCjdnsService event) {
         Toast.makeText(getApplicationContext(), "Starting CjdnsService", Toast.LENGTH_SHORT).show();
         startService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
     @Subscribe
-    public void handleEvent(StopCjdnsServiceEvent event) {
+    public void handleEvent(ApplicationEvents.StopCjdnsService event) {
         Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
         stopService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
     @Subscribe
-    public void handleEvent(PageChangeEvent event) {
+    public void handleEvent(ApplicationEvents.ChangePage event) {
         changePage(event.mSelectedContent);
     }
 
     @Subscribe
-    public void handleEvent(ConnectionEvents.List event) {
+    public void handleEvent(ApplicationEvents.ListConnections event) {
         DialogFragment fragment = ConnectionsDialogFragment.newInstance(event.mPeerId);
         fragment.show(getFragmentManager(), null);
     }
 
     @Subscribe
-    public void handleEvent(ExchangeEvent event) {
+    public void handleEvent(ApplicationEvents.ExchangeCredential event) {
         DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, event.mMessage);
         fragment.show(getFragmentManager(), null);
     }

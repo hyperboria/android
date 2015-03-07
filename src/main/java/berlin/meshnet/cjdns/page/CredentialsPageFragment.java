@@ -26,8 +26,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.R;
+import berlin.meshnet.cjdns.event.ApplicationEvents;
 import berlin.meshnet.cjdns.event.AuthorizedCredentialEvents;
-import berlin.meshnet.cjdns.event.ExchangeEvent;
 import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Protocol;
 import berlin.meshnet.cjdns.model.Theme;
@@ -251,7 +251,7 @@ public class CredentialsPageFragment extends BasePageFragment {
                             "&interface=" + credential.protocol.transportInterface +
                             "&link=" + credential.protocol.link +
                             "&message=" + credential.label + "+" + credential.password;
-                    mBus.post(new ExchangeEvent(ExchangeEvent.Type.broadcast, message));
+                    mBus.post(new ApplicationEvents.ExchangeCredential(ApplicationEvents.ExchangeCredential.Type.broadcast, message));
                 }
             });
             holder.target.setOnClickListener(new View.OnClickListener() {
@@ -261,7 +261,7 @@ public class CredentialsPageFragment extends BasePageFragment {
                             "&interface=" + credential.protocol.transportInterface +
                             "&link=" + credential.protocol.link +
                             "&message=" + credential.label + "+" + credential.password;
-                    mBus.post(new ExchangeEvent(ExchangeEvent.Type.target, message));
+                    mBus.post(new ApplicationEvents.ExchangeCredential(ApplicationEvents.ExchangeCredential.Type.target, message));
                 }
             });
             holder.allow.setText(credential.isAllowed

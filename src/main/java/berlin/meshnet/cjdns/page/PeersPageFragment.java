@@ -25,7 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.R;
-import berlin.meshnet.cjdns.event.ConnectionEvents;
+import berlin.meshnet.cjdns.event.ApplicationEvents;
 import berlin.meshnet.cjdns.event.PeerEvents;
 import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Node;
@@ -219,7 +219,7 @@ public class PeersPageFragment extends BasePageFragment {
                 holder.connections.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mBus.post(new ConnectionEvents.List(peer.id));
+                        mBus.post(new ApplicationEvents.ListConnections(peer.id));
                     }
                 });
                 holder.connections.setVisibility(View.VISIBLE);
