@@ -95,17 +95,13 @@ public class CjdnsApplication extends Application {
         }
 
         @Provides
-        public PeersProducer providePeerListProducer(Bus bus) {
-            PeersProducer producer = new PeersProducer.Mock();
-            bus.register(producer);
-            return producer;
+        public PeersProducer providePeerListProducer() {
+            return new PeersProducer.Mock();
         }
 
         @Provides
-        public CredentialsProducer provideCredentialListProducer(Bus bus) {
-            CredentialsProducer producer = new CredentialsProducer.Mock();
-            bus.register(producer);
-            return producer;
+        public CredentialsProducer provideCredentialListProducer() {
+            return new CredentialsProducer.Mock();
         }
     }
 }

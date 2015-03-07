@@ -37,6 +37,7 @@ import brnunes.swipeablecardview.SwipeableRecyclerViewTouchListener;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.app.AppObservable;
 import rx.functions.Action1;
 
@@ -59,6 +60,8 @@ public class CredentialsPageFragment extends BasePageFragment {
 
     @InjectView(R.id.credentials_page_add)
     FloatingActionButton mAdd;
+
+    private CredentialListAdapter mAdapter;
 
     public static Fragment newInstance() {
         return new CredentialsPageFragment();
@@ -89,30 +92,30 @@ public class CredentialsPageFragment extends BasePageFragment {
         });
         mCredentialsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        final CredentialListAdapter adapter = new CredentialListAdapter(getActivity(), mBus,
+        mAdapter = new CredentialListAdapter(getActivity(), mBus,
                 AppObservable.bindFragment(this, mThemeProducer.stream()),
                 AppObservable.bindFragment(this, mCredentialProducer.createStream()),
                 AppObservable.bindFragment(this, mCredentialProducer.updateStream()),
                 AppObservable.bindFragment(this, mCredentialProducer.removeStream()));
-        mCredentialsRecyclerView.setAdapter(adapter);
+        mCredentialsRecyclerView.setAdapter(mAdapter);
         mCredentialsRecyclerView.addOnItemTouchListener(new SwipeableRecyclerViewTouchListener(mCredentialsRecyclerView,
                 new SwipeableRecyclerViewTouchListener.SwipeListener() {
                     @Override
                     public boolean canSwipe(int position) {
-                        return !adapter.getItem(position).isAllowed;
+                        return !mAdapter.getItem(position).isAllowed;
                     }
 
                     @Override
                     public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
                         for (int position : reverseSortedPositions) {
-                            mBus.post(new AuthorizedCredentialEvents.Remove(adapter.getItem(position)));
+                            mBus.post(new AuthorizedCredentialEvents.Remove(mAdapter.getItem(position)));
                         }
                     }
 
                     @Override
                     public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
                         for (int position : reverseSortedPositions) {
-                            mBus.post(new AuthorizedCredentialEvents.Remove(adapter.getItem(position)));
+                            mBus.post(new AuthorizedCredentialEvents.Remove(mAdapter.getItem(position)));
                         }
                     }
                 }));
@@ -130,6 +133,26 @@ public class CredentialsPageFragment extends BasePageFragment {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mBus.register(mThemeProducer);
+        mBus.register(mCredentialProducer);
+    }
+
+    @Override
+    public void onPause() {
+        mBus.unregister(mThemeProducer);
+        mBus.unregister(mCredentialProducer);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        mAdapter.onDestroyImpl();
+        super.onDestroy();
+    }
+
     private static class CredentialListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private static final float ALPHA_ALLOWED = 1f;
@@ -142,34 +165,35 @@ public class CredentialsPageFragment extends BasePageFragment {
 
         private boolean mIsInternalsVisible;
 
-        private List<Credential.Authorized> mCredentials;
+        private List<Credential.Authorized> mCredentials = new ArrayList<>();
+
+        private List<Subscription> mSubscriptions = new ArrayList<>();
 
         private CredentialListAdapter(Context context, Bus bus,
                                       Observable<Theme> themeStream,
                                       Observable<Credential.Authorized> createStream,
                                       Observable<Credential.Authorized> updateStream,
                                       Observable<Credential.Authorized> removeStream) {
-            mCredentials = new ArrayList<>();
             mResources = context.getApplicationContext().getResources();
             mBus = bus;
 
-            themeStream.subscribe(new Action1<Theme>() {
+            mSubscriptions.add(themeStream.subscribe(new Action1<Theme>() {
                 @Override
                 public void call(Theme theme) {
                     mIsInternalsVisible = theme.isInternalsVisible;
                     notifyDataSetChanged();
                 }
-            });
+            }));
 
-            createStream.subscribe(new Action1<Credential.Authorized>() {
+            mSubscriptions.add(createStream.subscribe(new Action1<Credential.Authorized>() {
                 @Override
                 public void call(Credential.Authorized credential) {
                     mCredentials.add(credential);
                     notifyDataSetChanged();
                 }
-            });
+            }));
 
-            updateStream.subscribe(new Action1<Credential.Authorized>() {
+            mSubscriptions.add(updateStream.subscribe(new Action1<Credential.Authorized>() {
                 @Override
                 public void call(Credential.Authorized credential) {
                     int position = mCredentials.indexOf(credential);
@@ -178,9 +202,9 @@ public class CredentialsPageFragment extends BasePageFragment {
                         notifyDataSetChanged();
                     }
                 }
-            });
+            }));
 
-            removeStream.subscribe(new Action1<Credential.Authorized>() {
+            mSubscriptions.add(removeStream.subscribe(new Action1<Credential.Authorized>() {
                 @Override
                 public void call(Credential.Authorized credential) {
                     int position = mCredentials.indexOf(credential);
@@ -189,11 +213,17 @@ public class CredentialsPageFragment extends BasePageFragment {
                         notifyDataSetChanged();
                     }
                 }
-            });
+            }));
         }
 
         private Credential.Authorized getItem(int position) {
             return mCredentials.get(position);
+        }
+
+        private void onDestroyImpl() {
+            for (Subscription subscription : mSubscriptions) {
+                subscription.unsubscribe();
+            }
         }
 
         @Override

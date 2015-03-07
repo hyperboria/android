@@ -35,6 +35,7 @@ import berlin.meshnet.cjdns.producer.ThemeProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.app.AppObservable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -55,6 +56,8 @@ public class ConnectionsDialogFragment extends DialogFragment {
     @Inject
     PeersProducer mPeersProducer;
 
+    private ConnectionAdapter mAdapter;
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -72,14 +75,14 @@ public class ConnectionsDialogFragment extends DialogFragment {
                     }
                 });
 
-        final ConnectionAdapter adapter = new ConnectionAdapter(getActivity(), mBus,
+        mAdapter = new ConnectionAdapter(getActivity(), mBus,
                 AppObservable.bindFragment(this, mThemeProducer.stream()),
                 AppObservable.bindFragment(this, peerStream));
-        adapter.registerDataSetObserver(new DataSetObserver() {
+        mAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
-                if (adapter.hasData() && adapter.getCount() <= 0) {
+                if (mAdapter.hasData() && mAdapter.getCount() <= 0) {
                     dismiss();
                 }
             }
@@ -87,9 +90,29 @@ public class ConnectionsDialogFragment extends DialogFragment {
 
         return new MaterialDialog.Builder(getActivity())
                 .title(R.string.connections_list_title)
-                .adapter(adapter)
+                .adapter(mAdapter)
                 .listSelector(R.drawable.md_transparent)
                 .build();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mBus.register(mThemeProducer);
+        mBus.register(mPeersProducer);
+    }
+
+    @Override
+    public void onPause() {
+        mBus.unregister(mThemeProducer);
+        mBus.unregister(mPeersProducer);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        mAdapter.onDestroyImpl();
+        super.onDestroy();
     }
 
     public static DialogFragment newInstance(int peerId) {
@@ -114,6 +137,8 @@ public class ConnectionsDialogFragment extends DialogFragment {
 
         private boolean mIsInternalsVisible;
 
+        private List<Subscription> mSubscriptions = new ArrayList<>();
+
         private ConnectionAdapter(Context context, Bus bus,
                                   Observable<Theme> themeStream,
                                   Observable<Node.Peer> peerStream) {
@@ -121,25 +146,31 @@ public class ConnectionsDialogFragment extends DialogFragment {
             mInflater = LayoutInflater.from(context);
             mBus = bus;
 
-            themeStream.subscribe(new Action1<Theme>() {
+            mSubscriptions.add(themeStream.subscribe(new Action1<Theme>() {
                 @Override
                 public void call(Theme theme) {
                     mIsInternalsVisible = theme.isInternalsVisible;
                     notifyDataSetChanged();
                 }
-            });
+            }));
 
-            peerStream.subscribe(new Action1<Node.Peer>() {
+            mSubscriptions.add(peerStream.subscribe(new Action1<Node.Peer>() {
                 @Override
                 public void call(Node.Peer peer) {
                     mPeer = peer;
                     notifyDataSetChanged();
                 }
-            });
+            }));
         }
 
         private boolean hasData() {
             return mPeer != null;
+        }
+
+        private void onDestroyImpl() {
+            for (Subscription subscription : mSubscriptions) {
+                subscription.unsubscribe();
+            }
         }
 
         @Override

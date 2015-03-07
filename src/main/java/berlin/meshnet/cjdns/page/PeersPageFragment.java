@@ -35,6 +35,7 @@ import berlin.meshnet.cjdns.producer.ThemeProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.app.AppObservable;
 import rx.functions.Action1;
 
@@ -57,6 +58,8 @@ public class PeersPageFragment extends BasePageFragment {
 
     @InjectView(R.id.peers_page_add)
     FloatingActionButton mAdd;
+
+    private PeerListAdapter mAdapter;
 
     public static Fragment newInstance() {
         return new PeersPageFragment();
@@ -87,12 +90,12 @@ public class PeersPageFragment extends BasePageFragment {
         });
         mPeersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        final PeerListAdapter adapter = new PeerListAdapter(getActivity(), mBus,
+        mAdapter = new PeerListAdapter(getActivity(), mBus,
                 AppObservable.bindFragment(this, mThemeProducer.stream()),
                 AppObservable.bindFragment(this, mPeersProducer.createStream()),
                 AppObservable.bindFragment(this, mPeersProducer.updateStream()),
                 AppObservable.bindFragment(this, mPeersProducer.removeStream()));
-        mPeersRecyclerView.setAdapter(adapter);
+        mPeersRecyclerView.setAdapter(mAdapter);
 
         IconDrawable addIcon = new IconDrawable(getActivity(), Iconify.IconValue.fa_plus)
                 .colorRes(R.color.my_primary)
@@ -107,6 +110,26 @@ public class PeersPageFragment extends BasePageFragment {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mBus.register(mThemeProducer);
+        mBus.register(mPeersProducer);
+    }
+
+    @Override
+    public void onPause() {
+        mBus.unregister(mThemeProducer);
+        mBus.unregister(mPeersProducer);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        mAdapter.onDestroyImpl();
+        super.onDestroy();
+    }
+
     private static class PeerListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private static final float ALPHA_ACTIVE = 1f;
@@ -117,33 +140,34 @@ public class PeersPageFragment extends BasePageFragment {
 
         private boolean mIsInternalsVisible;
 
-        private List<Node.Peer> mPeers;
+        private List<Node.Peer> mPeers = new ArrayList<>();
+
+        private List<Subscription> mSubscriptions = new ArrayList<>();
 
         private PeerListAdapter(Context context, Bus bus,
                                 Observable<Theme> themeStream,
                                 Observable<Node.Peer> createStream,
                                 Observable<Node.Peer> updateStream,
                                 Observable<Node.Peer> removeStream) {
-            mPeers = new ArrayList<>();
             mBus = bus;
 
-            themeStream.subscribe(new Action1<Theme>() {
+            mSubscriptions.add(themeStream.subscribe(new Action1<Theme>() {
                 @Override
                 public void call(Theme theme) {
                     mIsInternalsVisible = theme.isInternalsVisible;
                     notifyDataSetChanged();
                 }
-            });
+            }));
 
-            createStream.subscribe(new Action1<Node.Peer>() {
+            mSubscriptions.add(createStream.subscribe(new Action1<Node.Peer>() {
                 @Override
                 public void call(Node.Peer peer) {
                     mPeers.add(peer);
                     notifyDataSetChanged();
                 }
-            });
+            }));
 
-            updateStream.subscribe(new Action1<Node.Peer>() {
+            mSubscriptions.add(updateStream.subscribe(new Action1<Node.Peer>() {
                 @Override
                 public void call(Node.Peer peer) {
                     int position = mPeers.indexOf(peer);
@@ -152,9 +176,9 @@ public class PeersPageFragment extends BasePageFragment {
                         notifyDataSetChanged();
                     }
                 }
-            });
+            }));
 
-            removeStream.subscribe(new Action1<Node.Peer>() {
+            mSubscriptions.add(removeStream.subscribe(new Action1<Node.Peer>() {
                 @Override
                 public void call(Node.Peer peer) {
                     int position = mPeers.indexOf(peer);
@@ -163,7 +187,13 @@ public class PeersPageFragment extends BasePageFragment {
                         notifyDataSetChanged();
                     }
                 }
-            });
+            }));
+        }
+
+        private void onDestroyImpl() {
+            for (Subscription subscription : mSubscriptions) {
+                subscription.unsubscribe();
+            }
         }
 
         @Override

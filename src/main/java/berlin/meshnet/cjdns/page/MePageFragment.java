@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.R;
@@ -17,6 +20,7 @@ import berlin.meshnet.cjdns.producer.MeProducer;
 import berlin.meshnet.cjdns.producer.ThemeProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Subscription;
 import rx.android.app.AppObservable;
 import rx.functions.Action1;
 
@@ -43,6 +47,8 @@ public class MePageFragment extends BasePageFragment {
     @InjectView(R.id.me_page_public_key_text)
     TextView mPublicKeyTextView;
 
+    private List<Subscription> mSubscriptions = new ArrayList<>();
+
     public static Fragment newInstance() {
         return new MePageFragment();
     }
@@ -58,15 +64,15 @@ public class MePageFragment extends BasePageFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        AppObservable.bindFragment(this, mThemeProducer.stream())
+        mSubscriptions.add(AppObservable.bindFragment(this, mThemeProducer.stream())
                 .subscribe(new Action1<Theme>() {
                     @Override
                     public void call(Theme theme) {
                         mPublicKey.setVisibility(theme.isInternalsVisible ? View.VISIBLE : View.GONE);
                     }
-                });
+                }));
 
-        AppObservable.bindFragment(this, mMeProducer.stream())
+        mSubscriptions.add(AppObservable.bindFragment(this, mMeProducer.stream())
                 .subscribe(new Action1<Node.Me>() {
                     @Override
                     public void call(Node.Me me) {
@@ -74,6 +80,14 @@ public class MePageFragment extends BasePageFragment {
                         mAddressTextView.setText(me.address);
                         mPublicKeyTextView.setText(me.publicKey);
                     }
-                });
+                }));
+    }
+
+    @Override
+    public void onDestroy() {
+        for (Subscription subscription : mSubscriptions) {
+            subscription.unsubscribe();
+        }
+        super.onDestroy();
     }
 }
