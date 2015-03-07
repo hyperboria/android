@@ -61,8 +61,6 @@ public class MainActivity extends ActionBarActivity {
     @InjectView(R.id.drawer)
     ListView mDrawer;
 
-    private SwitchCompat mCjdnsServiceSwitch;
-
     private ActionBarDrawerToggle mDrawerToggle;
 
     private ArrayAdapter<String> mDrawerAdapter;
@@ -98,7 +96,6 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         mDrawer.setAdapter(mDrawerAdapter);
-        mDrawer.setItemChecked(1, true); // TODO Create state producer
         mDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -142,6 +139,15 @@ public class MainActivity extends ActionBarActivity {
             mSelectedContent = selectedPage;
             mToolbar.setTitle(selectedPage);
         }
+
+        // Select corresponding drawer option.
+        String[] options = getResources().getStringArray(R.array.drawer_options);
+        for (int index = 0; index < options.length; index++) {
+            if (options[index].equals(mSelectedContent)) {
+                mDrawer.setItemChecked(index, true);
+                break;
+            }
+        }
     }
 
     @Override
@@ -149,9 +155,9 @@ public class MainActivity extends ActionBarActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
-        mCjdnsServiceSwitch = (SwitchCompat) menu.findItem(R.id.switch_cjdns_service).getActionView();
+        SwitchCompat cjdnsServiceSwitch = (SwitchCompat) menu.findItem(R.id.switch_cjdns_service).getActionView();
         // TODO Init with current CjdnsService state
-        mCjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
