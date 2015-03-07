@@ -8,7 +8,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.squareup.otto.Subscribe;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -16,9 +17,12 @@ import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.model.Node;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.MeProducer;
-import berlin.meshnet.cjdns.producer.ThemeProducer;
+import berlin.meshnet.cjdns.producer.SettingsProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Subscription;
+import rx.android.app.AppObservable;
+import rx.functions.Action1;
 
 /**
  * The page representing the self node.
@@ -26,7 +30,7 @@ import butterknife.InjectView;
 public class MePageFragment extends BasePageFragment {
 
     @Inject
-    ThemeProducer mThemeProducer;
+    SettingsProducer mSettingsProducer;
 
     @Inject
     MeProducer mMeProducer;
@@ -43,6 +47,8 @@ public class MePageFragment extends BasePageFragment {
     @InjectView(R.id.me_page_public_key_text)
     TextView mPublicKeyTextView;
 
+    private List<Subscription> mSubscriptions = new ArrayList<>();
+
     public static Fragment newInstance() {
         return new MePageFragment();
     }
@@ -54,15 +60,34 @@ public class MePageFragment extends BasePageFragment {
         return view;
     }
 
-    @Subscribe
-    public void handleTheme(Theme theme) {
-        mPublicKey.setVisibility(theme.isInternalsVisible ? View.VISIBLE : View.GONE);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mSubscriptions.add(AppObservable.bindFragment(this, mSettingsProducer.themeStream())
+                .subscribe(new Action1<Theme>() {
+                    @Override
+                    public void call(Theme theme) {
+                        mPublicKey.setVisibility(theme.isInternalsVisible ? View.VISIBLE : View.GONE);
+                    }
+                }));
+
+        mSubscriptions.add(AppObservable.bindFragment(this, mMeProducer.stream())
+                .subscribe(new Action1<Node.Me>() {
+                    @Override
+                    public void call(Node.Me me) {
+                        mNameTextView.setText(me.name);
+                        mAddressTextView.setText(me.address);
+                        mPublicKeyTextView.setText(me.publicKey);
+                    }
+                }));
     }
 
-    @Subscribe
-    public void handleMe(Node.Me me) {
-        mNameTextView.setText(me.name);
-        mAddressTextView.setText(me.address);
-        mPublicKeyTextView.setText(me.publicKey);
+    @Override
+    public void onDestroy() {
+        for (Subscription subscription : mSubscriptions) {
+            subscription.unsubscribe();
+        }
+        super.onDestroy();
     }
 }

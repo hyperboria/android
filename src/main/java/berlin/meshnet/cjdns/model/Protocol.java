@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import berlin.meshnet.cjdns.R;
 
 /**
- * Model for a connectivity protocol.
+ * Immutable model object for a connectivity protocol.
  */
 public class Protocol {
 
@@ -13,15 +13,13 @@ public class Protocol {
 
     public final Link link;
 
-    public Protocol(Interface transportInterface, Link link) {
-        this.transportInterface = transportInterface;
-        this.link = link;
-    }
-
-    public String getDescription(Resources res) {
+    /**
+     * Formats the protocol description.
+     */
+    public static String formatDescription(Resources res, Protocol protocol) {
         String interfaceString = null;
         String linkString = null;
-        switch (transportInterface) {
+        switch (protocol.transportInterface) {
             case udp:
                 interfaceString = res.getString(R.string.interface_udp);
                 break;
@@ -29,7 +27,7 @@ public class Protocol {
                 interfaceString = res.getString(R.string.interface_eth);
                 break;
         }
-        switch (link) {
+        switch (protocol.link) {
             case wifiDirect:
                 linkString = res.getString(R.string.link_wifi_direct);
                 break;
@@ -41,6 +39,11 @@ public class Protocol {
                 break;
         }
         return res.getString(R.string.protocol_description, interfaceString, linkString);
+    }
+
+    public Protocol(Interface transportInterface, Link link) {
+        this.transportInterface = transportInterface;
+        this.link = link;
     }
 
     /**

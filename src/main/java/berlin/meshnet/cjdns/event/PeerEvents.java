@@ -2,12 +2,21 @@ package berlin.meshnet.cjdns.event;
 
 import berlin.meshnet.cjdns.model.Node;
 
-public class PeerEvents {
+/**
+ * Events associated with {@link berlin.meshnet.cjdns.model.Node.Peer}.
+ */
+public interface PeerEvents {
 
-    public static class Create {
+    /**
+     * Request to create a new {@link berlin.meshnet.cjdns.model.Node.Peer}.
+     */
+    static class Create {
     }
 
-    public static class Update {
+    /**
+     * Request to update a {@link berlin.meshnet.cjdns.model.Node.Peer}.
+     */
+    static class Update {
 
         public final Node.Peer mPeer;
 
@@ -16,20 +25,14 @@ public class PeerEvents {
         }
     }
 
-    public static class Remove {
-
-        public final int mId;
-
-        public Remove(int id) {
-            mId = id;
-        }
-    }
-
-    public static class New {
+    /**
+     * Request to remove a {@link berlin.meshnet.cjdns.model.Node.Peer}.
+     */
+    static class Remove {
 
         public final Node.Peer mPeer;
 
-        public New(Node.Peer peer) {
+        public Remove(Node.Peer peer) {
             mPeer = peer;
         }
     }
