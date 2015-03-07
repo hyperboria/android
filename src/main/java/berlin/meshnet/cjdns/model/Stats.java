@@ -1,7 +1,12 @@
 package berlin.meshnet.cjdns.model;
 
+import android.content.Context;
+import android.text.format.DateFormat;
+
+import java.util.Date;
+
 /**
- * Model for the transient statistics about a node.
+ * Immutable model object for the transient statistics about a node.
  */
 public class Stats {
 
@@ -21,6 +26,13 @@ public class Stats {
 
     public final int bandwidthOut;
 
+    /**
+     * Formats the last active time.
+     */
+    public static String formatLastActive(Context context, long lastActive) {
+        return DateFormat.getTimeFormat(context).format(new Date(lastActive));
+    }
+
     public Stats(String version, boolean isActive, long lastActive, int linkCount,
                  int bytesIn, int bytesOut, int bandwidthIn, int bandwidthOut) {
         this.version = version;
@@ -34,7 +46,7 @@ public class Stats {
     }
 
     /**
-     * Model for the transient statistics about the self node.
+     * Immutable model object for the transient statistics about the self node.
      */
     public static class Me extends Stats {
 

@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import berlin.meshnet.cjdns.R;
 
 /**
- * Model for a connectivity protocol.
+ * Immutable model object for a connectivity protocol.
  */
 public class Protocol {
 
@@ -13,6 +13,9 @@ public class Protocol {
 
     public final Link link;
 
+    /**
+     * Formats the protocol description.
+     */
     public static String formatDescription(Resources res, Protocol protocol) {
         String interfaceString = null;
         String linkString = null;

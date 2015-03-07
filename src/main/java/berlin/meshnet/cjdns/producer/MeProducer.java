@@ -5,15 +5,10 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 /**
- * Abstract class that produces {@link berlin.meshnet.cjdns.model.Node.Me}.
+ * Producer of a {@link berlin.meshnet.cjdns.model.Node.Me} stream.
  */
 public interface MeProducer {
 
-    /**
-     * Produces {@link berlin.meshnet.cjdns.model.Node.Me} to any subscribers. Must be annotated with {@link @Produce}.
-     *
-     * @return A {@link berlin.meshnet.cjdns.model.Node.Me}.
-     */
     Observable<Node.Me> stream();
 
     /**

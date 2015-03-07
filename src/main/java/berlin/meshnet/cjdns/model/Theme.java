@@ -1,7 +1,7 @@
 package berlin.meshnet.cjdns.model;
 
 /**
- * Model for the UI theme.
+ * Immutable model object for the UI theme.
  */
 public class Theme {
 

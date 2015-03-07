@@ -1,7 +1,7 @@
 package berlin.meshnet.cjdns.model;
 
 /**
- * Model for a node.
+ * Immutable model object for a node.
  */
 public abstract class Node {
 
@@ -18,7 +18,7 @@ public abstract class Node {
     }
 
     /**
-     * Model for the self node.
+     * Immutable model object for the self node.
      */
     public static class Me extends Node {
 
@@ -34,7 +34,7 @@ public abstract class Node {
     }
 
     /**
-     * Model for a peer node.
+     * Immutable model object for a peer node.
      */
     public static class Peer extends Node {
 

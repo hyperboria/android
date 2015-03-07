@@ -17,7 +17,7 @@ import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.model.Node;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.MeProducer;
-import berlin.meshnet.cjdns.producer.ThemeProducer;
+import berlin.meshnet.cjdns.producer.SettingsProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Subscription;
@@ -30,7 +30,7 @@ import rx.functions.Action1;
 public class MePageFragment extends BasePageFragment {
 
     @Inject
-    ThemeProducer mThemeProducer;
+    SettingsProducer mSettingsProducer;
 
     @Inject
     MeProducer mMeProducer;
@@ -64,7 +64,7 @@ public class MePageFragment extends BasePageFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mSubscriptions.add(AppObservable.bindFragment(this, mThemeProducer.stream())
+        mSubscriptions.add(AppObservable.bindFragment(this, mSettingsProducer.themeStream())
                 .subscribe(new Action1<Theme>() {
                     @Override
                     public void call(Theme theme) {

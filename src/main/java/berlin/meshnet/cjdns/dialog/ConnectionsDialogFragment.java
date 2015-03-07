@@ -31,7 +31,7 @@ import berlin.meshnet.cjdns.model.Node;
 import berlin.meshnet.cjdns.model.Protocol;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.PeersProducer;
-import berlin.meshnet.cjdns.producer.ThemeProducer;
+import berlin.meshnet.cjdns.producer.SettingsProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
@@ -51,7 +51,7 @@ public class ConnectionsDialogFragment extends DialogFragment {
     Bus mBus;
 
     @Inject
-    ThemeProducer mThemeProducer;
+    SettingsProducer mSettingsProducer;
 
     @Inject
     PeersProducer mPeersProducer;
@@ -76,7 +76,7 @@ public class ConnectionsDialogFragment extends DialogFragment {
                 });
 
         mAdapter = new ConnectionAdapter(getActivity(), mBus,
-                AppObservable.bindFragment(this, mThemeProducer.stream()),
+                AppObservable.bindFragment(this, mSettingsProducer.themeStream()),
                 AppObservable.bindFragment(this, peerStream));
         mAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
@@ -98,13 +98,13 @@ public class ConnectionsDialogFragment extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        mBus.register(mThemeProducer);
+        mBus.register(mSettingsProducer);
         mBus.register(mPeersProducer);
     }
 
     @Override
     public void onPause() {
-        mBus.unregister(mThemeProducer);
+        mBus.unregister(mSettingsProducer);
         mBus.unregister(mPeersProducer);
         super.onPause();
     }

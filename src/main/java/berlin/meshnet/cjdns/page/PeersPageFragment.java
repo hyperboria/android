@@ -31,7 +31,7 @@ import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Node;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.PeersProducer;
-import berlin.meshnet.cjdns.producer.ThemeProducer;
+import berlin.meshnet.cjdns.producer.SettingsProducer;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
@@ -48,7 +48,7 @@ public class PeersPageFragment extends BasePageFragment {
     Bus mBus;
 
     @Inject
-    ThemeProducer mThemeProducer;
+    SettingsProducer mSettingsProducer;
 
     @Inject
     PeersProducer mPeersProducer;
@@ -91,7 +91,7 @@ public class PeersPageFragment extends BasePageFragment {
         mPeersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mAdapter = new PeerListAdapter(getActivity(), mBus,
-                AppObservable.bindFragment(this, mThemeProducer.stream()),
+                AppObservable.bindFragment(this, mSettingsProducer.themeStream()),
                 AppObservable.bindFragment(this, mPeersProducer.createStream()),
                 AppObservable.bindFragment(this, mPeersProducer.updateStream()),
                 AppObservable.bindFragment(this, mPeersProducer.removeStream()));
@@ -113,13 +113,13 @@ public class PeersPageFragment extends BasePageFragment {
     @Override
     public void onResume() {
         super.onResume();
-        mBus.register(mThemeProducer);
+        mBus.register(mSettingsProducer);
         mBus.register(mPeersProducer);
     }
 
     @Override
     public void onPause() {
-        mBus.unregister(mThemeProducer);
+        mBus.unregister(mSettingsProducer);
         mBus.unregister(mPeersProducer);
         super.onPause();
     }

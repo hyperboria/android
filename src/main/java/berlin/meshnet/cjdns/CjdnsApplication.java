@@ -17,7 +17,7 @@ import berlin.meshnet.cjdns.page.SettingsPageFragment;
 import berlin.meshnet.cjdns.producer.CredentialsProducer;
 import berlin.meshnet.cjdns.producer.MeProducer;
 import berlin.meshnet.cjdns.producer.PeersProducer;
-import berlin.meshnet.cjdns.producer.ThemeProducer;
+import berlin.meshnet.cjdns.producer.SettingsProducer;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
@@ -85,8 +85,8 @@ public class CjdnsApplication extends Application {
         }
 
         @Provides
-        public ThemeProducer provideThemeProducer(Context context, SharedPreferences sharedPreferences) {
-            return new ThemeProducer.Default(context, sharedPreferences);
+        public SettingsProducer provideSettingsProducer(Context context, SharedPreferences sharedPreferences) {
+            return new SettingsProducer.Default(context, sharedPreferences);
         }
 
         @Provides

@@ -32,7 +32,7 @@ import berlin.meshnet.cjdns.model.Credential;
 import berlin.meshnet.cjdns.model.Protocol;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.CredentialsProducer;
-import berlin.meshnet.cjdns.producer.ThemeProducer;
+import berlin.meshnet.cjdns.producer.SettingsProducer;
 import brnunes.swipeablecardview.SwipeableRecyclerViewTouchListener;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -42,7 +42,7 @@ import rx.android.app.AppObservable;
 import rx.functions.Action1;
 
 /**
- * The page representing the list of credentials known to the self node.
+ * The page representing the list of credentials authorized credentials.
  */
 public class CredentialsPageFragment extends BasePageFragment {
 
@@ -50,7 +50,7 @@ public class CredentialsPageFragment extends BasePageFragment {
     Bus mBus;
 
     @Inject
-    ThemeProducer mThemeProducer;
+    SettingsProducer mSettingsProducer;
 
     @Inject
     CredentialsProducer mCredentialProducer;
@@ -93,7 +93,7 @@ public class CredentialsPageFragment extends BasePageFragment {
         mCredentialsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mAdapter = new CredentialListAdapter(getActivity(), mBus,
-                AppObservable.bindFragment(this, mThemeProducer.stream()),
+                AppObservable.bindFragment(this, mSettingsProducer.themeStream()),
                 AppObservable.bindFragment(this, mCredentialProducer.createStream()),
                 AppObservable.bindFragment(this, mCredentialProducer.updateStream()),
                 AppObservable.bindFragment(this, mCredentialProducer.removeStream()));
@@ -136,13 +136,13 @@ public class CredentialsPageFragment extends BasePageFragment {
     @Override
     public void onResume() {
         super.onResume();
-        mBus.register(mThemeProducer);
+        mBus.register(mSettingsProducer);
         mBus.register(mCredentialProducer);
     }
 
     @Override
     public void onPause() {
-        mBus.unregister(mThemeProducer);
+        mBus.unregister(mSettingsProducer);
         mBus.unregister(mCredentialProducer);
         super.onPause();
     }

@@ -1,7 +1,7 @@
 package berlin.meshnet.cjdns.model;
 
 /**
- * Model for a peering credential.
+ * Immutable model object for a peering credential.
  */
 public class Credential {
 
@@ -35,7 +35,7 @@ public class Credential {
     }
 
     /**
-     * Model for a peering credential authorized for the self node.
+     * Immutable model object for a peering credential authorized for the self node.
      */
     public static class Authorized extends Credential {
 

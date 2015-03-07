@@ -14,7 +14,7 @@ import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 /**
- * Abstract class that produces {@link PeersProducer.PeerList}.
+ * Producer of a {@link berlin.meshnet.cjdns.model.Node.Peer} themeStream.
  */
 public interface PeersProducer {
 

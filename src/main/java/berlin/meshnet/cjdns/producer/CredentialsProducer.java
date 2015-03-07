@@ -13,7 +13,7 @@ import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 /**
- * Abstract class that produces {@link berlin.meshnet.cjdns.model.Credential.Authorized}.
+ * Producer of a {@link berlin.meshnet.cjdns.model.Credential.Authorized} themeStream.
  */
 public interface CredentialsProducer {
 
