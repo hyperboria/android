@@ -15,6 +15,7 @@ import android.widget.IconTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.brnunes.swipeablerecyclerview.SwipeableRecyclerViewTouchListener;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melnykov.fab.FloatingActionButton;
@@ -33,7 +34,6 @@ import berlin.meshnet.cjdns.model.Protocol;
 import berlin.meshnet.cjdns.model.Theme;
 import berlin.meshnet.cjdns.producer.CredentialsProducer;
 import berlin.meshnet.cjdns.producer.SettingsProducer;
-import brnunes.swipeablecardview.SwipeableRecyclerViewTouchListener;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
