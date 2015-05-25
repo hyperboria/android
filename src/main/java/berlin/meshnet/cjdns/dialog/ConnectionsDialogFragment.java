@@ -90,7 +90,7 @@ public class ConnectionsDialogFragment extends DialogFragment {
 
         return new MaterialDialog.Builder(getActivity())
                 .title(R.string.connections_list_title)
-                .adapter(mAdapter)
+                .adapter(mAdapter, null)
                 .listSelector(R.drawable.md_transparent)
                 .build();
     }
