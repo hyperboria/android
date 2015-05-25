@@ -38,7 +38,7 @@ public class ExchangeDialogFragment extends DialogFragment {
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(titleResId)
-                .adapter(new ArrayAdapter<>(getActivity(), R.layout.view_exchange_item, options))
+                .adapter(new ArrayAdapter<>(getActivity(), R.layout.view_exchange_item, options), null)
                 .build();
 
         ListView listView = dialog.getListView();
