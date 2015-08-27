@@ -3,6 +3,7 @@ package berlin.meshnet.cjdns;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
@@ -14,8 +15,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -83,7 +89,43 @@ public class CjdnsService extends Service {
     }
 
     public InputStream cjdrouteconf() throws IOException {
-        return getAssets().open("cjdroute.conf");
+        //TODO run this stuff separate from UI thread.
+        File cjdroute = new File(getApplicationInfo().dataDir + "/files/cjdroute.conf");
+        if(cjdroute.exists()) {
+            //return stream
+            return new FileInputStream(cjdroute);
+        } else {
+            //create cjdroute.conf and return stream
+            File executable = new File(getApplicationInfo().dataDir, "cjdroute");
+            CjdrouteTask.writeCjdroute(cjdroute(), executable);
+
+            Runtime rt = Runtime.getRuntime();
+            String command = executable.getPath() + " --genconf";
+            java.lang.Process proc = rt.exec(command);
+
+            BufferedReader stdInput = new BufferedReader(new
+                    InputStreamReader(proc.getInputStream()));
+
+            String s;
+            String output = "";
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+                output += s + "\n";
+            }
+
+            FileOutputStream outputStream;
+
+            try {
+                outputStream = openFileOutput(cjdroute.getName(), Context.MODE_PRIVATE);
+                outputStream.write(output.getBytes());
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return new FileInputStream(cjdroute);
+        }
+        //return getAssets().open("cjdroute.conf");
     }
 
     public JSONObject config() throws IOException, JSONException {

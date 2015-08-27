@@ -16,7 +16,7 @@ import org.json.JSONException;
 public class CjdrouteTask extends AsyncTask<CjdnsService, String, Integer> {
     @Override
     protected Integer doInBackground(CjdnsService... service) {
-        Integer pid = new Integer(0);
+        Integer pid = 0;
 
         try {
             File executable = new File(service[0].getApplicationInfo().dataDir, "cjdroute");
@@ -39,7 +39,7 @@ public class CjdrouteTask extends AsyncTask<CjdnsService, String, Integer> {
                 if (line == null) {
                     break;
                 } else if (line.contains(adminLine)) {
-                    pid = new Integer(admin.Core_pid());
+                    pid = admin.Core_pid();
                 }
             }
         } catch (IOException e) {
@@ -51,7 +51,7 @@ public class CjdrouteTask extends AsyncTask<CjdnsService, String, Integer> {
         return pid;
     }
 
-    private void writeCjdroute(InputStream cjdroute, File target) throws IOException
+    public static void writeCjdroute(InputStream cjdroute, File target) throws IOException
     {
         if (target.exists() && target.canExecute()) {
             Log.i("cjdns.CjdrouteTask", "cjdroute exists and is executable");
