@@ -20,9 +20,11 @@ public class CjdrouteTask extends AsyncTask<CjdnsService, String, Integer> {
 
         try {
             File executable = new File(service[0].getApplicationInfo().dataDir, "cjdroute");
+            File generate_sh = new File(service[0].getApplicationInfo().dataDir, "generate.sh");
             writeCjdroute(service[0].cjdroute(), executable);
+            writeCjdroute(service[0].generate(), generate_sh);
 
-            ProcessBuilder builder = new ProcessBuilder(executable.getPath());
+            ProcessBuilder builder = new ProcessBuilder(generate_sh.getPath());
             builder.redirectErrorStream(true);
             Process process = builder.start();
 

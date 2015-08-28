@@ -88,40 +88,42 @@ public class CjdnsService extends Service {
         return getAssets().open(Build.CPU_ABI + "/cjdroute");
     }
 
+    public InputStream generate() throws IOException {
+        return getAssets().open("generate.sh");
+    }
+
     public InputStream cjdrouteconf() throws IOException {
         //TODO run this stuff separate from UI thread.
         File cjdroute = new File(getApplicationInfo().dataDir + "/files/cjdroute.conf");
-        if(cjdroute.exists()) {
+        if (cjdroute.exists()) {
             //return stream
             return new FileInputStream(cjdroute);
         } else {
             //create cjdroute.conf and return stream
             File executable = new File(getApplicationInfo().dataDir, "cjdroute");
+            File generate_sh = new File(getApplicationInfo().dataDir, "generate.sh");
             CjdrouteTask.writeCjdroute(cjdroute(), executable);
+            CjdrouteTask.writeCjdroute(generate(), generate_sh);
 
             Runtime rt = Runtime.getRuntime();
-            String command = executable.getPath() + " --cleanconf";
-            java.lang.Process proc = rt.exec(command);
+            java.lang.Process proc = rt.exec(generate_sh.getPath());
 
             BufferedReader stdInput = new BufferedReader(new
                     InputStreamReader(proc.getInputStream()));
 
-            String s;
+            String line;
             String output = "";
-            while ((s = stdInput.readLine()) != null) {
-                System.out.println(s);
-                output += s + "\n";
+            while ((line = stdInput.readLine()) != null) {
+                System.out.println(line);
+                output += line + "\n";
             }
 
             FileOutputStream outputStream;
 
-            try {
-                outputStream = openFileOutput(cjdroute.getName(), Context.MODE_PRIVATE);
-                outputStream.write(output.getBytes());
-                outputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            outputStream = openFileOutput(cjdroute.getName(), Context.MODE_PRIVATE);
+            outputStream.write(output.getBytes());
+            outputStream.close();
+
 
             return new FileInputStream(cjdroute);
         }
