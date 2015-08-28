@@ -100,7 +100,7 @@ public class CjdnsService extends Service {
             CjdrouteTask.writeCjdroute(cjdroute(), executable);
 
             Runtime rt = Runtime.getRuntime();
-            String command = executable.getPath() + " --genconf";
+            String command = executable.getPath() + " --cleanconf";
             java.lang.Process proc = rt.exec(command);
 
             BufferedReader stdInput = new BufferedReader(new

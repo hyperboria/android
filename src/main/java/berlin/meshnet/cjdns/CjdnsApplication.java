@@ -10,6 +10,7 @@ import com.squareup.otto.Bus;
 import javax.inject.Singleton;
 
 import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
+import berlin.meshnet.cjdns.page.AboutPageFragment;
 import berlin.meshnet.cjdns.page.CredentialsPageFragment;
 import berlin.meshnet.cjdns.page.MePageFragment;
 import berlin.meshnet.cjdns.page.PeersPageFragment;
@@ -55,7 +56,8 @@ public class CjdnsApplication extends Application {
                     PeersPageFragment.class,
                     CredentialsPageFragment.class,
                     SettingsPageFragment.class,
-                    ConnectionsDialogFragment.class
+                    ConnectionsDialogFragment.class,
+                    AboutPageFragment.class
             }
     )
     public static class DefaultModule {
