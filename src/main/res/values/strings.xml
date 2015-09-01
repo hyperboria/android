@@ -95,6 +95,13 @@
     <!-- Credential broadcast share -->
     <string name="credential_broadcast_share_title">Unencrypted Broadcast via</string>
 
+    <string name="version">Version</string>
+    <string name="small_info">Android app for mesh networking with cjdns</string>
+    <string name="license1">Copyright © 2015 Benedict Lau, Lars Gierth and Other Contributors</string>
+    <string name="license2">Distributed under the GNU GPL v3</string>
+    <string name="license3">Source code is available at https://github.com/hyperboria/android</string>
+    <string name="large_info">Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone — thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root.</string>
+
     <string-array name="credential_broadcast_share_exchange_options">
         <item>@string/exchange_medium_nfc</item>
         <item>@string/exchange_medium_qrcode</item>
