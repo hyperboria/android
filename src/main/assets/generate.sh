@@ -1,3 +1,3 @@
 #!/system/bin/sh
 
-cjdroute --genconf | cjdroute --cleanconf
+/data/data/berlin.meshnet.cjdns/cjdroute --genconf | /data/data/berlin.meshnet.cjdns/cjdroute --cleanconf
