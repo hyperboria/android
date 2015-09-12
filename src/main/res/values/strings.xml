@@ -6,9 +6,6 @@
     <string name="cjdns_service_notification_title">@string/app_name</string>
     <string name="cjdns_service_notification_text">Node %1$s running</string>
 
-    <!-- Toolbar -->
-    <string name="toolbar_switch_cjdns_service_title"></string>
-
     <!-- Drawer -->
     <string name="drawer_open_content_desc">Open drawer</string>
     <string name="drawer_close_content_desc">Close drawer</string>
@@ -100,7 +97,7 @@
     <string name="license1">Copyright © 2015 Benedict Lau, Lars Gierth and Other Contributors</string>
     <string name="license2">Distributed under the GNU GPL v3</string>
     <string name="license3">Source code is available at https://github.com/hyperboria/android</string>
-    <string name="large_info">Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone — thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root.</string>
+    <string name="large_info">MeshNet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone — thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root.</string>
 
     <string-array name="credential_broadcast_share_exchange_options">
         <item>@string/exchange_medium_nfc</item>

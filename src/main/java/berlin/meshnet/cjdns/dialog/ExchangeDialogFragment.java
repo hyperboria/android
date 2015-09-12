@@ -26,6 +26,31 @@ public class ExchangeDialogFragment extends DialogFragment {
 
     private static final String FRAGMENT_BUNDLE_KEY_MESSAGE = "message";
 
+    public static DialogFragment newInstance(ApplicationEvents.ExchangeCredential.Type type, String message) {
+        DialogFragment fragment = new ExchangeDialogFragment();
+
+        int titleResId;
+        int optionsResId;
+        switch (type) {
+            case broadcast:
+                titleResId = R.string.credential_broadcast_share_title;
+                optionsResId = R.array.credential_broadcast_share_exchange_options;
+                break;
+            case target:
+            default:
+                titleResId = R.string.credential_target_share_title;
+                optionsResId = R.array.credential_target_share_exchange_options;
+        }
+
+        Bundle args = new Bundle();
+        args.putInt(FRAGMENT_BUNDLE_KEY_TITLE_RES_ID, titleResId);
+        args.putInt(FRAGMENT_BUNDLE_KEY_OPTIONS_RES_ID, optionsResId);
+        args.putString(FRAGMENT_BUNDLE_KEY_MESSAGE, message);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -56,30 +81,5 @@ public class ExchangeDialogFragment extends DialogFragment {
         }
 
         return dialog;
-    }
-
-    public static DialogFragment newInstance(ApplicationEvents.ExchangeCredential.Type type, String message) {
-        DialogFragment fragment = new ExchangeDialogFragment();
-
-        int titleResId;
-        int optionsResId;
-        switch (type) {
-            case broadcast:
-                titleResId = R.string.credential_broadcast_share_title;
-                optionsResId = R.array.credential_broadcast_share_exchange_options;
-                break;
-            case target:
-            default:
-                titleResId = R.string.credential_target_share_title;
-                optionsResId = R.array.credential_target_share_exchange_options;
-        }
-
-        Bundle args = new Bundle();
-        args.putInt(FRAGMENT_BUNDLE_KEY_TITLE_RES_ID, titleResId);
-        args.putInt(FRAGMENT_BUNDLE_KEY_OPTIONS_RES_ID, optionsResId);
-        args.putString(FRAGMENT_BUNDLE_KEY_MESSAGE, message);
-        fragment.setArguments(args);
-
-        return fragment;
     }
 }

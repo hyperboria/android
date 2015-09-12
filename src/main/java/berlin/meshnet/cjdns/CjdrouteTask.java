@@ -3,58 +3,18 @@ package berlin.meshnet.cjdns;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.io.OutputStream;
 
-import org.json.JSONException;
-
 public class CjdrouteTask extends AsyncTask<CjdnsService, String, Integer> {
-    @Override
-    protected Integer doInBackground(CjdnsService... service) {
-        Integer pid = 0;
-
-        try {
-            File executable = new File(service[0].getApplicationInfo().dataDir, "cjdroute");
-            File generate_sh = new File(service[0].getApplicationInfo().dataDir, "generate.sh");
-            writeCjdroute(service[0].cjdroute(), executable);
-            writeCjdroute(service[0].generate(), generate_sh);
-
-            ProcessBuilder builder = new ProcessBuilder(generate_sh.getPath());
-            builder.redirectErrorStream(true);
-            Process process = builder.start();
-
-            writeCjdrouteconf(service[0].cjdrouteconf(), process.getOutputStream());
-
-            InputStreamReader reader = new InputStreamReader(process.getInputStream());
-            BufferedReader stdout = new BufferedReader(reader);
-
-            AdminAPI admin = service[0].admin();
-            String adminLine = "Bound to address [" + admin.getBind() + "]";
-            while (true) {
-                String line = stdout.readLine();
-                publishProgress(line);
-                if (line == null) {
-                    break;
-                } else if (line.contains(adminLine)) {
-                    pid = admin.Core_pid();
-                }
-            }
-        } catch (IOException e) {
-            Log.e("cjdns.CjdrouteTask", "IOException: " + e.toString());
-        } catch (JSONException e) {
-            Log.e("cjdns.CjdrouteTask", "JSONException: " + e.toString());
-        }
-
-        return pid;
-    }
-
-    public static void writeCjdroute(InputStream cjdroute, File target) throws IOException
-    {
+    public static void writeCjdroute(InputStream cjdroute, File target) throws IOException {
         if (target.exists() && target.canExecute()) {
             Log.i("cjdns.CjdrouteTask", "cjdroute exists and is executable");
             return;
@@ -76,6 +36,40 @@ public class CjdrouteTask extends AsyncTask<CjdnsService, String, Integer> {
         }
 
         Log.i("cjdns.CjdrouteTask", "Created cjdroute and made it executable");
+    }
+
+    @Override
+    protected Integer doInBackground(CjdnsService... service) {
+        Integer pid = 0;
+
+        try {
+            service[0].cjdrouteconf();
+            File executable = new File(service[0].getApplicationInfo().dataDir, "cjdroute");
+
+            Runtime rt = Runtime.getRuntime();
+            java.lang.Process proc = rt.exec(executable.getPath());
+
+            BufferedReader stdInput = new BufferedReader(new
+                    InputStreamReader(proc.getInputStream()));
+
+            AdminAPI admin = service[0].admin();
+            String adminLine = "Bound to address [" + admin.getBind() + "]";
+
+            String line;
+            while ((line = stdInput.readLine()) != null) {
+                System.out.println(line);
+                publishProgress(line);
+                if (line.contains(adminLine)) {
+                    pid = admin.Core_pid();
+                }
+            }
+        } catch (IOException e) {
+            Log.e("cjdns.CjdrouteTask", "IOException: " + e.toString());
+        } catch (JSONException e) {
+            Log.e("cjdns.CjdrouteTask", "JSONException: " + e.toString());
+        }
+
+        return pid;
     }
 
     private void writeCjdrouteconf(InputStream cjdrouteconf, OutputStream stdin) throws IOException {

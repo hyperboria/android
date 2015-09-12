@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class CjdnsService extends Service {
 
@@ -64,15 +63,15 @@ public class CjdnsService extends Service {
 
                 @Override
                 protected void onPostExecute(Integer pid) {
-                    CjdnsService.this.mPid = pid.intValue();
+                    CjdnsService.this.mPid = pid;
                     Log.i(TAG, "mPid: " + pid);
                 }
             };
             task.execute(this);
         } catch (IOException e) {
-            Log.e(TAG, "IOException: " + e.toString());
+            Log.e(TAG, "IOException: ", e);
         } catch (JSONException e) {
-            Log.e(TAG, "JSONException: " + e.toString());
+            Log.e(TAG, "JSONException: ",  e);
         }
     }
 
@@ -124,7 +123,6 @@ public class CjdnsService extends Service {
             outputStream.write(output.getBytes());
             outputStream.close();
 
-
             return new FileInputStream(cjdroute);
         }
         //return getAssets().open("cjdroute.conf");
@@ -138,6 +136,7 @@ public class CjdnsService extends Service {
             byte[] buf = new byte[1024];
             int len = stream.read(buf);
             while (len > 0) {
+                System.out.println(len);
                 json.append(new String(buf));
                 len = stream.read(buf);
             }
@@ -149,7 +148,7 @@ public class CjdnsService extends Service {
         return mCjdrouteConf;
     }
 
-    public AdminAPI admin() throws IOException, JSONException, UnknownHostException {
+    public AdminAPI admin() throws IOException, JSONException {
         JSONObject admin = config().getJSONObject("admin");
         String[] bind = admin.getString("bind").split(":");
 
