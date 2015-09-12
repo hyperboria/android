@@ -71,14 +71,4 @@ public class CjdrouteTask extends AsyncTask<CjdnsService, String, Integer> {
 
         return pid;
     }
-
-    private void writeCjdrouteconf(InputStream cjdrouteconf, OutputStream stdin) throws IOException {
-        byte buf[] = new byte[4096];
-        int len = cjdrouteconf.read(buf);
-        while (len > 0) {
-            stdin.write(buf, 0, len);
-            len = cjdrouteconf.read(buf);
-        }
-        stdin.close();
-    }
 }

@@ -2,6 +2,12 @@
 <resources>
     <string name="app_name">cjdns</string>
 
+    <string name="setting_verbose_enabled_key" translatable="false">setting_verbose_enabled_key</string>
+    <string name="setting_encrypt_enabled_key" translatable="false">setting_encrypt_enabled_key</string>
+    <string name="setting_link_wifi_direct" translatable="false">setting_link_wifi_direct</string>
+    <string name="setting_link_bluetooth" translatable="false">setting_link_bluetooth</string>
+    <string name="setting_link_overlay" translatable="false">setting_link_overlay</string>
+
     <!-- cjdns service -->
     <string name="cjdns_service_notification_title">@string/app_name</string>
     <string name="cjdns_service_notification_text">Node %1$s running</string>

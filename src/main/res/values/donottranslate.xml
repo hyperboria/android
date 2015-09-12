@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="setting_verbose_enabled_key">setting_verbose_enabled_key</string>
-    <string name="setting_encrypt_enabled_key">setting_encrypt_enabled_key</string>
-    <string name="setting_link_wifi_direct">setting_link_wifi_direct</string>
-    <string name="setting_link_bluetooth">setting_link_bluetooth</string>
-    <string name="setting_link_overlay">setting_link_overlay</string>
-</resources>

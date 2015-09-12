@@ -1,7 +1,6 @@
 package berlin.meshnet.cjdns.page;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -90,7 +89,7 @@ public class PeersPageFragment extends BasePageFragment {
         });
         mPeersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new PeerListAdapter(getActivity(), mBus,
+        mAdapter = new PeerListAdapter(mBus,
                 AppObservable.bindFragment(this, mSettingsProducer.themeStream()),
                 AppObservable.bindFragment(this, mPeersProducer.createStream()),
                 AppObservable.bindFragment(this, mPeersProducer.updateStream()),
@@ -144,7 +143,7 @@ public class PeersPageFragment extends BasePageFragment {
 
         private List<Subscription> mSubscriptions = new ArrayList<>();
 
-        private PeerListAdapter(Context context, Bus bus,
+        private PeerListAdapter(Bus bus,
                                 Observable<Theme> themeStream,
                                 Observable<Node.Peer> createStream,
                                 Observable<Node.Peer> updateStream,
