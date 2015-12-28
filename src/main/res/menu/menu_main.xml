@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/switch_cjdns_service"
-        android:title="@string/toolbar_switch_cjdns_service_title"
+        android:title=""
         app:actionLayout="@layout/view_toolbar_switch"
         app:showAsAction="always" />
 </menu>

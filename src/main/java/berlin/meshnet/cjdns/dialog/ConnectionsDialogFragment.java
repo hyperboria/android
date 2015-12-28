@@ -58,6 +58,16 @@ public class ConnectionsDialogFragment extends DialogFragment {
 
     private ConnectionAdapter mAdapter;
 
+    public static DialogFragment newInstance(int peerId) {
+        DialogFragment fragment = new ConnectionsDialogFragment();
+
+        Bundle args = new Bundle();
+        args.putInt(FRAGMENT_BUNDLE_KEY_PEER_ID, peerId);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -113,16 +123,6 @@ public class ConnectionsDialogFragment extends DialogFragment {
     public void onDestroy() {
         mAdapter.onDestroyImpl();
         super.onDestroy();
-    }
-
-    public static DialogFragment newInstance(int peerId) {
-        DialogFragment fragment = new ConnectionsDialogFragment();
-
-        Bundle args = new Bundle();
-        args.putInt(FRAGMENT_BUNDLE_KEY_PEER_ID, peerId);
-        fragment.setArguments(args);
-
-        return fragment;
     }
 
     private static class ConnectionAdapter extends BaseAdapter {

@@ -25,13 +25,12 @@
 /**
  * This is just a little class that lets you read and write bencoded files.
  * It uses List, Map, Long, and ByteBuffer in memory to represents data
- *
  */
 package org.bitlet.wetorrent.bencode;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,15 +68,15 @@ public class Bencode {
     private void print(Object object, OutputStream os) throws IOException {
         if (object instanceof Long) {
             os.write('i');
-            os.write(((Long) object).toString().getBytes());
+            os.write((object).toString().getBytes());
             os.write('e');
         }
         if (object instanceof ByteBuffer) {
             byte[] byteString = ((ByteBuffer) object).array();
             os.write(Integer.toString(byteString.length).getBytes());
             os.write(':');
-            for (int i = 0; i < byteString.length; i++) {
-                os.write(byteString[i]);
+            for (byte aByteString : byteString) {
+                os.write(aByteString);
             }
         } else if (object instanceof List) {
             List list = (List) object;
@@ -90,7 +89,7 @@ public class Bencode {
             Map map = (Map) object;
             os.write('d');
 
-            SortedMap<ByteBuffer, Object> sortedMap = new TreeMap<ByteBuffer, Object>(new DictionaryComparator());
+            SortedMap<ByteBuffer, Object> sortedMap = new TreeMap<>(new DictionaryComparator());
             // sortedMap.putAll(map);
 
             for (Object elem : map.entrySet()) {
@@ -146,7 +145,7 @@ public class Bencode {
 
         int readChar = is.read();
 
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         do {
             if (readChar < 0) {
                 throw new IOException("Unexpected EOF found");
@@ -161,7 +160,7 @@ public class Bencode {
 
     private List<Object> parseList(StringReader is) throws IOException {
 
-        List<Object> list = new LinkedList<Object>();
+        List<Object> list = new LinkedList<>();
         is.mark(0);
         int readChar = is.read();
         while (readChar != 'e') {
@@ -178,7 +177,7 @@ public class Bencode {
     }
 
     private SortedMap parseDictionary(StringReader is) throws IOException {
-        SortedMap<ByteBuffer, Object> map = new TreeMap<ByteBuffer, Object>(new DictionaryComparator());
+        SortedMap<ByteBuffer, Object> map = new TreeMap<>(new DictionaryComparator());
         is.mark(0);
         int readChar = is.read();
         while (readChar != 'e') {
@@ -198,7 +197,7 @@ public class Bencode {
 
         int readChar = is.read();
 
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         do {
             if (readChar < 0) {
                 throw new IOException("Unexpected EOF found");
@@ -211,7 +210,7 @@ public class Bencode {
         byte[] byteString = new byte[length];
         for (int i = 0; i < byteString.length; i++) {
             byteString[i] = (byte) is.read();
-        // System.out.println("Loaded string: " + new String(byteString));
+            // System.out.println("Loaded string: " + new String(byteString));
         }
         return ByteBuffer.wrap(byteString);
     }

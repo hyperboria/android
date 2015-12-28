@@ -26,7 +26,7 @@ public interface CredentialsProducer {
     /**
      * Mock implementation of a {@link CredentialsProducer}.
      */
-    public static class Mock implements CredentialsProducer {
+    class Mock implements CredentialsProducer {
 
         private static List<Credential.Authorized> sCredentials = new ArrayList<Credential.Authorized>() {{
             add(new Credential.Authorized(0, "Alice", new Protocol(Protocol.Interface.udp, Protocol.Link.wifiDirect), "Loremipsumdolorsitametpharetrae", true));

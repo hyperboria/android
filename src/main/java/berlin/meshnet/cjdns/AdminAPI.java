@@ -37,7 +37,7 @@ public class AdminAPI {
 
     public int Core_pid() throws IOException {
         // try {
-        HashMap<ByteBuffer, Object> request = new HashMap<ByteBuffer, Object>();
+        HashMap<ByteBuffer, Object> request = new HashMap<>();
         request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));
 
         Map response = perform(request);

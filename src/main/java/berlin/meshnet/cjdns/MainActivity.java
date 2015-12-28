@@ -8,14 +8,15 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -41,15 +42,12 @@ import berlin.meshnet.cjdns.page.SettingsPageFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String BUNDLE_KEY_SELECTED_CONTENT = "selectedContent";
 
     @Inject
     Bus mBus;
-
-    @InjectView(R.id.toolbar)
-    Toolbar mToolbar;
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -63,16 +61,18 @@ public class MainActivity extends ActionBarActivity {
 
     private String mSelectedContent;
 
+    private ActionBar mActionBar;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mActionBar = getSupportActionBar();
+
         // Inject dependencies.
         ((CjdnsApplication) getApplication()).inject(this);
         ButterKnife.inject(this);
-
-        setSupportActionBar(mToolbar);
 
         final TypedArray drawerIcons = getResources().obtainTypedArray(R.array.drawer_icons);
         mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.view_drawer_option, getResources().getStringArray(R.array.drawer_options)) {
@@ -95,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
         mDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mDrawerLayout.closeDrawer(Gravity.START);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
 
                 final String selectedOption = mDrawerAdapter.getItem(position);
                 if (!selectedOption.equals(mSelectedContent)) {
@@ -104,22 +104,25 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open_content_desc, R.string.drawer_close_content_desc) {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open_content_desc, R.string.drawer_close_content_desc) {
             @Override
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                mToolbar.setTitle(mSelectedContent);
+                mActionBar.setTitle(mSelectedContent);
                 supportInvalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                mToolbar.setTitle(getString(R.string.app_name));
+                mActionBar.setTitle(getString(R.string.app_name));
                 supportInvalidateOptionsMenu();
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        mActionBar.setDisplayHomeAsUpEnabled(true);
+        mActionBar.setHomeButtonEnabled(true);
     }
 
     @Override
@@ -133,7 +136,7 @@ public class MainActivity extends ActionBarActivity {
         } else {
             final String selectedPage = savedInstanceState.getString(BUNDLE_KEY_SELECTED_CONTENT, getString(R.string.drawer_option_me));
             mSelectedContent = selectedPage;
-            mToolbar.setTitle(selectedPage);
+            mActionBar.setTitle(selectedPage);
         }
 
         // Select corresponding drawer option.
@@ -226,7 +229,7 @@ public class MainActivity extends ActionBarActivity {
      */
     private void changePage(final String selectedPage) {
         mSelectedContent = selectedPage;
-        mToolbar.setTitle(selectedPage);
+        mActionBar.setTitle(selectedPage);
 
         Fragment fragment = null;
         if (getString(R.string.drawer_option_me).equals(selectedPage)) {
@@ -248,5 +251,15 @@ public class MainActivity extends ActionBarActivity {
             ft.replace(R.id.content_container, fragment);
             ft.commit();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            if (mDrawerToggle.onOptionsItemSelected(item)) {
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -8,19 +8,19 @@ public interface ApplicationEvents {
     /**
      * Request to start the {@link berlin.meshnet.cjdns.CjdnsService}.
      */
-    static class StartCjdnsService {
+    class StartCjdnsService {
     }
 
     /**
      * Request to stop the {@link berlin.meshnet.cjdns.CjdnsService}.
      */
-    static class StopCjdnsService {
+    class StopCjdnsService {
     }
 
     /**
      * Request to change the page.
      */
-    static class ChangePage {
+    class ChangePage {
 
         public final String mSelectedContent;
 
@@ -32,7 +32,7 @@ public interface ApplicationEvents {
     /**
      * Request to list the connections of a {@link berlin.meshnet.cjdns.model.Node.Peer}.
      */
-    static class ListConnections {
+    class ListConnections {
 
         public final int mPeerId;
 
@@ -44,7 +44,7 @@ public interface ApplicationEvents {
     /**
      * Request to exchange a {@link berlin.meshnet.cjdns.model.Credential}.
      */
-    static class ExchangeCredential {
+    class ExchangeCredential {
 
         public final Type mType;
 

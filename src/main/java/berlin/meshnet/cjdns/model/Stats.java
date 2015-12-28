@@ -26,13 +26,6 @@ public class Stats {
 
     public final int bandwidthOut;
 
-    /**
-     * Formats the last active time.
-     */
-    public static String formatLastActive(Context context, long lastActive) {
-        return DateFormat.getTimeFormat(context).format(new Date(lastActive));
-    }
-
     public Stats(String version, boolean isActive, long lastActive, int linkCount,
                  int bytesIn, int bytesOut, int bandwidthIn, int bandwidthOut) {
         this.version = version;
@@ -43,6 +36,13 @@ public class Stats {
         this.bytesOut = bytesOut;
         this.bandwidthIn = bandwidthIn;
         this.bandwidthOut = bandwidthOut;
+    }
+
+    /**
+     * Formats the last active time.
+     */
+    public static String formatLastActive(Context context, long lastActive) {
+        return DateFormat.getTimeFormat(context).format(new Date(lastActive));
     }
 
     /**

@@ -13,6 +13,11 @@ public class Protocol {
 
     public final Link link;
 
+    public Protocol(Interface transportInterface, Link link) {
+        this.transportInterface = transportInterface;
+        this.link = link;
+    }
+
     /**
      * Formats the protocol description.
      */
@@ -39,11 +44,6 @@ public class Protocol {
                 break;
         }
         return res.getString(R.string.protocol_description, interfaceString, linkString);
-    }
-
-    public Protocol(Interface transportInterface, Link link) {
-        this.transportInterface = transportInterface;
-        this.link = link;
     }
 
     /**
