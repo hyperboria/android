@@ -20,14 +20,14 @@ TODO
 - [x] Start cjdroute from app
 - [x] Properly kill cjdroute (via Admin API)
 - [x] Extract Admin API config from cjdroute.conf
+- [x] Store cjdroute.conf somewhere safe
 - [ ] Run as background service
 - [ ] Display cjdroute logs
 - [ ] Pass VpnService descriptor to cjdroute
 - [ ] Display peer stats
 - [ ] Allow peering info exchange via qr codes
 - [ ] Release on fdroid (finn's repo: http://h.finn.io/fdroid/)
-- [ ] Store cjdroute.conf on SD card
-- [ ] Store cjdroute.conf somewhere safe
+- [ ] Allow cjdroute.conf backup to SD card(with encryption)
 - [ ] Add IPv6 to contacts
 - [ ] Use root for Android < 4.0
 - [ ] tbc
