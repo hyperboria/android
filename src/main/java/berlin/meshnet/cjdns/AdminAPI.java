@@ -3,6 +3,8 @@ package berlin.meshnet.cjdns;
 import android.util.Log;
 
 import org.bitlet.wetorrent.bencode.Bencode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,7 +19,7 @@ import java.util.Map;
 
 import berlin.meshnet.cjdns.model.Node;
 
-public class AdminAPI {
+public class AdminApi {
     public static final int TIMEOUT = 5000;
     public static final int DGRAM_LENGTH = 4096;
 
@@ -25,7 +27,18 @@ public class AdminAPI {
     private int port;
     private byte[] password;
 
-    public AdminAPI(InetAddress address, int port, byte[] password) {
+    static AdminApi from(JSONObject cjdrouteConf) throws IOException, JSONException {
+        JSONObject admin = cjdrouteConf.getJSONObject("admin");
+        String[] bind = admin.getString("bind").split(":");
+
+        InetAddress address = InetAddress.getByName(bind[0]);
+        int port = Integer.parseInt(bind[1]);
+        byte[] password = admin.getString("password").getBytes();
+
+        return new AdminApi(address, port, password);
+    }
+
+    private AdminApi(InetAddress address, int port, byte[] password) {
         this.address = address;
         this.port = port;
         this.password = password;
@@ -35,7 +48,7 @@ public class AdminAPI {
         return this.address.getHostAddress() + ":" + this.port;
     }
 
-    public int Core_pid() throws IOException {
+    public int corePid() throws IOException {
         // try {
         HashMap<ByteBuffer, Object> request = new HashMap<>();
         request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));

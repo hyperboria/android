@@ -5,15 +5,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- for 4.0 -->
-    <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
 
     <application
         android:name=".CjdnsApplication"
-        android:label="@string/app_name"
+        android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
-        android:allowBackup="true"
-        android:fullBackupContent="true">
+        android:label="@string/app_name">
 
         <activity
             android:name=".MainActivity"

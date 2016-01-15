@@ -10,13 +10,13 @@ public interface AuthorizedCredentialEvents {
     /**
      * Request to create a new {@link berlin.meshnet.cjdns.model.Credential.Authorized}.
      */
-    static class Create {
+    class Create {
     }
 
     /**
      * Request to update a {@link berlin.meshnet.cjdns.model.Credential.Authorized}.
      */
-    static class Update {
+    class Update {
 
         public final Credential.Authorized mCredential;
 
@@ -28,7 +28,7 @@ public interface AuthorizedCredentialEvents {
     /**
      * Request to remove a {@link berlin.meshnet.cjdns.model.Credential.Authorized}.
      */
-    static class Remove {
+    class Remove {
 
         public final Credential.Authorized mCredential;
 

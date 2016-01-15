@@ -11,6 +11,7 @@
     <!-- cjdns service -->
     <string name="cjdns_service_notification_title">@string/app_name</string>
     <string name="cjdns_service_notification_text">Node %1$s running</string>
+    <string name="cjdns_service_notification_text_missing_address">Node address is missing</string>
 
     <!-- Drawer -->
     <string name="drawer_open_content_desc">Open drawer</string>

@@ -14,7 +14,7 @@ public interface MeProducer {
     /**
      * Mock implementation of a {@link MeProducer}.
      */
-    public static class Mock implements MeProducer {
+    class Mock implements MeProducer {
 
         @Override
         public Observable<Node.Me> stream() {

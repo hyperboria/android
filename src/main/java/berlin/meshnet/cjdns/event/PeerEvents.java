@@ -10,13 +10,13 @@ public interface PeerEvents {
     /**
      * Request to create a new {@link berlin.meshnet.cjdns.model.Node.Peer}.
      */
-    static class Create {
+    class Create {
     }
 
     /**
      * Request to update a {@link berlin.meshnet.cjdns.model.Node.Peer}.
      */
-    static class Update {
+    class Update {
 
         public final Node.Peer mPeer;
 
@@ -28,7 +28,7 @@ public interface PeerEvents {
     /**
      * Request to remove a {@link berlin.meshnet.cjdns.model.Node.Peer}.
      */
-    static class Remove {
+    class Remove {
 
         public final Node.Peer mPeer;
 
