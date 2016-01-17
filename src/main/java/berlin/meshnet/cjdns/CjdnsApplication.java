@@ -90,7 +90,7 @@ public class CjdnsApplication extends Application {
 
         @Singleton
         @Provides
-        public Cjdroute provideCjdrouteSubscriber(Context context) {
+        public Cjdroute provideCjdroute(Context context) {
             // TODO Change this conditional to (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) when VpnService is implemented.
             // TODO Use Lollipop for now to allow any API level below to connect with tun device.
             // TODO Unable to run cjdroute as root since Lollipop, so there is no point trying.

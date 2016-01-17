@@ -155,6 +155,16 @@ abstract class Cjdroute {
         private static final String CMD_SUBSTITUTE_ROOT_USER = "su";
 
         /**
+         * Command divider.
+         */
+        private static final String CMD_NEWLINE = "\n";
+
+        /**
+         * Command to add a default route. Some browsers will not resolve DNS without a default route for IPv6.
+         */
+        private static final String CMD_ADD_DEFAULT_ROUTE = "ip -6 route add default via fc00::1 dev tun0 metric 4096";
+
+        /**
          * Command template to execute cjdroute.
          */
         private static final String CMD_EXECUTE_CJDROUTE = "%1$s/" + FILENAME_CJDROUTE + " < %2$s/" + CjdrouteConf.FILENAME_CJDROUTE_CONF;
@@ -281,6 +291,8 @@ abstract class Cjdroute {
                         String filesDir = mContext.getFilesDir().getPath();
                         os = new DataOutputStream(process.getOutputStream());
                         os.writeBytes(String.format(CMD_EXECUTE_CJDROUTE, filesDir, filesDir));
+                        os.writeBytes(CMD_NEWLINE);
+                        os.writeBytes(CMD_ADD_DEFAULT_ROUTE);
                         os.flush();
                     } catch (IOException | JSONException e) {
                         Log.e(TAG, "Failed to execute cjdroute", e);
