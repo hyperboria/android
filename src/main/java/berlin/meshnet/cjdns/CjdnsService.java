@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -18,12 +17,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -37,11 +33,6 @@ public class CjdnsService extends Service {
     private static final String TAG = CjdnsService.class.getSimpleName();
 
     /**
-     * Value that represents an invalid PID.
-     */
-    private static final int INVALID_PID = Integer.MIN_VALUE;
-
-    /**
      * ID for foreground service {@link Notification}.
      */
     private static final int NOTIFICATION_ID = 1;
@@ -52,7 +43,7 @@ public class CjdnsService extends Service {
     private List<Subscription> mSubscriptions = new ArrayList<>();
 
     @Inject
-    CjdrouteSubscriber mCjdrouteSubscriber;
+    Cjdroute mCjdroute;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -73,7 +64,7 @@ public class CjdnsService extends Service {
         ((CjdnsApplication) getApplication()).inject(this);
 
         // Start foreground service.
-        mSubscriptions.add(CjdrouteConfObservable.just(this)
+        mSubscriptions.add(CjdrouteConf.fetch(this)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<JSONObject>() {
@@ -84,10 +75,10 @@ public class CjdnsService extends Service {
                 }));
 
         // Execute cjdroute.
-        mSubscriptions.add(CjdrouteConfObservable.just(this)
+        mSubscriptions.add(CjdrouteConf.fetch(this)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .subscribe(mCjdrouteSubscriber.execute()));
+                .subscribe(mCjdroute.execute()));
     }
 
     @Override
@@ -100,25 +91,10 @@ public class CjdnsService extends Service {
         }
 
         // Kill cjdroute process.
-        Observable
-                .create(new Observable.OnSubscribe<Integer>() {
-                    @Override
-                    public void call(Subscriber<? super Integer> subscriber) {
-                        int pid = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                                .getInt(CjdrouteSubscriber.SHARED_PREFERENCES_KEY_CJDROUTE_PID, INVALID_PID);
-                        subscriber.onNext(pid);
-                        subscriber.onCompleted();
-                    }
-                })
-                .filter(new Func1<Integer, Boolean>() {
-                    @Override
-                    public Boolean call(Integer pid) {
-                        return pid != INVALID_PID;
-                    }
-                })
+        Cjdroute.running(this)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .subscribe(mCjdrouteSubscriber.terminate());
+                .subscribe(mCjdroute.terminate());
 
         // Stop foreground service.
         stopForeground(true);

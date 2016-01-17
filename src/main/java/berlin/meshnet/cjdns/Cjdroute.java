@@ -17,47 +17,81 @@ import java.io.InputStream;
 import java.util.Locale;
 
 import berlin.meshnet.cjdns.util.InputStreamObservable;
+import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
- * {@link Subscriber}s for managing the execution of cjdroute.
+ * Methods for managing the execution of cjdroute.
  */
-interface CjdrouteSubscriber {
+abstract class Cjdroute {
 
     /**
      * The filename for the cjdroute executable.
      */
-    String FILENAME_CJDROUTE = "cjdroute";
+    static final String FILENAME_CJDROUTE = "cjdroute";
 
     /**
      * {@link SharedPreferences} key for cjdroute PID.
      */
-    String SHARED_PREFERENCES_KEY_CJDROUTE_PID = "cjdroutePid";
+    private static final String SHARED_PREFERENCES_KEY_CJDROUTE_PID = "cjdroutePid";
+
+    /**
+     * Value that represents an invalid PID.
+     */
+    private static final int INVALID_PID = Integer.MIN_VALUE;
+
+    /**
+     * {@link Observable} for the PID of any currently running cjdroute process. If none is running,
+     * this {@link Observable} will complete without calling {@link Subscriber#onNext(Object)}.
+     *
+     * @param context The {@link Context}.
+     * @return The {@link Observable}.
+     */
+    public static Observable<Integer> running(Context context) {
+        final Context appContext = context.getApplicationContext();
+        return Observable
+                .create(new Observable.OnSubscribe<Integer>() {
+                    @Override
+                    public void call(Subscriber<? super Integer> subscriber) {
+                        int pid = PreferenceManager.getDefaultSharedPreferences(appContext)
+                                .getInt(SHARED_PREFERENCES_KEY_CJDROUTE_PID, INVALID_PID);
+                        subscriber.onNext(pid);
+                        subscriber.onCompleted();
+                    }
+                })
+                .filter(new Func1<Integer, Boolean>() {
+                    @Override
+                    public Boolean call(Integer pid) {
+                        return pid != INVALID_PID;
+                    }
+                });
+    }
 
     /**
      * {@link Subscriber} that executes cjdroute.
      *
      * @return The {@link Subscriber}.
      */
-    Subscriber<JSONObject> execute();
+    abstract Subscriber<JSONObject> execute();
 
     /**
      * {@link Subscriber} that terminates cjdroute.
      *
      * @return The {@link Subscriber}.
      */
-    Subscriber<Integer> terminate();
+    abstract Subscriber<Integer> terminate();
 
     /**
-     * Default implementation of {@link CjdrouteSubscriber}. This relies on {@link android.net.VpnService}
+     * Default implementation of {@link Cjdroute}. This relies on {@link android.net.VpnService}
      * introduced in {@link android.os.Build.VERSION_CODES#ICE_CREAM_SANDWICH} and does not require
      * super user permission.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    class Default implements CjdrouteSubscriber {
+    static class Default extends Cjdroute {
 
         /**
          * Log tag.
@@ -83,6 +117,12 @@ interface CjdrouteSubscriber {
                 public void onNext(Integer pid) {
                     Log.i(TAG, "Terminating cjdroute with pid=" + pid);
                     Process.killProcess(pid);
+
+                    // Erase PID.
+                    SharedPreferences.Editor editor = PreferenceManager
+                            .getDefaultSharedPreferences(mContext.getApplicationContext()).edit();
+                    editor.putInt(SHARED_PREFERENCES_KEY_CJDROUTE_PID, INVALID_PID);
+                    editor.apply();
                 }
 
                 @Override
@@ -99,10 +139,10 @@ interface CjdrouteSubscriber {
     }
 
     /**
-     * Compat implementation of {@link CjdrouteSubscriber}. This allows cjdroute to create a TUN device and
+     * Compat implementation of {@link Cjdroute}. This allows cjdroute to create a TUN device and
      * requires super user permission.
      */
-    class Compat implements CjdrouteSubscriber {
+    static class Compat extends Cjdroute {
 
         /**
          * Log tag.
@@ -117,7 +157,7 @@ interface CjdrouteSubscriber {
         /**
          * Command template to execute cjdroute.
          */
-        private static final String CMD_EXECUTE_CJDROUTE = "%1$s/" + FILENAME_CJDROUTE + " < %2$s/" + CjdrouteConfObservable.FILENAME_CJDROUTE_CONF;
+        private static final String CMD_EXECUTE_CJDROUTE = "%1$s/" + FILENAME_CJDROUTE + " < %2$s/" + CjdrouteConf.FILENAME_CJDROUTE_CONF;
 
         /**
          * Command template to terminate process by PID.
@@ -281,6 +321,12 @@ interface CjdrouteSubscriber {
                         os = new DataOutputStream(process.getOutputStream());
                         os.writeBytes(String.format(Locale.ENGLISH, CMD_KILL_PROCESS, pid));
                         os.flush();
+
+                        // Erase PID.
+                        SharedPreferences.Editor editor = PreferenceManager
+                                .getDefaultSharedPreferences(mContext.getApplicationContext()).edit();
+                        editor.putInt(SHARED_PREFERENCES_KEY_CJDROUTE_PID, INVALID_PID);
+                        editor.apply();
                     } catch (IOException e) {
                         Log.e(TAG, "Failed to terminate cjdroute", e);
                     } finally {

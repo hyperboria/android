@@ -24,7 +24,7 @@ import rx.Subscriber;
 /**
  * Configurations for cjdroute.
  */
-public class CjdrouteConfObservable {
+public class CjdrouteConf {
 
     /**
      * The filename for the cjdroute configurations.
@@ -44,7 +44,7 @@ public class CjdrouteConfObservable {
     /**
      * Command template to generate the cjdroute configurations.
      */
-    private static final String CMD_GENERATE_CJDROUTE_CONF_TEMPLATE = "%1$s/" + CjdrouteSubscriber.FILENAME_CJDROUTE + " --genconf | %2$s/" + CjdrouteSubscriber.FILENAME_CJDROUTE + " --cleanconf";
+    private static final String CMD_GENERATE_CJDROUTE_CONF_TEMPLATE = "%1$s/" + Cjdroute.FILENAME_CJDROUTE + " --genconf | %2$s/" + Cjdroute.FILENAME_CJDROUTE + " --cleanconf";
 
     /**
      * Lock to ensure cjdroute configurations is only generated once.
@@ -62,7 +62,7 @@ public class CjdrouteConfObservable {
      */
     private static final String DEFAULT_PEER_CREDENTIALS = "{\n" +
             "  \"publicKey\": \"1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k\",\n" +
-            "  \"password\": \"0YUg6eJ06NHUCMZexLj2F2cGjeENgX3\",\n" +
+            "  \"password\": \"8fVMl0oo6QI6wKeMneuY26x1MCgRemg\",\n" +
             "  \"contact\": \"ansuz@transitiontech.ca\",\n" +
             "  \"location\": \"Newark,NJ,USA\"\n" +
             "}";
@@ -73,7 +73,7 @@ public class CjdrouteConfObservable {
      * @param context The {@link Context}.
      * @return The {@link Observable}.
      */
-    public static Observable<JSONObject> just(Context context) {
+    public static Observable<JSONObject> fetch(Context context) {
         final Context appContext = context.getApplicationContext();
         return Observable.create(new Observable.OnSubscribe<JSONObject>() {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -106,15 +106,15 @@ public class CjdrouteConfObservable {
                         }
                     } else {
                         // If cjdroute is not present in the files directory, it needs to be copied over from assets.
-                        File cjdroutefile = new File(filesDir, CjdrouteSubscriber.FILENAME_CJDROUTE);
+                        File cjdroutefile = new File(filesDir, Cjdroute.FILENAME_CJDROUTE);
                         if (!cjdroutefile.exists()) {
                             // Copy cjdroute from assets folder to the files directory.
                             InputStream is = null;
                             FileOutputStream os = null;
                             try {
                                 String abi = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? Build.SUPPORTED_ABIS[0] : Build.CPU_ABI;
-                                is = appContext.getAssets().open(abi + "/" + CjdrouteSubscriber.FILENAME_CJDROUTE);
-                                os = appContext.openFileOutput(CjdrouteSubscriber.FILENAME_CJDROUTE, Context.MODE_PRIVATE);
+                                is = appContext.getAssets().open(abi + "/" + Cjdroute.FILENAME_CJDROUTE);
+                                os = appContext.openFileOutput(Cjdroute.FILENAME_CJDROUTE, Context.MODE_PRIVATE);
                                 copyStream(is, os);
                             } catch (IOException e) {
                                 subscriber.onError(e);

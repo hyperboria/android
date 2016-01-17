@@ -29,6 +29,10 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
@@ -41,6 +45,11 @@ import berlin.meshnet.cjdns.page.PeersPageFragment;
 import berlin.meshnet.cjdns.page.SettingsPageFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Subscription;
+import rx.android.app.AppObservable;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private String mSelectedContent;
 
     private ActionBar mActionBar;
+
+    private List<Subscription> mSubscriptions = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -154,18 +165,38 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
-        SwitchCompat cjdnsServiceSwitch = (SwitchCompat) menu.findItem(R.id.switch_cjdns_service).getActionView();
-        // TODO Init with current CjdnsService state
-        cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mBus.post(new ApplicationEvents.StartCjdnsService());
-                } else {
-                    mBus.post(new ApplicationEvents.StopCjdnsService());
-                }
-            }
-        });
+        // Set initial state of toggle and click behaviour.
+        final SwitchCompat cjdnsServiceSwitch = (SwitchCompat) menu.findItem(R.id.switch_cjdns_service).getActionView();
+        mSubscriptions.add(AppObservable.bindActivity(this, Cjdroute.running(this)
+                .subscribeOn(Schedulers.io()))
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer pid) {
+                        // Change toggle check state if there is a currently running cjdroute process.
+                        cjdnsServiceSwitch.setChecked(true);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        // Do nothing.
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        // Configure toggle click behaviour.
+                        cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                if (isChecked) {
+                                    mBus.post(new ApplicationEvents.StartCjdnsService());
+                                } else {
+                                    mBus.post(new ApplicationEvents.StopCjdnsService());
+                                }
+                            }
+                        });
+                    }
+                }));
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -191,6 +222,18 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         mBus.unregister(this);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Unsubscribe from observables.
+        Iterator<Subscription> itr = mSubscriptions.iterator();
+        while (itr.hasNext()) {
+            itr.next().unsubscribe();
+            itr.remove();
+        }
+
+        super.onDestroy();
     }
 
     @Subscribe

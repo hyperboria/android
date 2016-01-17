@@ -19,6 +19,7 @@ import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -190,8 +191,11 @@ public class PeersPageFragment extends BasePageFragment {
         }
 
         private void onDestroyImpl() {
-            for (Subscription subscription : mSubscriptions) {
-                subscription.unsubscribe();
+            // Unsubscribe from observables.
+            Iterator<Subscription> itr = mSubscriptions.iterator();
+            while (itr.hasNext()) {
+                itr.next().unsubscribe();
+                itr.remove();
             }
         }
 
