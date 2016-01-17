@@ -90,12 +90,6 @@ public class CjdnsService extends Service {
             itr.remove();
         }
 
-        // Kill cjdroute process.
-        Cjdroute.running(this)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(mCjdroute.terminate());
-
         // Stop foreground service.
         stopForeground(true);
 

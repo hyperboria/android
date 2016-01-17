@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     Bus mBus;
 
+    @Inject
+    Cjdroute mCjdroute;
+
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
@@ -245,6 +248,13 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void handleEvent(ApplicationEvents.StopCjdnsService event) {
         Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
+
+        // Kill cjdroute process.
+        Cjdroute.running(this)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(mCjdroute.terminate());
+
         stopService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
