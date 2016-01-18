@@ -3,9 +3,9 @@ cjdns for Android
 
 [![Build Status](https://travis-ci.org/hyperboria/android.svg?branch=master)](https://travis-ci.org/hyperboria/android) [![tip for next commit](https://tip4commit.com/projects/1049.svg)](https://tip4commit.com/github/hyperboria/android)
 
-Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone—thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root.
+Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone—thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root and routes through a TUN device.
 
-***Current state:** App starts and stops cjdroute for rooted devices with Android 4.4 (KitKat) and below. A public peer is added by default, so you should be able browse websites and reach services on Hyperboria just by starting the cjdns service with the toggle. All other menus are only populated with mock data at the moment and you cannot add additional peers.* 
+**Current state:** App starts and stops cjdroute for rooted devices with Android 4.4 (KitKat) and below. A public peer is added by default, so you should be able browse websites and reach services on Hyperboria just by starting the cjdns service with the toggle. All other menus are only populated with mock data at the moment and you cannot add additional peers.
 
 Installation
 ------------
@@ -35,7 +35,7 @@ Contact
 -------
 
 - Find out how to help by visiting our [issue tracker](https://github.com/hyperboria/android/issues)
-- IRC channel for this project: #android on [HypeIRC](irc://irc.hypeirc.net)
+- IRC channel for this project: **#android on [HypeIRC](irc://irc.hypeirc.net)**
 
     ```
     fc13:6176:aaca:8c7f:9f55:924f:26b3:4b14
