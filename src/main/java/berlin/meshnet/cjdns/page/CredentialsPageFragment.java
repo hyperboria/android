@@ -1,11 +1,12 @@
 package berlin.meshnet.cjdns.page;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -279,7 +280,7 @@ public class CredentialsPageFragment extends BasePageFragment {
                     mBus.post(new AuthorizedCredentialEvents.Update(update));
                 }
             });
-            holder.itemView.setAlpha(credential.isAllowed ? ALPHA_ALLOWED : ALPHA_REVOKED);
+            ViewCompat.setAlpha(holder.itemView, credential.isAllowed ? ALPHA_ALLOWED : ALPHA_REVOKED);
         }
 
         @Override

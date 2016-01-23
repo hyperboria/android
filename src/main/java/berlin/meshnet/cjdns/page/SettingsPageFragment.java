@@ -1,14 +1,15 @@
 package berlin.meshnet.cjdns.page;
 
-import android.app.Fragment;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.provider.Settings;
+import android.support.v4.app.Fragment;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 
 import javax.inject.Inject;
 
@@ -18,7 +19,7 @@ import berlin.meshnet.cjdns.R;
 /**
  * The page to configure application settings.
  */
-public class SettingsPageFragment extends PreferenceFragment {
+public class SettingsPageFragment extends PreferenceFragmentCompat {
 
     @Inject
     SharedPreferences mSharedPreferences;
@@ -28,8 +29,7 @@ public class SettingsPageFragment extends PreferenceFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
     }
 
@@ -42,7 +42,7 @@ public class SettingsPageFragment extends PreferenceFragment {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         Preference preference = getPreferenceManager().findPreference(encryptEnabledKey);
         DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getActivity().getSystemService(Context.DEVICE_POLICY_SERVICE);
-        if (devicePolicyManager != null) {
+        if (devicePolicyManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             int encryptionStatus = devicePolicyManager.getStorageEncryptionStatus();
             switch (encryptionStatus) {
                 case DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE:

@@ -1,7 +1,7 @@
 package berlin.meshnet.cjdns.page;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import berlin.meshnet.cjdns.CjdnsApplication;
 

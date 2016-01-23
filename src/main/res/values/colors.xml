@@ -10,4 +10,7 @@
     <color name="my_card_background">@color/my_primary</color>
     <color name="my_fab_normal">@color/my_accent</color>
     <color name="my_fab_pressed">@color/my_accent_dark</color>
+
+    <!-- Workaround for Preference list separator text color -->
+    <color name="preference_fallback_accent_color">@color/my_accent</color>
 </resources>

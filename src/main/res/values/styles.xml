@@ -9,6 +9,17 @@
         <item name="md_background_color">@color/my_primary</item>
         <item name="md_title_color">@color/my_accent</item>
         <item name="md_list_selector">@drawable/selector_dialog_list_item</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:listSeparatorTextViewStyle">@style/Theme.MyTheme.ListSeparatorTextView</item>
+    </style>
+
+    <!-- Styling Preference list separator for API level below 14 -->
+    <style name="Theme.MyTheme.ListSeparatorTextView">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/my_accent</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
     </style>
 
     <style name="MyText">

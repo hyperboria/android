@@ -1,14 +1,15 @@
 package berlin.meshnet.cjdns;
 
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -145,10 +146,10 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
 
         // Show Me page on first launch.
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey(BUNDLE_KEY_SELECTED_CONTENT)) {
             changePage(getString(R.string.drawer_option_me));
         } else {
-            final String selectedPage = savedInstanceState.getString(BUNDLE_KEY_SELECTED_CONTENT, getString(R.string.drawer_option_me));
+            final String selectedPage = savedInstanceState.getString(BUNDLE_KEY_SELECTED_CONTENT);
             mSelectedContent = selectedPage;
             mActionBar.setTitle(selectedPage);
         }
@@ -169,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_main, menu);
 
         // Set initial state of toggle and click behaviour.
-        final SwitchCompat cjdnsServiceSwitch = (SwitchCompat) menu.findItem(R.id.switch_cjdns_service).getActionView();
+        final SwitchCompat cjdnsServiceSwitch = (SwitchCompat) MenuItemCompat.getActionView(menu.findItem(R.id.switch_cjdns_service));
         mSubscriptions.add(AppObservable.bindActivity(this, Cjdroute.running(this)
                 .subscribeOn(Schedulers.io()))
                 .subscribe(new Action1<Integer>() {
@@ -266,13 +267,13 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void handleEvent(ApplicationEvents.ListConnections event) {
         DialogFragment fragment = ConnectionsDialogFragment.newInstance(event.mPeerId);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
     }
 
     @Subscribe
     public void handleEvent(ApplicationEvents.ExchangeCredential event) {
         DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, event.mMessage);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
     }
 
     /**
@@ -299,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Swap page.
         if (fragment != null) {
-            final FragmentManager fragmentManager = getFragmentManager();
+            final FragmentManager fragmentManager = getSupportFragmentManager();
             final FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.replace(R.id.content_container, fragment);
             ft.commit();
