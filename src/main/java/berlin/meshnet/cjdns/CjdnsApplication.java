@@ -3,6 +3,7 @@ package berlin.meshnet.cjdns;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.squareup.otto.Bus;
@@ -52,6 +53,7 @@ public class CjdnsApplication extends Application {
     @Module(
             injects = {
                     MainActivity.class,
+                    CjdnsService.class,
                     MePageFragment.class,
                     PeersPageFragment.class,
                     CredentialsPageFragment.class,
@@ -84,6 +86,18 @@ public class CjdnsApplication extends Application {
         @Provides
         public Bus provideBus() {
             return new Bus();
+        }
+
+        @Singleton
+        @Provides
+        public Cjdroute provideCjdroute(Context context) {
+            // TODO Change this conditional to (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) when VpnService is implemented.
+            // TODO Use Lollipop for now to allow any API level below to connect with tun device.
+            // TODO Unable to run cjdroute as root since Lollipop, so there is no point trying.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                return new Cjdroute.Compat(context.getApplicationContext());
+            }
+            return new Cjdroute.Default(context.getApplicationContext());
         }
 
         @Provides

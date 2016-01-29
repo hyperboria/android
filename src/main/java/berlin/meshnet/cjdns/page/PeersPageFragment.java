@@ -1,9 +1,10 @@
 package berlin.meshnet.cjdns.page;
 
-import android.app.Fragment;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -190,8 +192,11 @@ public class PeersPageFragment extends BasePageFragment {
         }
 
         private void onDestroyImpl() {
-            for (Subscription subscription : mSubscriptions) {
-                subscription.unsubscribe();
+            // Unsubscribe from observables.
+            Iterator<Subscription> itr = mSubscriptions.iterator();
+            while (itr.hasNext()) {
+                itr.next().unsubscribe();
+                itr.remove();
             }
         }
 
@@ -225,7 +230,7 @@ public class PeersPageFragment extends BasePageFragment {
             } else {
                 holder.connections.setVisibility(View.GONE);
             }
-            holder.itemView.setAlpha(peer.stats.isActive ? ALPHA_ACTIVE : ALPHA_INACTIVE);
+            ViewCompat.setAlpha(holder.itemView, peer.stats.isActive ? ALPHA_ACTIVE : ALPHA_INACTIVE);
         }
 
         @Override

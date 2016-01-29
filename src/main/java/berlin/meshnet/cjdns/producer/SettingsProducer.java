@@ -18,7 +18,7 @@ public interface SettingsProducer {
     /**
      * Minimalist implementation of a {@link SettingsProducer}.
      */
-    public static class MinimalMock implements SettingsProducer {
+    class MinimalMock implements SettingsProducer {
 
         @Override
         public Observable<Theme> themeStream() {
@@ -29,7 +29,7 @@ public interface SettingsProducer {
     /**
      * Verbose implementation of a {@link SettingsProducer}.
      */
-    public static class VerboseMock implements SettingsProducer {
+    class VerboseMock implements SettingsProducer {
 
         @Override
         public Observable<Theme> themeStream() {
@@ -40,7 +40,7 @@ public interface SettingsProducer {
     /**
      * Default implementation of a {@link SettingsProducer}.
      */
-    public static class Default implements SettingsProducer {
+    class Default implements SettingsProducer {
 
         private Context mContext;
 

@@ -27,7 +27,7 @@ public interface PeersProducer {
     /**
      * Mock implementation of a {@link PeersProducer}.
      */
-    public static class Mock implements PeersProducer {
+    class Mock implements PeersProducer {
 
         private static List<Node.Peer> sPeers = new ArrayList<Node.Peer>() {{
             add(new Node.Peer(0, "Alice", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", new Credential[]{

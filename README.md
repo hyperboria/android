@@ -3,75 +3,44 @@ cjdns for Android
 
 [![Build Status](https://travis-ci.org/hyperboria/android.svg?branch=master)](https://travis-ci.org/hyperboria/android) [![tip for next commit](https://tip4commit.com/projects/1049.svg)](https://tip4commit.com/github/hyperboria/android)
 
-Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone -- thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root.
+Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone—thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root and routes through a TUN device.
 
-*Current state:*
-- app starts cjdroute and stops it properly
-- app crashes on real devices because of a threading issue
-- shows cjdroute's pid on the emulator
-- shows cjdroute's output in adb logcat -- with weird buffer issues though
-- doesn't support ETHInterface and TUNInterface yet
-
-TODO
-----
-
-- [x] Hello world
-- [x] Build cjdroute
-- [x] Start cjdroute from app
-- [x] Properly kill cjdroute (via Admin API)
-- [x] Extract Admin API config from cjdroute.conf
-- [x] Store cjdroute.conf somewhere safe
-- [ ] Run as background service
-- [ ] Display cjdroute logs
-- [ ] Pass VpnService descriptor to cjdroute
-- [ ] Display peer stats
-- [ ] Allow peering info exchange via qr codes
-- [ ] Release on fdroid (finn's repo: http://h.finn.io/fdroid/)
-- [ ] Allow cjdroute.conf backup to SD card(with encryption)
-- [ ] Add IPv6 to contacts
-- [ ] Use root for Android < 4.0
-- [ ] tbc
+**Current state:** App starts and stops cjdroute for rooted devices with Android 4.4 (KitKat) and below. A public peer is added by default, so you should be able to browse websites and reach services on Hyperboria just by starting the cjdns service with the toggle. All other menus are only populated with mock data at the moment and you cannot add additional peers.
 
 Installation
 ------------
 
-1. Android SDK and NDK
-2. x86 or armeabi toolchain
-  - `android-ndk/build/tools/make-standalone-toolchain.sh --platform=android-21 --toolchain=x86-4.9 --install-dir=i686-linux-android/ --system=linux-x86_64`
-  - `android-ndk/build/tools/make-standalone-toolchain.sh --platform=android-21 --toolchain=arm-linux-androideabi-4.9 --install-dir=arm-linux-androideabi/ --system=linux-x86_64`
-3. build cjdns
-  - `git clone https://github.com/lgierth/cjdns.git && cd cjdns && git checkout android-wip`
-  - for the x86 emulator:
-    - `PATH=$PATH:/path/to/i686-linux-android/bin CROSS_COMPILE=i686-linux-android- TARGET_ARCH=x64 Seccomp_NO=1 ./cross-do`
-    - `cp cjdroute /path/to/cjdns-android/src/main/assets/x86/`
-  - for armeabi devices:
-    - `PATH=$PATH:/path/to/arm-linux-androideabi/bin CROSS_COMPILE=arm-linux-androideabi- TARGET_ARCH=arm Seccomp_NO=1 ./cross-do`
-    - `cp cjdroute /path/to/cjdns-android/src/main/assets/armeabi-v7a/`
-  - for android-5.0 on x86 (and possibly other archs), you need to cross-do with `Seccomp_NO=1`
-  - `cjdroute --genconf > /path/to/cjdns-android/src/main/assets/cjdroute.conf`
-4. Create emulator
-  - `android create avd -n cjdns -t 1 --abi x86 --force`
-5. Start emulator
-  - `emulator -avd cjdns -qemu -m 256 -enable-kvm`
+1. Install the [Android SDK](http://developer.android.com/sdk/index.html) 
+2. Clone this application repo
+3. Clone [cjdns](https://github.com/hyperboria/cjdns) and build native binaries:
 
-Running
--------
+    ```
+    ./android_do
+    ```
 
-6. build cjdns-android (and clear app cache)
-  - `./gradlew installDebug`
-7. tail app log
-  - `adb logcat | grep cjdns`
-8. tail cjdroute crashdumps (x86)
-  - `adb logcat | ndk-trace -sym src/main/assets/x86/`
-8. tail cjdroute crashdumps (armeabi)
-  - `adb logcat | ndk-trace -sym src/main/assets/armeabi-v7a/`
+4. Copy built artifacts from **./build_android/** into the application repo such that corresponding **cjdroute** binaries are located as such:
+
+    ```
+    ./src/main/assets/armeabi-v7a/cjdroute
+    ./src/main/assets/x86/cjdroute
+    ```
+
+5. Build application and install on device:
+
+    ```
+    ./gradlew installDebug
+    ```
 
 Contact
 -------
 
-- Issue tracker: [github.com/BerlinMeshnet/cjdns-android/issues](https://github.com/BerlinMeshnet/cjdns-android/issues)
-- IRC: #android on [HypeIRC](https://wiki.projectmeshnet.org/HypeIRC)
-- Development updates: [www.lars.meshnet.berlin](http://www.lars.meshnet.berlin)
+- Find out how to help by visiting our [issue tracker](https://github.com/hyperboria/android/issues)
+- IRC channel for this project: **#android on [HypeIRC](irc://irc.hypeirc.net)**
+
+    ```
+    fc13:6176:aaca:8c7f:9f55:924f:26b3:4b14
+    fcbf:7bbc:32e4:0716:bd00:e936:c927:fc14
+    ```
 
 Notes
 -----

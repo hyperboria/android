@@ -1,8 +1,8 @@
 package berlin.meshnet.cjdns.page;
 
-import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;

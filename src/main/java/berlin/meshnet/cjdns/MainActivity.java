@@ -1,14 +1,15 @@
 package berlin.meshnet.cjdns;
 
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,6 +30,10 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
@@ -41,6 +46,11 @@ import berlin.meshnet.cjdns.page.PeersPageFragment;
 import berlin.meshnet.cjdns.page.SettingsPageFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Subscription;
+import rx.android.app.AppObservable;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Inject
     Bus mBus;
+
+    @Inject
+    Cjdroute mCjdroute;
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -62,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
     private String mSelectedContent;
 
     private ActionBar mActionBar;
+
+    private List<Subscription> mSubscriptions = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,10 +146,10 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
 
         // Show Me page on first launch.
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey(BUNDLE_KEY_SELECTED_CONTENT)) {
             changePage(getString(R.string.drawer_option_me));
         } else {
-            final String selectedPage = savedInstanceState.getString(BUNDLE_KEY_SELECTED_CONTENT, getString(R.string.drawer_option_me));
+            final String selectedPage = savedInstanceState.getString(BUNDLE_KEY_SELECTED_CONTENT);
             mSelectedContent = selectedPage;
             mActionBar.setTitle(selectedPage);
         }
@@ -154,18 +169,38 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
-        SwitchCompat cjdnsServiceSwitch = (SwitchCompat) menu.findItem(R.id.switch_cjdns_service).getActionView();
-        // TODO Init with current CjdnsService state
-        cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mBus.post(new ApplicationEvents.StartCjdnsService());
-                } else {
-                    mBus.post(new ApplicationEvents.StopCjdnsService());
-                }
-            }
-        });
+        // Set initial state of toggle and click behaviour.
+        final SwitchCompat cjdnsServiceSwitch = (SwitchCompat) MenuItemCompat.getActionView(menu.findItem(R.id.switch_cjdns_service));
+        mSubscriptions.add(AppObservable.bindActivity(this, Cjdroute.running(this)
+                .subscribeOn(Schedulers.io()))
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer pid) {
+                        // Change toggle check state if there is a currently running cjdroute process.
+                        cjdnsServiceSwitch.setChecked(true);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        // Do nothing.
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        // Configure toggle click behaviour.
+                        cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                if (isChecked) {
+                                    mBus.post(new ApplicationEvents.StartCjdnsService());
+                                } else {
+                                    mBus.post(new ApplicationEvents.StopCjdnsService());
+                                }
+                            }
+                        });
+                    }
+                }));
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -193,6 +228,18 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onDestroy() {
+        // Unsubscribe from observables.
+        Iterator<Subscription> itr = mSubscriptions.iterator();
+        while (itr.hasNext()) {
+            itr.next().unsubscribe();
+            itr.remove();
+        }
+
+        super.onDestroy();
+    }
+
     @Subscribe
     public void handleEvent(ApplicationEvents.StartCjdnsService event) {
         Toast.makeText(getApplicationContext(), "Starting CjdnsService", Toast.LENGTH_SHORT).show();
@@ -202,6 +249,13 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void handleEvent(ApplicationEvents.StopCjdnsService event) {
         Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
+
+        // Kill cjdroute process.
+        Cjdroute.running(this)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(mCjdroute.terminate());
+
         stopService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
@@ -213,13 +267,13 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void handleEvent(ApplicationEvents.ListConnections event) {
         DialogFragment fragment = ConnectionsDialogFragment.newInstance(event.mPeerId);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
     }
 
     @Subscribe
     public void handleEvent(ApplicationEvents.ExchangeCredential event) {
         DialogFragment fragment = ExchangeDialogFragment.newInstance(event.mType, event.mMessage);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
     }
 
     /**
@@ -246,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Swap page.
         if (fragment != null) {
-            final FragmentManager fragmentManager = getFragmentManager();
+            final FragmentManager fragmentManager = getSupportFragmentManager();
             final FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.replace(R.id.content_container, fragment);
             ft.commit();

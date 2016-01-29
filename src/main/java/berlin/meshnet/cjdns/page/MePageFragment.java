@@ -1,7 +1,7 @@
 package berlin.meshnet.cjdns.page;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -85,9 +86,13 @@ public class MePageFragment extends BasePageFragment {
 
     @Override
     public void onDestroy() {
-        for (Subscription subscription : mSubscriptions) {
-            subscription.unsubscribe();
+        // Unsubscribe from observables.
+        Iterator<Subscription> itr = mSubscriptions.iterator();
+        while (itr.hasNext()) {
+            itr.next().unsubscribe();
+            itr.remove();
         }
+
         super.onDestroy();
     }
 }
