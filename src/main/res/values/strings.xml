@@ -2,12 +2,6 @@
 <resources>
     <string name="app_name">cjdns</string>
 
-    <string name="setting_verbose_enabled_key" translatable="false">setting_verbose_enabled_key</string>
-    <string name="setting_encrypt_enabled_key" translatable="false">setting_encrypt_enabled_key</string>
-    <string name="setting_link_wifi_direct" translatable="false">setting_link_wifi_direct</string>
-    <string name="setting_link_bluetooth" translatable="false">setting_link_bluetooth</string>
-    <string name="setting_link_overlay" translatable="false">setting_link_overlay</string>
-
     <!-- cjdns service -->
     <string name="cjdns_service_notification_title">@string/app_name</string>
     <string name="cjdns_service_notification_text">Node %1$s running</string>
@@ -37,14 +31,23 @@
     <string name="me_page_public_key_icon">{fa-lock}</string>
 
     <!-- Settings page -->
+    <string name="setting_verbose_enabled_key" translatable="false">setting_verbose_enabled_key</string>
+    <string name="setting_encrypt_enabled_key" translatable="false">setting_encrypt_enabled_key</string>
+    <string name="setting_send_apk_key" translatable="false">setting_send_apk_key</string>
+    <string name="setting_link_wifi_direct_key" translatable="false">setting_link_wifi_direct_key</string>
+    <string name="setting_link_bluetooth_key" translatable="false">setting_link_bluetooth_key</string>
+    <string name="setting_link_overlay_key" translatable="false">setting_link_overlay_key</string>
+
     <string name="settings_page_category_general_title">General</string>
+    <string name="settings_page_setting_verbose_title">Verbose Mode</string>
+    <string name="settings_page_setting_verbose_summary_on">Display detailed node information</string>
+    <string name="settings_page_setting_verbose_summary_off">Display minimal node information</string>
     <string name="settings_page_setting_encrypt_title">Data Encryption</string>
     <string name="settings_page_setting_encrypt_summary_enabled">Enabled</string>
     <string name="settings_page_setting_encrypt_summary_disabled">Configure device storage encryption</string>
     <string name="settings_page_setting_encrypt_summary_unsupported">Not supported</string>
-    <string name="settings_page_setting_verbose_title">Verbose Mode</string>
-    <string name="settings_page_setting_verbose_summary_on">Display detailed node information</string>
-    <string name="settings_page_setting_verbose_summary_off">Display minimal node information</string>
+    <string name="settings_page_setting_send_apk_title">Share Application</string>
+    <string name="settings_page_setting_send_apk_summary">Send APK to another device</string>
 
     <string name="settings_page_category_connectivity_title">Connectivity</string>
     <string name="settings_page_setting_link_summary_on">On</string>
