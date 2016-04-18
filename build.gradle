@@ -56,6 +56,7 @@ dependencies {
     compile 'com.github.brnunes:swipeablerecyclerview:1.0.1'
     compile 'io.reactivex:rxjava:1.0.7'
     compile 'io.reactivex:rxandroid:0.24.0'
+    compile 'com.github.gerardsoleca:robosodium:1.0.0'
     compile 'com.squareup:otto:1.3.5'
     compile 'com.squareup.dagger:dagger:1.2.2'
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'

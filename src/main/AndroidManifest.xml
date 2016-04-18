@@ -5,7 +5,8 @@
 
     <uses-sdk tools:overrideLibrary="
         android.support.v14.preference,
-        com.github.brnunes.swipeablerecyclerview
+        com.github.brnunes.swipeablerecyclerview,
+        ch.twelveco.lib
         " />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
