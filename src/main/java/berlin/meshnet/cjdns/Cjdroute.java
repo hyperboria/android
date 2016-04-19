@@ -246,8 +246,10 @@ abstract class Cjdroute {
                                                 Log.i(TAG, line);
 
                                                 // Find and store cjdroute PID.
+                                                // TODO Apply filter operator on the line.
                                                 if (line.contains(adminLine)) {
                                                     try {
+                                                        // TODO Apply corePid as operator.
                                                         int pid = adminApi.corePid();
 
                                                         // Store PID on disk to persist across java process crashes.

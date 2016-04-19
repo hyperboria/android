@@ -24,7 +24,7 @@ import rx.Subscriber;
 /**
  * Configurations for cjdroute.
  */
-public class CjdrouteConf {
+abstract class CjdrouteConf {
 
     /**
      * The filename for the cjdroute configurations.
