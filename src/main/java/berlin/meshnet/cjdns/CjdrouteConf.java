@@ -180,7 +180,9 @@ abstract class CjdrouteConf {
                                             "    \"password\": \"none\",\n" +
                                             "    \"bind\": \"127.0.0.1:11234\"\n" +
                                             "  },\n" +
-                                            "  \"privateKey\": \"f6e37ae8c49147170bd7b65aa04fab7d29d2c4fd35ba5df17be4f6008ec68c59\"\n" +
+                                            "  \"privateKey\": \"59ae83c9cd94a18add9d76096ca85a4005683f18ad997236e7ad5660b9b77c4c\",\n" +
+                                            "  \"publicKey\": \"pmr3bqsp33rdu9d6grf243wrc7kbsdzwubg5sg3gmz68u1hgznn0.k\",\n" +
+                                            "  \"ipv6\": \"fce5:c180:6bff:a33f:c0b3:f22a:945d:ca39\"\n" +
                                             "}";
                                     JSONObject json = new JSONObject(jsonString);
 
