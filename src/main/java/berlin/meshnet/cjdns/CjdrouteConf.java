@@ -51,21 +51,20 @@ abstract class CjdrouteConf {
      */
     private static final Object sLock = new Object();
 
-
-    /**
-     * Default public peer interface. TODO Remove.
-     */
-    private static final String DEFAULT_PEER_INTERFACE = "104.200.29.163:53053";
-
-    /**
-     * Default public peer credentials. TODO Remove.
-     */
-    private static final String DEFAULT_PEER_CREDENTIALS = "{\n" +
-            "  \"publicKey\": \"1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k\",\n" +
-            "  \"password\": \"8fVMl0oo6QI6wKeMneuY26x1MCgRemg\",\n" +
-            "  \"contact\": \"ansuz@transitiontech.ca\",\n" +
-            "  \"location\": \"Newark,NJ,USA\"\n" +
-            "}";
+//    /**
+//     * Default public peer interface. TODO Remove.
+//     */
+//    private static final String DEFAULT_PEER_INTERFACE = "104.200.29.163:53053";
+//
+//    /**
+//     * Default public peer credentials. TODO Remove.
+//     */
+//    private static final String DEFAULT_PEER_CREDENTIALS = "{\n" +
+//            "  \"publicKey\": \"1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k\",\n" +
+//            "  \"password\": \"8fVMl0oo6QI6wKeMneuY26x1MCgRemg\",\n" +
+//            "  \"contact\": \"ansuz@transitiontech.ca\",\n" +
+//            "  \"location\": \"Newark,NJ,USA\"\n" +
+//            "}";
 
     /**
      * {@link Observable} for cjdroute configuration JSON object.
@@ -151,18 +150,50 @@ abstract class CjdrouteConf {
                                     // Generate new configurations.
                                     Process process = Runtime.getRuntime().exec(cmd);
                                     is = process.getInputStream();
-                                    JSONObject json = new JSONObject(fromInputStream(is));
+                                    String jsonString = fromInputStream(is);
 
-                                    // Append default peer credentials. TODO Remove.
-                                    json.getJSONObject("interfaces")
-                                            .getJSONArray("UDPInterface")
-                                            .getJSONObject(0)
-                                            .getJSONObject("connectTo")
-                                            .put(DEFAULT_PEER_INTERFACE, new JSONObject(DEFAULT_PEER_CREDENTIALS));
+                                    // TODO Hack this in for now.
+                                    jsonString = "{\n" +
+                                            "  \"pipe\": \"/data/data/berlin.meshnet.cjdns\",\n" +
+                                            "  \"security\": [\n" +
+                                            "    {\n" +
+                                            "      \"keepNetAdmin\": 1,\n" +
+                                            "      \"setuser\": \"nobody\"\n" +
+                                            "    },\n" +
+                                            "    {\n" +
+                                            "      \"chroot\": 0\n" +
+                                            "    },\n" +
+                                            "    {\n" +
+                                            "      \"nofiles\": 0\n" +
+                                            "    },\n" +
+                                            "    {\n" +
+                                            "      \"noforks\": 1\n" +
+                                            "    },\n" +
+                                            "    {\n" +
+                                            "      \"seccomp\": 0\n" +
+                                            "    },\n" +
+                                            "    {\n" +
+                                            "      \"setupComplete\": 1\n" +
+                                            "    }\n" +
+                                            "  ],\n" +
+                                            "  \"admin\": {\n" +
+                                            "    \"password\": \"none\",\n" +
+                                            "    \"bind\": \"127.0.0.1:11234\"\n" +
+                                            "  },\n" +
+                                            "  \"privateKey\": \"f6e37ae8c49147170bd7b65aa04fab7d29d2c4fd35ba5df17be4f6008ec68c59\"\n" +
+                                            "}";
+                                    JSONObject json = new JSONObject(jsonString);
+
+//                                    // Append default peer credentials. TODO Remove.
+//                                    json.getJSONObject("interfaces")
+//                                            .getJSONArray("UDPInterface")
+//                                            .getJSONObject(0)
+//                                            .getJSONObject("connectTo")
+//                                            .put(DEFAULT_PEER_INTERFACE, new JSONObject(DEFAULT_PEER_CREDENTIALS));
 
                                     // Write configurations to file.
                                     os = appContext.openFileOutput(FILENAME_CJDROUTE_CONF, Context.MODE_PRIVATE);
-                                    os.write(json.toString().getBytes());
+                                    os.write(jsonString.getBytes());
                                     os.flush();
 
                                     // Return JSON object and complete Rx contract.

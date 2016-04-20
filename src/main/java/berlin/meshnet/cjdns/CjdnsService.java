@@ -105,12 +105,13 @@ public class CjdnsService extends Service {
     private Notification buildNotification(JSONObject cjdrouteConf) {
         // Get node address.
         String text;
-        try {
-            text = getString(R.string.cjdns_service_notification_text, cjdrouteConf.getString("ipv6"));
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to parse the address of this node", e);
-            text = getString(R.string.cjdns_service_notification_text_missing_address);
-        }
+//        try {
+//            text = getString(R.string.cjdns_service_notification_text, cjdrouteConf.getString("ipv6"));
+            text = "";
+//        } catch (JSONException e) {
+//            Log.e(TAG, "Failed to parse the address of this node", e);
+//            text = getString(R.string.cjdns_service_notification_text_missing_address);
+//        }
 
         // Create pending intent to launch MainActivity.
         Intent intent = new Intent(this, MainActivity.class);

@@ -147,7 +147,7 @@ class AdminApi {
      * @param port     The port to bind the admin RPC server.
      * @param password The password for authenticated requests.
      */
-    private AdminApi(InetAddress address, int port, byte[] password) {
+    public AdminApi(InetAddress address, int port, byte[] password) {
         mAddress = address;
         mPort = port;
         mPassword = password;
@@ -273,7 +273,8 @@ class AdminApi {
 
             // Args.
             HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-            args.put(ByteBuffer.wrap("bindAddress".getBytes()), ByteBuffer.wrap("0.0.0.0:26002".getBytes()));
+            // TODO Replace port.
+            args.put(ByteBuffer.wrap("bindAddress".getBytes()), ByteBuffer.wrap("127.0.0.1:0".getBytes()));
             request3.put(ByteBuffer.wrap("args".getBytes()), args);
 
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
@@ -467,23 +468,24 @@ class AdminApi {
     }
 
     public int runStuff() throws IOException {
-        functions(0L);
-        functions(1L);
-        functions(2L);
-        functions(3L);
-        functions(4L);
-        functions(5L);
-        functions(6L);
-        functions(7L);
-        functions(8L);
-        functions(9L);
-        functions(10L);
+//        functions(0L);
+//        functions(1L);
+//        functions(2L);
+//        functions(3L);
+//        functions(4L);
+//        functions(5L);
+//        functions(6L);
+//        functions(7L);
+//        functions(8L);
+//        functions(9L);
+//        functions(10L);
 
-        udpInterfaceNew();
-        udpInterfaceBeginConnection();
+        // TODO Not returning interfaceNumber atm.
+//        udpInterfaceNew();
+//        udpInterfaceBeginConnection();
 
-        Long tunFd = fileNoImport();
-        coreInitTunFd(tunFd, 1L);
+//        Long tunFd = fileNoImport();
+//        coreInitTunFd(tunFd, 1L);
 
         return corePid();
 

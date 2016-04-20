@@ -167,7 +167,7 @@ abstract class Cjdroute {
         /**
          * Command template to execute cjdroute.
          */
-        private static final String CMD_EXECUTE_CJDROUTE = "%1$s/" + FILENAME_CJDROUTE + " < %2$s/" + CjdrouteConf.FILENAME_CJDROUTE_CONF;
+        private static final String CMD_EXECUTE_CJDROUTE = "%1$s/" + FILENAME_CJDROUTE + " --nobg < %2$s/" + CjdrouteConf.FILENAME_CJDROUTE_CONF;
 
         /**
          * Command template to terminate process by PID.
