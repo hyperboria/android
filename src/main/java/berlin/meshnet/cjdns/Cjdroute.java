@@ -29,6 +29,12 @@ import rx.schedulers.Schedulers;
  */
 abstract class Cjdroute {
 
+    static {
+        System.loadLibrary("sendfd");
+    }
+
+    public static native int sendfd(String path, int tun_fd);
+
     /**
      * The filename for the cjdroute executable.
      */

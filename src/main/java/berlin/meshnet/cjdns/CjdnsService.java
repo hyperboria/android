@@ -63,6 +63,8 @@ public class CjdnsService extends Service {
         // Inject dependencies.
         ((CjdnsApplication) getApplication()).inject(this);
 
+        Cjdroute.sendfd("/data/data/berlin.meshnet.cjdns/the-tun-pipe", 321);
+
         // Start foreground service.
         mSubscriptions.add(CjdrouteConf.fetch(this)
                 .subscribeOn(Schedulers.io())

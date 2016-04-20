@@ -4,6 +4,7 @@ build/
 local.properties
 *.iml
 *.class
-src/main/assets/x86/
-src/main/assets/armeabi-v7a/
-src/main/assets/cjdroute.conf
+src/main/assets/x86/cjdroute
+src/main/assets/armeabi-v7a/cjdroute
+src/main/libs
+src/main/obj
