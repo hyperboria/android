@@ -1,8 +1,11 @@
 package berlin.meshnet.cjdns;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.VpnService;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -240,10 +243,19 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Subscribe
     public void handleEvent(ApplicationEvents.StartCjdnsService event) {
         Toast.makeText(getApplicationContext(), "Starting CjdnsService", Toast.LENGTH_SHORT).show();
         startService(new Intent(getApplicationContext(), CjdnsService.class));
+
+        // Start VPN.
+        Intent intent = VpnService.prepare(this);
+        if (intent != null) {
+            startActivityForResult(intent, 0);
+        } else {
+            onActivityResult(0, RESULT_OK, null);
+        }
     }
 
     @Subscribe
@@ -315,5 +327,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // ToyVPN things...
+
+    private static final String VPN_SERVER_ADDRESS = "";
+    private static final String VPN_SERVER_PORT = "";
+    private static final String VPN_SERVER_SHARED_SECRET = "";
+
+    @Override
+    protected void onActivityResult(int request, int result, Intent data) {
+        if (result == RESULT_OK) {
+            String prefix = getPackageName();
+            Intent intent = new Intent(this, CjdnsVpnService.class)
+                    .putExtra(prefix + ".ADDRESS", VPN_SERVER_ADDRESS)
+                    .putExtra(prefix + ".PORT", VPN_SERVER_PORT)
+                    .putExtra(prefix + ".SECRET", VPN_SERVER_SHARED_SECRET);
+            startService(intent);
+        }
     }
 }

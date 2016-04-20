@@ -114,4 +114,9 @@
         <item>@string/exchange_medium_qrcode</item>
     </string-array>
 
+    <!-- Toy VPN strings -->
+    <string name="connecting">ToyVPN is connecting...</string>
+    <string name="connected">ToyVPN is connected!</string>
+    <string name="disconnected">ToyVPN is disconnected!</string>
+
 </resources>

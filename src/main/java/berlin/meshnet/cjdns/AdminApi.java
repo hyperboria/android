@@ -14,7 +14,10 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -23,29 +26,29 @@ import java.util.Map;
 class AdminApi {
 
     /*
-        AdminLog_logMany(count)
-        AdminLog_subscribe(line='', file=0, level=0)
-        AdminLog_subscriptions()
-        AdminLog_unsubscribe(streamId)
-        Admin_asyncEnabled()
-        Admin_availableFunctions(page='')
-        Allocator_bytesAllocated()
-        Allocator_snapshot(includeAllocations='')
-        AuthorizedPasswords_add(password, user=0, ipv6=0)
-        AuthorizedPasswords_list()
-        AuthorizedPasswords_remove(user)
+//        AdminLog_logMany(count)
+//        AdminLog_subscribe(line='', file=0, level=0)
+//        AdminLog_subscriptions()
+//        AdminLog_unsubscribe(streamId)
+//        Admin_asyncEnabled()
+//        Admin_availableFunctions(page='')
+//        Allocator_bytesAllocated()
+//        Allocator_snapshot(includeAllocations='')
+//        AuthorizedPasswords_add(password, user=0, ipv6=0)
+//        AuthorizedPasswords_list()
+//        AuthorizedPasswords_remove(user)
         Core_exit()
-        Core_initTunnel(desiredTunName=0)
+        Core_initTunfd(tunfd, type='')
+//        Core_initTunnel(desiredTunName=0)
         Core_pid()
-        ETHInterface_beacon(interfaceNumber='', state='')
-        ETHInterface_beginConnection(publicKey, macAddress, interfaceNumber='', login=0, password=0)
-        ETHInterface_listDevices()
-        ETHInterface_new(bindDevice)
+//        ETHInterface_beacon(interfaceNumber='', state='')
+//        ETHInterface_beginConnection(publicKey, macAddress, interfaceNumber='', login=0, password=0)
+//        ETHInterface_listDevices()
+//        ETHInterface_new(bindDevice)
+        FileNo_import(path, type=0)
         InterfaceController_disconnectPeer(pubkey)
         InterfaceController_peerStats(page='')
         InterfaceController_resetPeering(pubkey=0)
-        IpTunnel_allowConnection(publicKeyOfAuthorizedNode, ip4Alloc='', ip6Alloc='', ip4Address=0, ip4Prefix='', ip6Address=0, ip6Prefix='')
-        InterfaceController_resetPeering(pubkey=0)                                                                                                                                    [0/229]
         IpTunnel_allowConnection(publicKeyOfAuthorizedNode, ip4Alloc='', ip6Alloc='', ip4Address=0, ip4Prefix='', ip6Address=0, ip6Prefix='')
         IpTunnel_connectTo(publicKeyOfNodeToConnectTo)
         IpTunnel_listConnections()
@@ -90,6 +93,8 @@ class AdminApi {
         memory()
         ping()
     */
+
+    private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 
     /**
      * UDP datagram socket timeout in milliseconds.
@@ -152,7 +157,337 @@ class AdminApi {
         return mAddress.getHostAddress() + ":" + mPort;
     }
 
+    public void functions(long page) throws IOException {
+        // Get cookie.
+        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+        Map response = send(request);
+        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+        Log.d("BEN", "Cookie: " + cookie);
+
+        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(mPassword);
+            digest.update(cookie.getBytes());
+            byte[] dummyHash = digest.digest();
+            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+
+            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Admin_availableFunctions".getBytes()));
+
+            // Args.
+            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(ByteBuffer.wrap("page".getBytes()), new Long(page));
+            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+            byte[] requestBytes = serialize(request3);
+            Log.d("BEN", "requestBytes: " + new String(requestBytes));
+
+            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+            digest2.update(requestBytes);
+            byte[] actualHash = digest2.digest();
+            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        Map response3 = send(request3);
+//        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+        Map availableFunctions = (Map) response3.get(ByteBuffer.wrap("availableFunctions".getBytes()));
+//        Log.d("BEN", "error: " + error);
+        for (Object o : availableFunctions.keySet()) {
+            Log.d("BEN", new String(((ByteBuffer) o).array()) + " ->");
+            Map func = (Map) availableFunctions.get(o);
+            for (Object p : func.keySet()) {
+                Log.d("BEN", "  " + new String(((ByteBuffer) p).array()));
+//                Log.d("BEN", new String(((ByteBuffer) func.get(p)).array()));
+            }
+        }
+    }
+
     public int corePid() throws IOException {
+        // Get cookie.
+        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+        Map response = send(request);
+        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+        Log.d("BEN", "Cookie: " + cookie);
+
+        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(mPassword);
+            digest.update(cookie.getBytes());
+            byte[] dummyHash = digest.digest();
+            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+
+            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+            byte[] requestBytes = serialize(request3);
+            Log.d("BEN", "requestBytes: " + new String(requestBytes));
+
+            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+            digest2.update(requestBytes);
+            byte[] actualHash = digest2.digest();
+            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        Map response3 = send(request3);
+        Long pid = (Long) response3.get(ByteBuffer.wrap("pid".getBytes()));
+        Log.d("BEN", "PID: " + pid);
+
+        return pid.intValue();
+    }
+
+    public int udpInterfaceNew() throws IOException {
+        // Get cookie.
+        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+        Map response = send(request);
+        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+        Log.d("BEN", "Cookie: " + cookie);
+
+        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(mPassword);
+            digest.update(cookie.getBytes());
+            byte[] dummyHash = digest.digest();
+            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+
+            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("UDPInterface_new".getBytes()));
+
+            // Args.
+            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(ByteBuffer.wrap("bindAddress".getBytes()), ByteBuffer.wrap("0.0.0.0:26002".getBytes()));
+            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+            byte[] requestBytes = serialize(request3);
+            Log.d("BEN", "requestBytes: " + new String(requestBytes));
+
+            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+            digest2.update(requestBytes);
+            byte[] actualHash = digest2.digest();
+            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        Map response3 = send(request3);
+        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+        interfaceNumber = (Long) response3.get(ByteBuffer.wrap("interfaceNumber".getBytes()));
+        Log.d("BEN", "error: " + error + " interfaceNumber: " + interfaceNumber);
+
+        return 1;
+    }
+
+    Long interfaceNumber;
+
+    public int udpInterfaceBeginConnection() throws IOException {
+        // Get cookie.
+        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+        Map response = send(request);
+        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+        Log.d("BEN", "Cookie: " + cookie);
+
+        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(mPassword);
+            digest.update(cookie.getBytes());
+            byte[] dummyHash = digest.digest();
+            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+
+            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("UDPInterface_beginConnection".getBytes()));
+
+            // Args.
+
+//            /**
+//             * Default public peer interface. TODO Remove.
+//             */
+//            private static final String DEFAULT_PEER_INTERFACE = "104.200.29.163:53053";
+//
+//            /**
+//             * Default public peer credentials. TODO Remove.
+//             */
+//            private static final String DEFAULT_PEER_CREDENTIALS = "{\n" +
+//                    "  \"publicKey\": \"1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k\",\n" +
+//                    "  \"password\": \"8fVMl0oo6QI6wKeMneuY26x1MCgRemg\",\n" +
+//                    "  \"contact\": \"ansuz@transitiontech.ca\",\n" +
+//                    "  \"location\": \"Newark,NJ,USA\"\n" +
+//                    "}";
+            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(ByteBuffer.wrap("publicKey".getBytes()), ByteBuffer.wrap("1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k".getBytes()));
+            args.put(ByteBuffer.wrap("address".getBytes()), ByteBuffer.wrap("104.200.29.163:53053".getBytes()));
+            args.put(ByteBuffer.wrap("interfaceNumber".getBytes()), interfaceNumber);
+//            args.put(ByteBuffer.wrap("login".getBytes()), ByteBuffer.wrap("ansuz".getBytes()));
+            args.put(ByteBuffer.wrap("password".getBytes()), ByteBuffer.wrap("8fVMl0oo6QI6wKeMneuY26x1MCgRemg".getBytes()));
+            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+            byte[] requestBytes = serialize(request3);
+            Log.d("BEN", "requestBytes: " + new String(requestBytes));
+
+            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+            digest2.update(requestBytes);
+            byte[] actualHash = digest2.digest();
+            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        Map response3 = send(request3);
+        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+        Log.d("BEN", "error: " + error);
+
+        return 1;
+    }
+
+    public Long fileNoImport() throws IOException {
+        // Get cookie.
+        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+        Map response = send(request);
+        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+        Log.d("BEN", "Cookie: " + cookie);
+
+        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(mPassword);
+            digest.update(cookie.getBytes());
+            byte[] dummyHash = digest.digest();
+            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+
+            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("FileNo_import".getBytes()));
+
+            // Args.
+            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(ByteBuffer.wrap("path".getBytes()), ByteBuffer.wrap("/data/data/berlin.meshnet.cjdns/tun0".getBytes()));
+            args.put(ByteBuffer.wrap("type".getBytes()), new Long(1L));
+            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+            byte[] requestBytes = serialize(request3);
+            Log.d("BEN", "requestBytes: " + new String(requestBytes));
+
+            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+            digest2.update(requestBytes);
+            byte[] actualHash = digest2.digest();
+            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        Map response3 = send(request3);
+        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+        Long tunfd = (Long) response3.get(ByteBuffer.wrap("tunfd".getBytes()));
+        Long type = (Long) response3.get(ByteBuffer.wrap("type".getBytes()));
+        Log.d("BEN", "error: " + error + " tunfd: " + tunfd + " type: " + type);
+
+        return tunfd;
+    }
+
+    public int coreInitTunFd(Long tunFd, Long type) throws IOException {
+        // Get cookie.
+        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+        Map response = send(request);
+        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+        Log.d("BEN", "Cookie: " + cookie);
+
+        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(mPassword);
+            digest.update(cookie.getBytes());
+            byte[] dummyHash = digest.digest();
+            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+
+            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_initTunfd".getBytes()));
+
+            // Args.
+            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(ByteBuffer.wrap("tunfd".getBytes()), tunFd);
+            args.put(ByteBuffer.wrap("type".getBytes()), type);
+            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+            byte[] requestBytes = serialize(request3);
+            Log.d("BEN", "requestBytes: " + new String(requestBytes));
+
+            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+            digest2.update(requestBytes);
+            byte[] actualHash = digest2.digest();
+            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        Map response3 = send(request3);
+        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+        Log.d("BEN", "error: " + error);
+
+        return 1;
+    }
+
+    public int runStuff() throws IOException {
+        functions(0L);
+        functions(1L);
+        functions(2L);
+        functions(3L);
+        functions(4L);
+        functions(5L);
+        functions(6L);
+        functions(7L);
+        functions(8L);
+        functions(9L);
+        functions(10L);
+
+        udpInterfaceNew();
+        udpInterfaceBeginConnection();
+
+        Long tunFd = fileNoImport();
+        coreInitTunFd(tunFd, 1L);
+
+        return corePid();
+
+        /*
         // try {
         HashMap<ByteBuffer, Object> request = new HashMap<>();
         request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));
@@ -164,6 +499,7 @@ class AdminApi {
         // } catch (IOException e) {
         //     return 0;
         // }
+        */
     }
 
     /**
@@ -228,5 +564,19 @@ class AdminApi {
         StringReader input = new StringReader(new String(data));
         Bencode parser = new Bencode(input);
         return (Map) parser.getRootElement();
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        String hexString = null;
+        if (bytes != null && bytes.length > 0) {
+            final char[] hexChars = new char[bytes.length * 2];
+            for (int i = 0; i < bytes.length; i++) {
+                int v = bytes[i] & 0xFF;
+                hexChars[i * 2] = HEX_ARRAY[v >>> 4];
+                hexChars[i * 2 + 1] = HEX_ARRAY[v & 0x0F];
+            }
+            hexString = new String(hexChars);
+        }
+        return hexString;
     }
 }

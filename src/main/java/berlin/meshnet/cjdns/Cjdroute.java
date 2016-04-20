@@ -249,8 +249,8 @@ abstract class Cjdroute {
                                                 // TODO Apply filter operator on the line.
                                                 if (line.contains(adminLine)) {
                                                     try {
-                                                        // TODO Apply corePid as operator.
-                                                        int pid = adminApi.corePid();
+                                                        // TODO Apply runStuff as operator.
+                                                        int pid = adminApi.runStuff();
 
                                                         // Store PID on disk to persist across java process crashes.
                                                         SharedPreferences.Editor editor = PreferenceManager
