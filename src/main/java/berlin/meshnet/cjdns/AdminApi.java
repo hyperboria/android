@@ -369,7 +369,7 @@ class AdminApi {
         return 1;
     }
 
-    public Long fileNoImport() throws IOException {
+    public Long fileNoImport(String path) throws IOException {
         // Get cookie.
         HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
         request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
@@ -390,7 +390,7 @@ class AdminApi {
 
             // Args.
             HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-            args.put(ByteBuffer.wrap("path".getBytes()), ByteBuffer.wrap("/data/data/berlin.meshnet.cjdns/tun0".getBytes()));
+            args.put(ByteBuffer.wrap("path".getBytes()), ByteBuffer.wrap(path.getBytes()));
             args.put(ByteBuffer.wrap("type".getBytes()), new Long(1L));
             request3.put(ByteBuffer.wrap("args".getBytes()), args);
 

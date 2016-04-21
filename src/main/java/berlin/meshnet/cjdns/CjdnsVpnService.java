@@ -20,19 +20,14 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.VpnService;
 import android.os.Handler;
-import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @SuppressLint("NewApi")
 public class CjdnsVpnService extends VpnService {
@@ -42,7 +37,7 @@ public class CjdnsVpnService extends VpnService {
 //    private byte[] mSharedSecret;
     private PendingIntent mConfigureIntent;
     private Handler mHandler;
-    //    private Thread mThread;
+    private Thread mThread;
     private ParcelFileDescriptor mInterface;
     private String mParameters;
 
@@ -53,48 +48,62 @@ public class CjdnsVpnService extends VpnService {
 //            mHandler = new Handler(this);
 //        }
         // Stop the previous session by interrupting the thread.
-//        if (mThread != null) {
-//            mThread.interrupt();
-//        }
+        if (mThread != null) {
+            mThread.interrupt();
+        }
         // Extract information from the intent.
-        String prefix = getPackageName();
+//        String prefix = getPackageName();
 //        mServerAddress = intent.getStringExtra(prefix + ".ADDRESS");
 //        mServerPort = intent.getStringExtra(prefix + ".PORT");
 //        mSharedSecret = intent.getStringExtra(prefix + ".SECRET").getBytes();
 
-
-        // TODO LOOK HERE
-        //        "ip -6 route add default via fc00::1 dev tun0 metric 4096"
-        try {
-            mInterface = new Builder()
-                    .setMtu(1500)
-                    .addAddress("fce5:c180:6bff:a33f:c0b3:f22a:945d:ca39", 8)
-                    .addRoute("fc00::", 8)
-                    .establish();
-
-            int fd = mInterface.getFd();
-            Log.d("BEN", "fd: " + fd);
-
-            AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "none".getBytes());
-            api.fileNoImport();
-            api.coreInitTunFd(new Long(fd), 1L);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         // Start a new session by creating a new thread.
-//         = new Thread(this, "ToyVpnThread");
-//        mThread.start();
+        mThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // TODO LOOK HERE
+                //        "ip -6 route add default via fc00::1 dev tun0 metric 4096"
+                try {
+                    mInterface = new Builder()
+                            .setMtu(1500)
+                            .addAddress("fce5:c180:6bff:a33f:c0b3:f22a:945d:ca39", 8)
+                            .addRoute("fc00::", 8)
+                            .establish();
+
+                    final int fd = mInterface.getFd();
+                    Log.d("BEN", "VPN fd: " + fd);
+
+                    AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "none".getBytes());
+
+                    new Timer().schedule(new TimerTask() {
+
+                        @Override
+                        public void run() {
+                            int failure = Cjdroute.sendfd("/data/data/berlin.meshnet.cjdns/files/tun0", fd);
+                            Log.d("BEN", "VPN failure: " + failure);
+                        }
+                    }, 1000L);
+
+                    Long realFd = api.fileNoImport("/data/data/berlin.meshnet.cjdns/files/tun0");
+                    Log.d("BEN", "VPN realFd: " + realFd);
+
+//                    api.coreInitTunFd(realFd, 1L);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "ToyVpnThread");
+        mThread.start();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-//        if (mThread != null) {
-//            mThread.interrupt();
-//        }
+        if (mThread != null) {
+            mThread.interrupt();
+        }
     }
 
 //    @Override
