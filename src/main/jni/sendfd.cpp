@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "sendfd.h"
 
@@ -28,7 +29,7 @@ jint Java_berlin_meshnet_cjdns_Cjdroute_sendfd(JNIEnv *env, jobject thiz, jstrin
     strcpy(un.sun_path, tunPath);
     if (connect(fd, (struct sockaddr *)&un, sizeof(struct sockaddr_un)) < 0) {
         close(fd);
-        __android_log_print(ANDROID_LOG_DEBUG, "cjdns", "error2");
+        __android_log_print(ANDROID_LOG_DEBUG, "cjdns", "error2 [%d]", errno);
         return (jint)-1;
     }
 

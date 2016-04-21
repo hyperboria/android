@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 @SuppressLint("NewApi")
 public class CjdnsVpnService extends VpnService {
@@ -75,19 +76,20 @@ public class CjdnsVpnService extends VpnService {
 
                     AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "none".getBytes());
 
+                    final String path = "/data/data/berlin.meshnet.cjdns/files/" + UUID.randomUUID();
                     new Timer().schedule(new TimerTask() {
 
                         @Override
                         public void run() {
-                            int failure = Cjdroute.sendfd("/data/data/berlin.meshnet.cjdns/files/tun0", fd);
+                            int failure = Cjdroute.sendfd(path, fd);
                             Log.d("BEN", "VPN failure: " + failure);
                         }
-                    }, 1000L);
+                    }, 5000L);
 
-                    Long realFd = api.fileNoImport("/data/data/berlin.meshnet.cjdns/files/tun0");
+                    Long realFd = api.fileNoImport(path);
                     Log.d("BEN", "VPN realFd: " + realFd);
 
-//                    api.coreInitTunFd(realFd, 1L);
+                    api.coreInitTunFd(realFd, 1L);
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 } catch (IOException e) {

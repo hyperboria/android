@@ -156,11 +156,6 @@ abstract class Cjdroute {
         private static final String TAG = Compat.class.getSimpleName();
 
         /**
-         * Command to substitute user to root.
-         */
-        private static final String CMD_SUBSTITUTE_ROOT_USER = "su";
-
-        /**
          * Command divider.
          */
         private static final String CMD_NEWLINE = "\n";
@@ -173,7 +168,7 @@ abstract class Cjdroute {
         /**
          * Command template to execute cjdroute.
          */
-        private static final String CMD_EXECUTE_CJDROUTE = "%1$s/" + FILENAME_CJDROUTE + " --nobg < %2$s/" + CjdrouteConf.FILENAME_CJDROUTE_CONF;
+        private static final String CMD_EXECUTE_CJDROUTE = "%1$s/" + FILENAME_CJDROUTE + " --nobg";
 
         /**
          * Command template to terminate process by PID.
@@ -198,7 +193,7 @@ abstract class Cjdroute {
                 public void onNext(JSONObject cjdrouteConf) {
                     DataOutputStream os = null;
                     try {
-                        java.lang.Process process = Runtime.getRuntime().exec(CMD_SUBSTITUTE_ROOT_USER);
+                        java.lang.Process process = Runtime.getRuntime().exec(String.format(CMD_EXECUTE_CJDROUTE, mContext.getFilesDir().getPath()));
 
                         // Subscribe to input stream.
                         final InputStream is = process.getInputStream();
@@ -298,9 +293,40 @@ abstract class Cjdroute {
                         // Execute cjdroute.
                         String filesDir = mContext.getFilesDir().getPath();
                         os = new DataOutputStream(process.getOutputStream());
-                        os.writeBytes(String.format(CMD_EXECUTE_CJDROUTE, filesDir, filesDir));
-                        os.writeBytes(CMD_NEWLINE);
-                        os.writeBytes(CMD_ADD_DEFAULT_ROUTE);
+                        String conf = "{\n" +
+                                "  \"pipe\": \"/data/data/berlin.meshnet.cjdns\",\n" +
+                                "  \"security\": [\n" +
+                                "    {\n" +
+                                "      \"keepNetAdmin\": 1,\n" +
+                                "      \"setuser\": 0\n" +
+                                "    },\n" +
+                                "    {\n" +
+                                "      \"chroot\": 0\n" +
+                                "    },\n" +
+                                "    {\n" +
+                                "      \"nofiles\": 0\n" +
+                                "    },\n" +
+                                "    {\n" +
+                                "      \"noforks\": 1\n" +
+                                "    },\n" +
+                                "    {\n" +
+                                "      \"seccomp\": 0\n" +
+                                "    },\n" +
+                                "    {\n" +
+                                "      \"setupComplete\": 1\n" +
+                                "    }\n" +
+                                "  ],\n" +
+                                "  \"admin\": {\n" +
+                                "    \"password\": \"none\",\n" +
+                                "    \"bind\": \"127.0.0.1:11234\"\n" +
+                                "  },\n" +
+                                "  \"privateKey\": \"59ae83c9cd94a18add9d76096ca85a4005683f18ad997236e7ad5660b9b77c4c\",\n" +
+                                "  \"publicKey\": \"pmr3bqsp33rdu9d6grf243wrc7kbsdzwubg5sg3gmz68u1hgznn0.k\",\n" +
+                                "  \"ipv6\": \"fce5:c180:6bff:a33f:c0b3:f22a:945d:ca39\"\n" +
+                                "}";
+                        os.writeBytes(conf);
+//                        os.writeBytes(CMD_NEWLINE);
+//                        os.writeBytes(CMD_ADD_DEFAULT_ROUTE);
                         os.flush();
                     } catch (IOException | JSONException e) {
                         Log.e(TAG, "Failed to execute cjdroute", e);
@@ -333,31 +359,13 @@ abstract class Cjdroute {
                 @Override
                 public void onNext(Integer pid) {
                     Log.i(TAG, "Terminating cjdroute with pid=" + pid);
+                    Process.killProcess(pid);
 
-                    // Kill cjdroute as root.
-                    DataOutputStream os = null;
-                    try {
-                        java.lang.Process process = Runtime.getRuntime().exec(CMD_SUBSTITUTE_ROOT_USER);
-                        os = new DataOutputStream(process.getOutputStream());
-                        os.writeBytes(String.format(Locale.ENGLISH, CMD_KILL_PROCESS, pid));
-                        os.flush();
-
-                        // Erase PID.
-                        SharedPreferences.Editor editor = PreferenceManager
-                                .getDefaultSharedPreferences(mContext.getApplicationContext()).edit();
-                        editor.putInt(SHARED_PREFERENCES_KEY_CJDROUTE_PID, INVALID_PID);
-                        editor.apply();
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to terminate cjdroute", e);
-                    } finally {
-                        if (os != null) {
-                            try {
-                                os.close();
-                            } catch (IOException e) {
-                                // Do nothing.
-                            }
-                        }
-                    }
+                    // Erase PID.
+                    SharedPreferences.Editor editor = PreferenceManager
+                            .getDefaultSharedPreferences(mContext.getApplicationContext()).edit();
+                    editor.putInt(SHARED_PREFERENCES_KEY_CJDROUTE_PID, INVALID_PID);
+                    editor.apply();
                 }
 
                 @Override

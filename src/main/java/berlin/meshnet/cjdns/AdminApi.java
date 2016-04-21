@@ -99,7 +99,8 @@ class AdminApi {
     /**
      * UDP datagram socket timeout in milliseconds.
      */
-    public static final int SOCKET_TIMEOUT = 5000;
+    // TODO FIX
+    public static final int SOCKET_TIMEOUT = 5000000;
 
     /**
      * UDP datagram length.

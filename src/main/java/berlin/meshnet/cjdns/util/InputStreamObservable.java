@@ -35,6 +35,6 @@ public abstract class InputStreamObservable {
                             subscriber.onError(e);
                         }
                     }
-                }).onBackpressureBuffer();
+                }).onBackpressureBlock();
     }
 }

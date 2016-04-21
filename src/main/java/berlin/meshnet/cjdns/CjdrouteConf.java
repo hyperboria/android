@@ -155,27 +155,27 @@ abstract class CjdrouteConf {
                                     // TODO Hack this in for now.
                                     jsonString = "{\n" +
                                             "  \"pipe\": \"/data/data/berlin.meshnet.cjdns\",\n" +
-                                            "  \"security\": [\n" +
-                                            "    {\n" +
-                                            "      \"keepNetAdmin\": 1,\n" +
-                                            "      \"setuser\": \"nobody\"\n" +
-                                            "    },\n" +
-                                            "    {\n" +
-                                            "      \"chroot\": 0\n" +
-                                            "    },\n" +
-                                            "    {\n" +
-                                            "      \"nofiles\": 0\n" +
-                                            "    },\n" +
-                                            "    {\n" +
-                                            "      \"noforks\": 1\n" +
-                                            "    },\n" +
-                                            "    {\n" +
-                                            "      \"seccomp\": 0\n" +
-                                            "    },\n" +
-                                            "    {\n" +
-                                            "      \"setupComplete\": 1\n" +
-                                            "    }\n" +
-                                            "  ],\n" +
+//                                            "  \"security\": [\n" +
+//                                            "    {\n" +
+//                                            "      \"keepNetAdmin\": 1,\n" +
+//                                            "      \"setuser\": \"nobody\"\n" +
+//                                            "    },\n" +
+//                                            "    {\n" +
+//                                            "      \"chroot\": 0\n" +
+//                                            "    },\n" +
+//                                            "    {\n" +
+//                                            "      \"nofiles\": 0\n" +
+//                                            "    },\n" +
+//                                            "    {\n" +
+//                                            "      \"noforks\": 1\n" +
+//                                            "    },\n" +
+//                                            "    {\n" +
+//                                            "      \"seccomp\": 0\n" +
+//                                            "    },\n" +
+//                                            "    {\n" +
+//                                            "      \"setupComplete\": 1\n" +
+//                                            "    }\n" +
+//                                            "  ],\n" +
                                             "  \"admin\": {\n" +
                                             "    \"password\": \"none\",\n" +
                                             "    \"bind\": \"127.0.0.1:11234\"\n" +
