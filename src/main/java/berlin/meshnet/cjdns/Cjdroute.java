@@ -76,7 +76,8 @@ abstract class Cjdroute {
                 .filter(new Func1<Integer, Boolean>() {
                     @Override
                     public Boolean call(Integer pid) {
-                        return pid != INVALID_PID;
+//                        return pid != INVALID_PID;
+                        return true;
                     }
                 });
     }
@@ -372,7 +373,7 @@ abstract class Cjdroute {
                     Log.i(TAG, "Terminating cjdroute with pid=" + pid);
 
                     try {
-                        AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "none".getBytes());
+                        AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "NONE".getBytes());
                         api.coreExit();
                     } catch (IOException e) {
                         e.printStackTrace();
