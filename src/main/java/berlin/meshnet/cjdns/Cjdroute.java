@@ -259,20 +259,20 @@ abstract class Cjdroute {
 
                                                 // Find and store cjdroute PID.
                                                 // TODO Apply filter operator on the line.
-                                                if (line.contains(adminLine)) {
-                                                    try {
-                                                        // TODO Apply runStuff as operator.
-                                                        int pid = adminApi.runStuff();
-
-                                                        // Store PID on disk to persist across java process crashes.
-                                                        SharedPreferences.Editor editor = PreferenceManager
-                                                                .getDefaultSharedPreferences(mContext.getApplicationContext()).edit();
-                                                        editor.putInt(SHARED_PREFERENCES_KEY_CJDROUTE_PID, pid);
-                                                        editor.apply();
-                                                    } catch (IOException e) {
-                                                        Log.e(TAG, "Failed to get cjdroute PID", e);
-                                                    }
-                                                }
+//                                                if (line.contains(adminLine)) {
+//                                                    try {
+//                                                        // TODO Apply runStuff as operator.
+//                                                        int pid = adminApi.runStuff();
+//
+//                                                        // Store PID on disk to persist across java process crashes.
+//                                                        SharedPreferences.Editor editor = PreferenceManager
+//                                                                .getDefaultSharedPreferences(mContext.getApplicationContext()).edit();
+//                                                        editor.putInt(SHARED_PREFERENCES_KEY_CJDROUTE_PID, pid);
+//                                                        editor.apply();
+//                                                    } catch (IOException e) {
+//                                                        Log.e(TAG, "Failed to get cjdroute PID", e);
+//                                                    }
+//                                                }
                                             }
                                         }, new Action1<Throwable>() {
                                             @Override

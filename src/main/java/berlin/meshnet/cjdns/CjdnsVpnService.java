@@ -49,9 +49,9 @@ public class CjdnsVpnService extends VpnService {
 //            mHandler = new Handler(this);
 //        }
         // Stop the previous session by interrupting the thread.
-        if (mThread != null) {
-            mThread.interrupt();
-        }
+//        if (mThread != null) {
+//            mThread.interrupt();
+//        }
         // Extract information from the intent.
 //        String prefix = getPackageName();
 //        mServerAddress = intent.getStringExtra(prefix + ".ADDRESS");
@@ -59,7 +59,8 @@ public class CjdnsVpnService extends VpnService {
 //        mSharedSecret = intent.getStringExtra(prefix + ".SECRET").getBytes();
 
         // Start a new session by creating a new thread.
-        mThread = new Thread(new Runnable() {
+        new Timer().schedule(new TimerTask() {
+
             @Override
             public void run() {
                 // TODO LOOK HERE
@@ -84,7 +85,7 @@ public class CjdnsVpnService extends VpnService {
                             int failure = Cjdroute.sendfd(path, fd);
                             Log.d("BEN", "VPN failure: " + failure);
                         }
-                    }, 5000L);
+                    }, 2000L);
 
                     Log.d("BEN", "BEFORE api.fileNoImport("+path+")");
                     Long realFd = api.fileNoImport(path);
@@ -97,16 +98,16 @@ public class CjdnsVpnService extends VpnService {
                     e.printStackTrace();
                 }
             }
-        }, "ToyVpnThread");
-        mThread.start();
+        }, 2000L);
+//        mThread.start();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        if (mThread != null) {
-            mThread.interrupt();
-        }
+//        if (mThread != null) {
+//            mThread.interrupt();
+//        }
     }
 
 //    @Override
