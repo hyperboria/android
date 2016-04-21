@@ -20,7 +20,10 @@ jint Java_berlin_meshnet_cjdns_Cjdroute_sendfd(JNIEnv *env, jobject thiz, jstrin
 #endif
 
     if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
-        __android_log_print(ANDROID_LOG_DEBUG, "cjdns", "error1");
+#ifndef NDEBUG
+        char *errstr = strerror(errno);
+        __android_log_print(ANDROID_LOG_DEBUG, "cjdns", "sendfd socket() failed [%s]", errstr);
+#endif
         return (jint)-1;
     }
 
@@ -28,8 +31,11 @@ jint Java_berlin_meshnet_cjdns_Cjdroute_sendfd(JNIEnv *env, jobject thiz, jstrin
     un.sun_family = AF_UNIX;
     strcpy(un.sun_path, tunPath);
     if (connect(fd, (struct sockaddr *)&un, sizeof(struct sockaddr_un)) < 0) {
+#ifndef NDEBUG
+        char *errstr = strerror(errno);
+        __android_log_print(ANDROID_LOG_DEBUG, "cjdns", "sendfd connect() failed [%s]", errstr);
+#endif
         close(fd);
-        __android_log_print(ANDROID_LOG_DEBUG, "cjdns", "error2 [%d]", errno);
         return (jint)-1;
     }
 
@@ -61,8 +67,11 @@ jint Java_berlin_meshnet_cjdns_Cjdroute_sendfd(JNIEnv *env, jobject thiz, jstrin
 
     int r;
     if ((r = sendmsg(fd, &msg, MSG_NOSIGNAL)) < 0) {
+#ifndef NDEBUG
+        char *errstr = strerror(errno);
+        __android_log_print(ANDROID_LOG_DEBUG, "cjdns", "sendfd sendmsg() failed [%s]", errstr);
+#endif
         close(fd);
-        __android_log_print(ANDROID_LOG_DEBUG, "cjdns", "error3");
         return (jint)-1;
     }
 

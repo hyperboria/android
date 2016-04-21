@@ -16,6 +16,7 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -185,7 +186,6 @@ class AdminApi {
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
             byte[] requestBytes = serialize(request3);
-            Log.d("BEN", "requestBytes: " + new String(requestBytes));
 
             MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
             digest2.update(requestBytes);
@@ -218,7 +218,7 @@ class AdminApi {
         request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
         Map response = send(request);
         String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-        Log.d("BEN", "Cookie: " + cookie);
+        Log.d("BEN", "corePid() cookie: " + cookie);
 
         HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
         try {
@@ -226,19 +226,18 @@ class AdminApi {
             digest.update(mPassword);
             digest.update(cookie.getBytes());
             byte[] dummyHash = digest.digest();
-            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+            Log.d("BEN", "corePid() dummyHash: " + bytesToHex(dummyHash));
 
             request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
             request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
             byte[] requestBytes = serialize(request3);
-            Log.d("BEN", "requestBytes: " + new String(requestBytes));
 
             MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
             digest2.update(requestBytes);
             byte[] actualHash = digest2.digest();
-            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+            Log.d("BEN", "corePid() actualHash: " + bytesToHex(actualHash));
 
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
@@ -247,8 +246,9 @@ class AdminApi {
         }
 
         Map response3 = send(request3);
+        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
         Long pid = (Long) response3.get(ByteBuffer.wrap("pid".getBytes()));
-        Log.d("BEN", "PID: " + pid);
+        Log.d("BEN", "corePid() PID: " + pid + " [error=" + error + "]");
 
         return pid.intValue();
     }
@@ -320,7 +320,6 @@ class AdminApi {
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
             byte[] requestBytes = serialize(request3);
-            Log.d("BEN", "requestBytes: " + new String(requestBytes));
 
             MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
             digest2.update(requestBytes);
@@ -389,7 +388,6 @@ class AdminApi {
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
             byte[] requestBytes = serialize(request3);
-            Log.d("BEN", "requestBytes: " + new String(requestBytes));
 
             MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
             digest2.update(requestBytes);
@@ -415,7 +413,7 @@ class AdminApi {
         request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
         Map response = send(request);
         String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-        Log.d("BEN", "Cookie: " + cookie);
+        Log.d("BEN", "fileNoImport() cookie: " + cookie);
 
         HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
         try {
@@ -423,7 +421,7 @@ class AdminApi {
             digest.update(mPassword);
             digest.update(cookie.getBytes());
             byte[] dummyHash = digest.digest();
-            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+            Log.d("BEN", "fileNoImport() dummyHash: " + bytesToHex(dummyHash));
 
             request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
             request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("FileNo_import".getBytes()));
@@ -437,12 +435,11 @@ class AdminApi {
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
             byte[] requestBytes = serialize(request3);
-            Log.d("BEN", "requestBytes: " + new String(requestBytes));
 
             MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
             digest2.update(requestBytes);
             byte[] actualHash = digest2.digest();
-            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+            Log.d("BEN", "fileNoImport() actualHash: " + bytesToHex(actualHash));
 
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
@@ -454,7 +451,7 @@ class AdminApi {
         String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
         Long tunfd = (Long) response3.get(ByteBuffer.wrap("tunfd".getBytes()));
         Long type = (Long) response3.get(ByteBuffer.wrap("type".getBytes()));
-        Log.d("BEN", "error: " + error + " tunfd: " + tunfd + " type: " + type);
+        Log.d("BEN", "fileNoImport() error: " + error + " tunfd: " + tunfd + " type: " + type);
 
         return tunfd;
     }
@@ -487,7 +484,6 @@ class AdminApi {
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
             byte[] requestBytes = serialize(request3);
-            Log.d("BEN", "requestBytes: " + new String(requestBytes));
 
             MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
             digest2.update(requestBytes);
@@ -555,6 +551,7 @@ class AdminApi {
         DatagramSocket socket = newSocket();
 
         byte[] data = serialize(request);
+        Log.i("BEN", "admin-request: " + new String(data));
         DatagramPacket dgram = new DatagramPacket(data, data.length, mAddress, mPort);
         socket.send(dgram);
 
@@ -562,9 +559,14 @@ class AdminApi {
         socket.receive(responseDgram);
         socket.close();
 
-        Map response = parse(responseDgram.getData());
-        Log.i("cjdns_AdminAPI", "response: " + response.toString());
-        return response;
+        byte[] resData = responseDgram.getData();
+        int i = resData.length - 1;
+        while (resData[i] == 0) {
+            --i;
+        }
+        byte[] resDataClean = Arrays.copyOf(resData, i+1);
+        Log.i("BEN", "admin-response: " + new String(resDataClean));
+        return parse(resDataClean);
     }
 
 

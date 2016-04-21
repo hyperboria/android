@@ -74,7 +74,7 @@ public class CjdnsVpnService extends VpnService {
                     final int fd = mInterface.getFd();
                     Log.d("BEN", "VPN fd: " + fd);
 
-                    AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "none".getBytes());
+                    AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "NONE".getBytes());
 
                     final String path = "/data/data/berlin.meshnet.cjdns/files/" + UUID.randomUUID();
                     new Timer().schedule(new TimerTask() {
@@ -86,6 +86,7 @@ public class CjdnsVpnService extends VpnService {
                         }
                     }, 5000L);
 
+                    Log.d("BEN", "BEFORE api.fileNoImport("+path+")");
                     Long realFd = api.fileNoImport(path);
                     Log.d("BEN", "VPN realFd: " + realFd);
 

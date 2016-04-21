@@ -243,7 +243,8 @@ abstract class Cjdroute {
 //                                        });
 
                         // Subscribe to error stream.
-                        final AdminApi adminApi = AdminApi.from(cjdrouteConf);
+                        // final AdminApi adminApi = AdminApi.from(cjdrouteConf);
+                        final AdminApi adminApi = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "NONE".getBytes());
                         final String adminLine = String.format(Locale.ENGLISH, LINE_ADMIN_API, adminApi.getBind());
 //                        final InputStream es = process.getErrorStream();
                         final InputStream es = process.getInputStream();
@@ -327,7 +328,7 @@ abstract class Cjdroute {
                                 "    }\n" +
                                 "  ],\n" +
                                 "  \"admin\": {\n" +
-                                "    \"password\": \"none\",\n" +
+                                "    \"password\": \"NONE\",\n" +
                                 "    \"bind\": \"127.0.0.1:11234\"\n" +
                                 "  },\n" +
                                 "  \"privateKey\": \"59ae83c9cd94a18add9d76096ca85a4005683f18ad997236e7ad5660b9b77c4c\",\n" +
@@ -338,7 +339,7 @@ abstract class Cjdroute {
 //                        os.writeBytes(CMD_NEWLINE);
 //                        os.writeBytes(CMD_ADD_DEFAULT_ROUTE);
                         os.flush();
-                    } catch (IOException | JSONException e) {
+                    } catch (IOException e) {
                         Log.e(TAG, "Failed to execute cjdroute", e);
                     } finally {
                         if (os != null) {

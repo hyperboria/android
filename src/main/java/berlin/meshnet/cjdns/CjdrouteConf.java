@@ -177,7 +177,7 @@ abstract class CjdrouteConf {
 //                                            "    }\n" +
 //                                            "  ],\n" +
                                             "  \"admin\": {\n" +
-                                            "    \"password\": \"none\",\n" +
+                                            "    \"password\": \"NONE\",\n" +
                                             "    \"bind\": \"127.0.0.1:11234\"\n" +
                                             "  },\n" +
                                             "  \"privateKey\": \"59ae83c9cd94a18add9d76096ca85a4005683f18ad997236e7ad5660b9b77c4c\",\n" +
