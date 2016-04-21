@@ -66,7 +66,7 @@ public class CjdnsVpnService extends VpnService {
                 //        "ip -6 route add default via fc00::1 dev tun0 metric 4096"
                 try {
                     mInterface = new Builder()
-                            .setMtu(1500)
+                            .setMtu(1304)
                             .addAddress("fce5:c180:6bff:a33f:c0b3:f22a:945d:ca39", 8)
                             .addRoute("fc00::", 8)
                             .establish();
