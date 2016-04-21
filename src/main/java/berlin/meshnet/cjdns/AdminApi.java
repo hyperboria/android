@@ -253,6 +253,45 @@ class AdminApi {
         return pid.intValue();
     }
 
+    public void coreExit() throws IOException {
+        // Get cookie.
+        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+        Map response = send(request);
+        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+        Log.d("BEN", "Cookie: " + cookie);
+
+        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(mPassword);
+            digest.update(cookie.getBytes());
+            byte[] dummyHash = digest.digest();
+            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+
+            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_exit".getBytes()));
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+            byte[] requestBytes = serialize(request3);
+            Log.d("BEN", "requestBytes: " + new String(requestBytes));
+
+            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+            digest2.update(requestBytes);
+            byte[] actualHash = digest2.digest();
+            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+
+            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        Map response3 = send(request3);
+        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+        Log.d("BEN", "error: " + error);
+    }
+
     public int udpInterfaceNew() throws IOException {
         // Get cookie.
         HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
@@ -440,10 +479,10 @@ class AdminApi {
             request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_initTunfd".getBytes()));
 
             // Args.
-            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-            args.put(ByteBuffer.wrap("tunfd".getBytes()), tunFd);
-            args.put(ByteBuffer.wrap("type".getBytes()), type);
-            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+//            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+//            args.put(ByteBuffer.wrap("tunfd".getBytes()), tunFd);
+//            args.put(ByteBuffer.wrap("type".getBytes()), type);
+//            request3.put(ByteBuffer.wrap("args".getBytes()), args);
 
             request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
             request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));

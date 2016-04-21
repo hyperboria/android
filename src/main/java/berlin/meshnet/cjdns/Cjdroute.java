@@ -12,13 +12,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 import berlin.meshnet.cjdns.util.InputStreamObservable;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -193,53 +197,59 @@ abstract class Cjdroute {
                 public void onNext(JSONObject cjdrouteConf) {
                     DataOutputStream os = null;
                     try {
-                        java.lang.Process process = Runtime.getRuntime().exec(String.format(CMD_EXECUTE_CJDROUTE, mContext.getFilesDir().getPath()));
+//                        java.lang.Process process = Runtime.getRuntime().exec(String.format(CMD_EXECUTE_CJDROUTE, mContext.getFilesDir().getPath()));
 
-                        // Subscribe to input stream.
-                        final InputStream is = process.getInputStream();
-                        InputStreamObservable.line(is)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(Schedulers.io())
-                                .subscribe(
-                                        new Action1<String>() {
-                                            @Override
-                                            public void call(String line) {
-                                                Log.i(TAG, line);
-                                            }
-                                        }, new Action1<Throwable>() {
-                                            @Override
-                                            public void call(Throwable throwable) {
-                                                Log.e(TAG, "Failed to parse input stream", throwable);
-                                                if (is != null) {
-                                                    try {
-                                                        is.close();
-                                                    } catch (IOException e) {
-                                                        // Do nothing.
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        new Action0() {
-                                            @Override
-                                            public void call() {
-                                                Log.i(TAG, "Completed parsing of input stream");
-                                                if (is != null) {
-                                                    try {
-                                                        is.close();
-                                                    } catch (IOException e) {
-                                                        // Do nothing.
-                                                    }
-                                                }
-                                            }
-                                        });
+                        java.lang.Process process = new ProcessBuilder("./cjdroute")
+                                .directory(new File("/data/data/berlin.meshnet.cjdns/files"))
+                                .redirectErrorStream(true)
+                                .start();
+
+//                        // Subscribe to input stream.
+//                        final InputStream is = process.getInputStream();
+//                        InputStreamObservable.line(is)
+//                                .subscribeOn(Schedulers.newThread())
+//                                .observeOn(Schedulers.immediate())
+//                                .subscribe(
+//                                        new Action1<String>() {
+//                                            @Override
+//                                            public void call(String line) {
+//                                                Log.i(TAG, "IS: " + line);
+//                                            }
+//                                        }, new Action1<Throwable>() {
+//                                            @Override
+//                                            public void call(Throwable throwable) {
+//                                                Log.e(TAG, "Failed to parse input stream", throwable);
+//                                                if (is != null) {
+//                                                    try {
+//                                                        is.close();
+//                                                    } catch (IOException e) {
+//                                                        // Do nothing.
+//                                                    }
+//                                                }
+//                                            }
+//                                        },
+//                                        new Action0() {
+//                                            @Override
+//                                            public void call() {
+//                                                Log.i(TAG, "Completed parsing of input stream");
+//                                                if (is != null) {
+//                                                    try {
+//                                                        is.close();
+//                                                    } catch (IOException e) {
+//                                                        // Do nothing.
+//                                                    }
+//                                                }
+//                                            }
+//                                        });
 
                         // Subscribe to error stream.
                         final AdminApi adminApi = AdminApi.from(cjdrouteConf);
                         final String adminLine = String.format(Locale.ENGLISH, LINE_ADMIN_API, adminApi.getBind());
-                        final InputStream es = process.getErrorStream();
+//                        final InputStream es = process.getErrorStream();
+                        final InputStream es = process.getInputStream();
                         InputStreamObservable.line(es)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(Schedulers.io())
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(Schedulers.immediate())
                                 .subscribe(
                                         new Action1<String>() {
                                             @Override
@@ -359,7 +369,14 @@ abstract class Cjdroute {
                 @Override
                 public void onNext(Integer pid) {
                     Log.i(TAG, "Terminating cjdroute with pid=" + pid);
-                    Process.killProcess(pid);
+
+                    try {
+                        AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "none".getBytes());
+                        api.coreExit();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+//                    Process.killProcess(pid);
 
                     // Erase PID.
                     SharedPreferences.Editor editor = PreferenceManager
