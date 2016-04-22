@@ -558,10 +558,10 @@ class AdminApi {
             });
         }
 
-        public static Observable<Boolean> initTunfd(final AdminApi api, final Long tunfd) {
+        public static Observable<Boolean> initTunfd(final AdminApi api, final Long tunfd, final Long type) {
             LinkedHashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
             args.put(wrapString("tunfd"), tunfd);
-            args.put(wrapString("type"), wrapString("android"));
+            args.put(wrapString("type"), type);
 
             return Observable.create(new BaseOnSubscribe<Boolean>(api, new Request("Core_initTunfd", args)) {
                 @Override
@@ -589,7 +589,7 @@ class AdminApi {
         public static Observable<Map<String, Long>> import0(final AdminApi api, final String path) {
             LinkedHashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
             args.put(wrapString("path"), wrapString(path));
-            args.put(wrapString("type"), 1L);
+            args.put(wrapString("type"), wrapString("android"));
 
             return Observable.create(new BaseOnSubscribe<Map<String, Long>>(api, new Request("FileNo_import", args)) {
                 @Override
@@ -711,6 +711,7 @@ class AdminApi {
                 if (error instanceof ByteBuffer) {
                     String errorString = new String(((ByteBuffer) error).array());
                     if (!"none".equals(errorString)) {
+                        Log.d("BEN", mRequest.name + " failed: " + errorString);
                         subscriber.onError(new IOException(mRequest.name + " failed: " + errorString));
                         return;
                     }
@@ -721,10 +722,13 @@ class AdminApi {
                 if (result != null) {
                     subscriber.onNext(result);
                     subscriber.onCompleted();
+                    Log.d("BEN", "Completed " + mRequest.name);
                 } else {
+                    Log.d("BEN", "Failed to parse result from " + mRequest.name);
                     subscriber.onError(new IOException("Failed to parse result from " + mRequest.name));
                 }
             } catch (NoSuchAlgorithmException | IOException e) {
+                Log.d("BEN", "SHIT Failed to parse result from " + mRequest.name);
                 subscriber.onError(e);
             }
         }

@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Locale;
+import java.util.UUID;
 
 import berlin.meshnet.cjdns.util.InputStreamObservable;
 import rx.Observable;
@@ -200,7 +201,13 @@ abstract class Cjdroute {
                     try {
 //                        java.lang.Process process = Runtime.getRuntime().exec(String.format(CMD_EXECUTE_CJDROUTE, mContext.getFilesDir().getPath()));
 
-                        java.lang.Process process = new ProcessBuilder("./cjdroute")
+                        String pipe = UUID.randomUUID().toString();
+                        java.lang.Process process = new ProcessBuilder("./cjdroute", "core", "/data/data/berlin.meshnet.cjdns/files", pipe)
+                                .directory(new File("/data/data/berlin.meshnet.cjdns/files"))
+                                .redirectErrorStream(true)
+                                .start();
+
+                        java.lang.Process process2 = new ProcessBuilder("./cjdroute-init", "/data/data/berlin.meshnet.cjdns/files", pipe, "59ae83c9cd94a18add9d76096ca85a4005683f18ad997236e7ad5660b9b77c4c", "127.0.0.1:11234", "NONE")
                                 .directory(new File("/data/data/berlin.meshnet.cjdns/files"))
                                 .redirectErrorStream(true)
                                 .start();

@@ -31,6 +31,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import rx.functions.Action1;
+
 @SuppressLint("NewApi")
 public class CjdnsVpnService extends VpnService {
     private static final String TAG = "ToyVpnService";
@@ -88,10 +90,24 @@ public class CjdnsVpnService extends VpnService {
                         }
                     }, 2000L);
 
+                    AdminApi.Security.setupComplete(api).toBlocking().first();
+
                     Map file = AdminApi.FileNo.import0(api, path).toBlocking().first();
                     Log.d("BEN", "tunfd: " + file.get("tunfd"));
                     Log.d("BEN", "type: " + file.get("type"));
-                    AdminApi.Core.initTunfd(api, (Long) file.get("tunfd")).toBlocking().first();
+//                    AdminApi.Core.initTunfd(api, (Long) file.get("tunfd"), (Long) file.get("type")).toBlocking().first();
+                    AdminApi.Core.initTunfd(api, (Long) file.get("tunfd"), (Long) file.get("type"))
+                            .subscribe(new Action1<Boolean>() {
+                                @Override
+                                public void call(Boolean aBoolean) {
+                                    Log.d("BEN", "initTunfd onNext()");
+                                }
+                            }, new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    Log.d("BEN", "initTunfd onError() " + throwable);
+                                }
+                            });
                     Log.d("BEN", "initTunfd DIDN'T CRASH");
 
 //                    Log.d("BEN", "BEFORE api.fileNoImport("+path+")");

@@ -134,7 +134,37 @@ abstract class CjdrouteConf {
                                     }
                                 }
                             }
+
+                            // Copy cjdroute from assets folder to the files directory.
+                            InputStream is2 = null;
+                            FileOutputStream os2 = null;
+                            try {
+                                String abi = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? Build.SUPPORTED_ABIS[0] : Build.CPU_ABI;
+                                is2 = appContext.getAssets().open(abi + "/" + Cjdroute.FILENAME_CJDROUTE + "-init");
+                                os2 = appContext.openFileOutput(Cjdroute.FILENAME_CJDROUTE + "-init", Context.MODE_PRIVATE);
+                                copyStream(is2, os2);
+                            } catch (IOException e) {
+                                subscriber.onError(e);
+                                return;
+                            } finally {
+                                if (is2 != null) {
+                                    try {
+                                        is2.close();
+                                    } catch (IOException e) {
+                                        // Do nothing.
+                                    }
+                                }
+                                if (os2 != null) {
+                                    try {
+                                        os2.close();
+                                    } catch (IOException e) {
+                                        // Do nothing.
+                                    }
+                                }
+                            }
                         }
+
+                        new File(filesDir, Cjdroute.FILENAME_CJDROUTE + "-init").setExecutable(true);
 
                         // Create new configuration file from which to return JSON object.
                         if (cjdroutefile.exists()) {
