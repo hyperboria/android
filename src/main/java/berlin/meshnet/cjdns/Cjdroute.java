@@ -374,7 +374,7 @@ abstract class Cjdroute {
 
                     try {
                         AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "NONE".getBytes());
-                        api.coreExit();
+                        AdminApi.Core.exit(api).toBlocking().first();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

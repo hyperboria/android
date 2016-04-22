@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import rx.Observable;
+import rx.Subscriber;
+
 /**
  * API for administration of the cjdns node.
  */
@@ -94,6 +97,7 @@ class AdminApi {
         memory()
         ping()
     */
+
 
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 
@@ -212,86 +216,6 @@ class AdminApi {
         }
     }
 
-    public int corePid() throws IOException {
-        // Get cookie.
-        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
-        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
-        Map response = send(request);
-        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-        Log.d("BEN", "corePid() cookie: " + cookie);
-
-        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(mPassword);
-            digest.update(cookie.getBytes());
-            byte[] dummyHash = digest.digest();
-            Log.d("BEN", "corePid() dummyHash: " + bytesToHex(dummyHash));
-
-            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
-            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-            byte[] requestBytes = serialize(request3);
-
-            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
-            digest2.update(requestBytes);
-            byte[] actualHash = digest2.digest();
-            Log.d("BEN", "corePid() actualHash: " + bytesToHex(actualHash));
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        Map response3 = send(request3);
-        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
-        Long pid = (Long) response3.get(ByteBuffer.wrap("pid".getBytes()));
-        Log.d("BEN", "corePid() PID: " + pid + " [error=" + error + "]");
-
-        return pid.intValue();
-    }
-
-    public void coreExit() throws IOException {
-        // Get cookie.
-        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
-        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
-        Map response = send(request);
-        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-        Log.d("BEN", "Cookie: " + cookie);
-
-        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(mPassword);
-            digest.update(cookie.getBytes());
-            byte[] dummyHash = digest.digest();
-            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
-
-            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
-            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_exit".getBytes()));
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-            byte[] requestBytes = serialize(request3);
-            Log.d("BEN", "requestBytes: " + new String(requestBytes));
-
-            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
-            digest2.update(requestBytes);
-            byte[] actualHash = digest2.digest();
-            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        Map response3 = send(request3);
-        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
-        Log.d("BEN", "error: " + error);
-    }
-
     public int udpInterfaceNew() throws IOException {
         // Get cookie.
         HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
@@ -407,101 +331,101 @@ class AdminApi {
         return 1;
     }
 
-    public Long fileNoImport(String path) throws IOException {
-        // Get cookie.
-        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
-        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
-        Map response = send(request);
-        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-        Log.d("BEN", "fileNoImport() cookie: " + cookie);
-
-        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(mPassword);
-            digest.update(cookie.getBytes());
-            byte[] dummyHash = digest.digest();
-            Log.d("BEN", "fileNoImport() dummyHash: " + bytesToHex(dummyHash));
-
-            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
-            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("FileNo_import".getBytes()));
-
-            // Args.
-            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-            args.put(ByteBuffer.wrap("path".getBytes()), ByteBuffer.wrap(path.getBytes()));
-            args.put(ByteBuffer.wrap("type".getBytes()), new Long(1L));
-            request3.put(ByteBuffer.wrap("args".getBytes()), args);
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-            byte[] requestBytes = serialize(request3);
-
-            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
-            digest2.update(requestBytes);
-            byte[] actualHash = digest2.digest();
-            Log.d("BEN", "fileNoImport() actualHash: " + bytesToHex(actualHash));
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        Map response3 = send(request3);
-        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
-        Long tunfd = (Long) response3.get(ByteBuffer.wrap("tunfd".getBytes()));
-        Long type = (Long) response3.get(ByteBuffer.wrap("type".getBytes()));
-        Log.d("BEN", "fileNoImport() error: " + error + " tunfd: " + tunfd + " type: " + type);
-
-        return tunfd;
-    }
-
-    public int coreInitTunFd(Long tunFd, Long type) throws IOException {
-        // Get cookie.
-        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
-        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
-        Map response = send(request);
-        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-        Log.d("BEN", "Cookie: " + cookie);
-
-        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(mPassword);
-            digest.update(cookie.getBytes());
-            byte[] dummyHash = digest.digest();
-            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
-
-            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
-            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_initTunfd".getBytes()));
-
-            // Args.
+//    public Long fileNoImport(String path) throws IOException {
+//        // Get cookie.
+//        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+//        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+//        Map response = send(request);
+//        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+//        Log.d("BEN", "fileNoImport() cookie: " + cookie);
+//
+//        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            digest.update(mPassword);
+//            digest.update(cookie.getBytes());
+//            byte[] dummyHash = digest.digest();
+//            Log.d("BEN", "fileNoImport() dummyHash: " + bytesToHex(dummyHash));
+//
+//            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+//            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("FileNo_import".getBytes()));
+//
+//            // Args.
 //            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-//            args.put(ByteBuffer.wrap("tunfd".getBytes()), tunFd);
-//            args.put(ByteBuffer.wrap("type".getBytes()), type);
+//            args.put(ByteBuffer.wrap("path".getBytes()), ByteBuffer.wrap(path.getBytes()));
+//            args.put(ByteBuffer.wrap("type".getBytes()), new Long(1L));
 //            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+//
+//            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+//            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+//            byte[] requestBytes = serialize(request3);
+//
+//            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+//            digest2.update(requestBytes);
+//            byte[] actualHash = digest2.digest();
+//            Log.d("BEN", "fileNoImport() actualHash: " + bytesToHex(actualHash));
+//
+//            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+//            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Map response3 = send(request3);
+//        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+//        Long tunfd = (Long) response3.get(ByteBuffer.wrap("tunfd".getBytes()));
+//        Long type = (Long) response3.get(ByteBuffer.wrap("type".getBytes()));
+//        Log.d("BEN", "fileNoImport() error: " + error + " tunfd: " + tunfd + " type: " + type);
+//
+//        return tunfd;
+//    }
 
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-            byte[] requestBytes = serialize(request3);
-
-            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
-            digest2.update(requestBytes);
-            byte[] actualHash = digest2.digest();
-            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        Map response3 = send(request3);
-        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
-        Log.d("BEN", "error: " + error);
-
-        return 1;
-    }
+//    public int coreInitTunFd(Long tunFd, Long type) throws IOException {
+//        // Get cookie.
+//        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+//        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+//        Map response = send(request);
+//        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+//        Log.d("BEN", "Cookie: " + cookie);
+//
+//        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            digest.update(mPassword);
+//            digest.update(cookie.getBytes());
+//            byte[] dummyHash = digest.digest();
+//            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+//
+//            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+//            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_initTunfd".getBytes()));
+//
+//            // Args.
+////            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+////            args.put(ByteBuffer.wrap("tunfd".getBytes()), tunFd);
+////            args.put(ByteBuffer.wrap("type".getBytes()), type);
+////            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+//
+//            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+//            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+//            byte[] requestBytes = serialize(request3);
+//
+//            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+//            digest2.update(requestBytes);
+//            byte[] actualHash = digest2.digest();
+//            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+//
+//            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+//            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Map response3 = send(request3);
+//        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+//        Log.d("BEN", "error: " + error);
+//
+//        return 1;
+//    }
 
     public int runStuff() throws IOException {
 //        functions(0L);
@@ -523,21 +447,7 @@ class AdminApi {
 //        Long tunFd = fileNoImport();
 //        coreInitTunFd(tunFd, 1L);
 
-        return corePid();
-
-        /*
-        // try {
-        HashMap<ByteBuffer, Object> request = new HashMap<>();
-        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("Core_pid".getBytes()));
-
-        Map response = send(request);
-        Long pid = (Long) response.get(ByteBuffer.wrap("pid".getBytes()));
-
-        return pid.intValue();
-        // } catch (IOException e) {
-        //     return 0;
-        // }
-        */
+        return AdminApi.Core.pid(this).toBlocking().first().intValue();
     }
 
     /**
@@ -564,7 +474,7 @@ class AdminApi {
         while (resData[i] == 0) {
             --i;
         }
-        byte[] resDataClean = Arrays.copyOf(resData, i+1);
+        byte[] resDataClean = Arrays.copyOf(resData, i + 1);
         Log.i("BEN", "admin-response: " + new String(resDataClean));
         return parse(resDataClean);
     }
@@ -576,7 +486,7 @@ class AdminApi {
      * @return The socket.
      * @throws SocketException Thrown if failed to create or bind.
      */
-    private DatagramSocket newSocket() throws SocketException {
+    private static DatagramSocket newSocket() throws SocketException {
         DatagramSocket socket = new DatagramSocket();
         socket.setSoTimeout(SOCKET_TIMEOUT);
         return socket;
@@ -589,7 +499,7 @@ class AdminApi {
      * @return The bencoded byte array.
      * @throws IOException
      */
-    private byte[] serialize(Map request) throws IOException {
+    private static byte[] serialize(Map request) throws IOException {
         Bencode serializer = new Bencode();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         serializer.setRootElement(request);
@@ -604,7 +514,7 @@ class AdminApi {
      * @return The response as a map.
      * @throws IOException
      */
-    private Map parse(byte[] data) throws IOException {
+    private static Map parse(byte[] data) throws IOException {
         StringReader input = new StringReader(new String(data));
         Bencode parser = new Bencode(input);
         return (Map) parser.getRootElement();
@@ -622,5 +532,203 @@ class AdminApi {
             hexString = new String(hexChars);
         }
         return hexString;
+    }
+
+    public static class Core {
+
+        public static Observable<Long> pid(final AdminApi api) {
+            return Observable.create(new BaseOnSubscribe<Long>(api, new Request("Core_pid", null)) {
+                @Override
+                protected Long parseResult(Map response) {
+                    Object pid = response.get(wrapString("pid"));
+                    if (pid instanceof Long) {
+                        return (Long) pid;
+                    }
+                    return null;
+                }
+            });
+        }
+
+        public static Observable<Boolean> exit(final AdminApi api) {
+            return Observable.create(new BaseOnSubscribe<Boolean>(api, new Request("Core_exit", null)) {
+                @Override
+                protected Boolean parseResult(Map response) {
+                    return Boolean.TRUE;
+                }
+            });
+        }
+
+        public static Observable<Boolean> initTunfd(final AdminApi api, final Long tunfd) {
+            LinkedHashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(wrapString("tunfd"), tunfd);
+            args.put(wrapString("type"), wrapString("android"));
+
+            return Observable.create(new BaseOnSubscribe<Boolean>(api, new Request("Core_initTunfd", args)) {
+                @Override
+                protected Boolean parseResult(Map response) {
+                    return Boolean.TRUE;
+                }
+            });
+        }
+    }
+
+    public static class Security {
+
+        public static Observable<Boolean> setupComplete(final AdminApi api) {
+            return Observable.create(new BaseOnSubscribe<Boolean>(api, new Request("Security_setupComplete", null)) {
+                @Override
+                protected Boolean parseResult(Map response) {
+                    return Boolean.TRUE;
+                }
+            });
+        }
+    }
+
+    public static class FileNo {
+
+        public static Observable<Map<String, Long>> import0(final AdminApi api, final String path) {
+            LinkedHashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(wrapString("path"), wrapString(path));
+            args.put(wrapString("type"), 1L);
+
+            return Observable.create(new BaseOnSubscribe<Map<String, Long>>(api, new Request("FileNo_import", args)) {
+                @Override
+                protected Map<String, Long> parseResult(Map response) {
+                    final Long tunfd = (Long) response.get(wrapString("tunfd"));
+                    final Long type = (Long) response.get(wrapString("type"));
+
+                    return new HashMap<String, Long>() {{
+                        put("tunfd", tunfd);
+                        put("type", type);
+                    }};
+                }
+            });
+        }
+    }
+
+    private static final HashMap<ByteBuffer, Object> REQUEST_COOKIE = new LinkedHashMap<ByteBuffer, Object>() {{
+        put(wrapString("q"), wrapString("cookie"));
+    }};
+
+    private static ByteBuffer wrapString(String value) {
+        return ByteBuffer.wrap(value.getBytes());
+    }
+
+    private static Map send(Map request, AdminApi api) throws IOException {
+        DatagramSocket socket = newSocket();
+
+        byte[] data = serialize(request);
+        Log.i("BEN", "admin-request: " + new String(data));
+        DatagramPacket dgram = new DatagramPacket(data, data.length, api.mAddress, api.mPort);
+        socket.send(dgram);
+
+        DatagramPacket responseDgram = new DatagramPacket(new byte[DATAGRAM_LENGTH], DATAGRAM_LENGTH);
+        socket.receive(responseDgram);
+        socket.close();
+
+        byte[] resData = responseDgram.getData();
+        int i = resData.length - 1;
+        while (resData[i] == 0) {
+            --i;
+        }
+        byte[] resDataClean = Arrays.copyOf(resData, i + 1);
+        Log.i("BEN", "admin-response: " + new String(resDataClean));
+        return parse(resDataClean);
+    }
+
+    private static String getCookie(AdminApi api) throws IOException {
+        Map response = send(REQUEST_COOKIE, api);
+        Object cookie = response.get(wrapString("cookie"));
+        if (cookie instanceof ByteBuffer) {
+            return new String(((ByteBuffer) cookie).array());
+        } else {
+            throw new IOException("Unable to fetch authentication cookie");
+        }
+    }
+
+    private static Map sendAuthenticatedRequest(Request request, AdminApi api) throws NoSuchAlgorithmException, IOException {
+        // Get authentication session cookie.
+        String cookie = getCookie(api);
+
+        // Generate dummy hash.
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        digest.update(api.mPassword);
+        digest.update(cookie.getBytes());
+        String dummyHash = bytesToHex(digest.digest());
+
+        // Assemble unsigned request.
+        HashMap<ByteBuffer, Object> authenticatedRequest = new LinkedHashMap<>();
+        authenticatedRequest.put(wrapString("q"), wrapString("auth"));
+        authenticatedRequest.put(wrapString("aq"), wrapString(request.name));
+        if (request.args != null) {
+            authenticatedRequest.put(wrapString("args"), request.args);
+        }
+        authenticatedRequest.put(wrapString("hash"), wrapString(dummyHash));
+        authenticatedRequest.put(wrapString("cookie"), wrapString(cookie));
+
+        // Sign request.
+        byte[] requestBytes = serialize(authenticatedRequest);
+        digest.reset();
+        digest.update(requestBytes);
+        String hash = bytesToHex(digest.digest());
+        authenticatedRequest.put(wrapString("hash"), wrapString(hash));
+        authenticatedRequest.put(wrapString("cookie"), wrapString(cookie)); // TODO May not need this for order preservation.
+
+        // Send request.
+        return send(authenticatedRequest, api);
+    }
+
+    private static class Request {
+
+        private final String name;
+
+        private final LinkedHashMap<ByteBuffer, Object> args;
+
+        private Request(String name, LinkedHashMap<ByteBuffer, Object> args) {
+            this.name = name;
+            this.args = args;
+        }
+    }
+
+    private static abstract class BaseOnSubscribe<T> implements Observable.OnSubscribe<T> {
+
+        private AdminApi mApi;
+
+        private Request mRequest;
+
+        private BaseOnSubscribe(AdminApi api, Request request) {
+            mApi = api;
+            mRequest = request;
+        }
+
+        @Override
+        public void call(Subscriber<? super T> subscriber) {
+            try {
+                Map response = AdminApi.sendAuthenticatedRequest(mRequest, mApi);
+
+                // Check for error.
+                Object error = response.get(wrapString("error"));
+                if (error instanceof ByteBuffer) {
+                    String errorString = new String(((ByteBuffer) error).array());
+                    if (!"none".equals(errorString)) {
+                        subscriber.onError(new IOException(mRequest.name + " failed: " + errorString));
+                        return;
+                    }
+                }
+
+                // Parse for result.
+                T result = parseResult(response);
+                if (result != null) {
+                    subscriber.onNext(result);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new IOException("Failed to parse result from " + mRequest.name));
+                }
+            } catch (NoSuchAlgorithmException | IOException e) {
+                subscriber.onError(e);
+            }
+        }
+
+        protected abstract T parseResult(Map response);
     }
 }

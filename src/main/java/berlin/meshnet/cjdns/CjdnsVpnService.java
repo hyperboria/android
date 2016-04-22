@@ -26,6 +26,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -87,11 +88,17 @@ public class CjdnsVpnService extends VpnService {
                         }
                     }, 2000L);
 
-                    Log.d("BEN", "BEFORE api.fileNoImport("+path+")");
-                    Long realFd = api.fileNoImport(path);
-                    Log.d("BEN", "VPN realFd: " + realFd);
+                    Map file = AdminApi.FileNo.import0(api, path).toBlocking().first();
+                    Log.d("BEN", "tunfd: " + file.get("tunfd"));
+                    Log.d("BEN", "type: " + file.get("type"));
+                    AdminApi.Core.initTunfd(api, (Long) file.get("tunfd")).toBlocking().first();
+                    Log.d("BEN", "initTunfd DIDN'T CRASH");
 
-                    api.coreInitTunFd(realFd, 1L);
+//                    Log.d("BEN", "BEFORE api.fileNoImport("+path+")");
+//                    Long realFd = api.fileNoImport(path);
+//                    Log.d("BEN", "VPN realFd: " + realFd);
+//
+//                    api.coreInitTunFd(realFd, 1L);
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
