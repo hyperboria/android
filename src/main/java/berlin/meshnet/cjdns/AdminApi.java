@@ -216,171 +216,7 @@ class AdminApi {
         }
     }
 
-    public int udpInterfaceNew() throws IOException {
-        // Get cookie.
-        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
-        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
-        Map response = send(request);
-        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-        Log.d("BEN", "Cookie: " + cookie);
-
-        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(mPassword);
-            digest.update(cookie.getBytes());
-            byte[] dummyHash = digest.digest();
-            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
-
-            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
-            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("UDPInterface_new".getBytes()));
-
-            // Args.
-            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-            // TODO Replace port.
-            args.put(ByteBuffer.wrap("bindAddress".getBytes()), ByteBuffer.wrap("127.0.0.1:0".getBytes()));
-            request3.put(ByteBuffer.wrap("args".getBytes()), args);
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-            byte[] requestBytes = serialize(request3);
-
-            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
-            digest2.update(requestBytes);
-            byte[] actualHash = digest2.digest();
-            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        Map response3 = send(request3);
-        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
-        interfaceNumber = (Long) response3.get(ByteBuffer.wrap("interfaceNumber".getBytes()));
-        Log.d("BEN", "error: " + error + " interfaceNumber: " + interfaceNumber);
-
-        return 1;
-    }
-
-    Long interfaceNumber;
-
-    public int udpInterfaceBeginConnection() throws IOException {
-        // Get cookie.
-        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
-        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
-        Map response = send(request);
-        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-        Log.d("BEN", "Cookie: " + cookie);
-
-        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(mPassword);
-            digest.update(cookie.getBytes());
-            byte[] dummyHash = digest.digest();
-            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
-
-            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
-            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("UDPInterface_beginConnection".getBytes()));
-
-            // Args.
-
-//            /**
-//             * Default public peer interface. TODO Remove.
-//             */
-//            private static final String DEFAULT_PEER_INTERFACE = "104.200.29.163:53053";
-//
-//            /**
-//             * Default public peer credentials. TODO Remove.
-//             */
-//            private static final String DEFAULT_PEER_CREDENTIALS = "{\n" +
-//                    "  \"publicKey\": \"1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k\",\n" +
-//                    "  \"password\": \"8fVMl0oo6QI6wKeMneuY26x1MCgRemg\",\n" +
-//                    "  \"contact\": \"ansuz@transitiontech.ca\",\n" +
-//                    "  \"location\": \"Newark,NJ,USA\"\n" +
-//                    "}";
-            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-            args.put(ByteBuffer.wrap("publicKey".getBytes()), ByteBuffer.wrap("1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k".getBytes()));
-            args.put(ByteBuffer.wrap("address".getBytes()), ByteBuffer.wrap("104.200.29.163:53053".getBytes()));
-            args.put(ByteBuffer.wrap("interfaceNumber".getBytes()), interfaceNumber);
-//            args.put(ByteBuffer.wrap("login".getBytes()), ByteBuffer.wrap("ansuz".getBytes()));
-            args.put(ByteBuffer.wrap("password".getBytes()), ByteBuffer.wrap("8fVMl0oo6QI6wKeMneuY26x1MCgRemg".getBytes()));
-            request3.put(ByteBuffer.wrap("args".getBytes()), args);
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-            byte[] requestBytes = serialize(request3);
-
-            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
-            digest2.update(requestBytes);
-            byte[] actualHash = digest2.digest();
-            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
-
-            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
-            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        Map response3 = send(request3);
-        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
-        Log.d("BEN", "error: " + error);
-
-        return 1;
-    }
-
-//    public Long fileNoImport(String path) throws IOException {
-//        // Get cookie.
-//        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
-//        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
-//        Map response = send(request);
-//        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
-//        Log.d("BEN", "fileNoImport() cookie: " + cookie);
-//
-//        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
-//        try {
-//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-//            digest.update(mPassword);
-//            digest.update(cookie.getBytes());
-//            byte[] dummyHash = digest.digest();
-//            Log.d("BEN", "fileNoImport() dummyHash: " + bytesToHex(dummyHash));
-//
-//            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
-//            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("FileNo_import".getBytes()));
-//
-//            // Args.
-//            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-//            args.put(ByteBuffer.wrap("path".getBytes()), ByteBuffer.wrap(path.getBytes()));
-//            args.put(ByteBuffer.wrap("type".getBytes()), new Long(1L));
-//            request3.put(ByteBuffer.wrap("args".getBytes()), args);
-//
-//            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
-//            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-//            byte[] requestBytes = serialize(request3);
-//
-//            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
-//            digest2.update(requestBytes);
-//            byte[] actualHash = digest2.digest();
-//            Log.d("BEN", "fileNoImport() actualHash: " + bytesToHex(actualHash));
-//
-//            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
-//            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Map response3 = send(request3);
-//        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
-//        Long tunfd = (Long) response3.get(ByteBuffer.wrap("tunfd".getBytes()));
-//        Long type = (Long) response3.get(ByteBuffer.wrap("type".getBytes()));
-//        Log.d("BEN", "fileNoImport() error: " + error + " tunfd: " + tunfd + " type: " + type);
-//
-//        return tunfd;
-//    }
-
-//    public int coreInitTunFd(Long tunFd, Long type) throws IOException {
+//    public int udpInterfaceNew() throws IOException {
 //        // Get cookie.
 //        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
 //        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
@@ -397,13 +233,65 @@ class AdminApi {
 //            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
 //
 //            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
-//            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("Core_initTunfd".getBytes()));
+//            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("UDPInterface_new".getBytes()));
 //
 //            // Args.
-////            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
-////            args.put(ByteBuffer.wrap("tunfd".getBytes()), tunFd);
-////            args.put(ByteBuffer.wrap("type".getBytes()), type);
-////            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+//            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+//            // TODO Replace port.
+//            args.put(ByteBuffer.wrap("bindAddress".getBytes()), ByteBuffer.wrap("127.0.0.1:0".getBytes()));
+//            request3.put(ByteBuffer.wrap("args".getBytes()), args);
+//
+//            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
+//            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+//            byte[] requestBytes = serialize(request3);
+//
+//            MessageDigest digest2 = MessageDigest.getInstance("SHA-256");
+//            digest2.update(requestBytes);
+//            byte[] actualHash = digest2.digest();
+//            Log.d("BEN", "actualHash: " + bytesToHex(actualHash));
+//
+//            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(actualHash).getBytes()));
+//            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Map response3 = send(request3);
+//        String error = new String(((ByteBuffer) response3.get(ByteBuffer.wrap("error".getBytes()))).array());
+//        interfaceNumber = (Long) response3.get(ByteBuffer.wrap("interfaceNumber".getBytes()));
+//        Log.d("BEN", "error: " + error + " interfaceNumber: " + interfaceNumber);
+//
+//        return 1;
+//    }
+//
+//    Long interfaceNumber;
+//
+//    public int udpInterfaceBeginConnection() throws IOException {
+//        // Get cookie.
+//        HashMap<ByteBuffer, Object> request = new LinkedHashMap<>();
+//        request.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("cookie".getBytes()));
+//        Map response = send(request);
+//        String cookie = new String(((ByteBuffer) response.get(ByteBuffer.wrap("cookie".getBytes()))).array());
+//        Log.d("BEN", "Cookie: " + cookie);
+//
+//        HashMap<ByteBuffer, Object> request3 = new LinkedHashMap<>();
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            digest.update(mPassword);
+//            digest.update(cookie.getBytes());
+//            byte[] dummyHash = digest.digest();
+//            Log.d("BEN", "dummyHash: " + bytesToHex(dummyHash));
+//
+//            request3.put(ByteBuffer.wrap("q".getBytes()), ByteBuffer.wrap("auth".getBytes()));
+//            request3.put(ByteBuffer.wrap("aq".getBytes()), ByteBuffer.wrap("UDPInterface_beginConnection".getBytes()));
+//
+//            HashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+//            args.put(ByteBuffer.wrap("publicKey".getBytes()), ByteBuffer.wrap("1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k".getBytes()));
+//            args.put(ByteBuffer.wrap("address".getBytes()), ByteBuffer.wrap("104.200.29.163:53053".getBytes()));
+//            args.put(ByteBuffer.wrap("interfaceNumber".getBytes()), interfaceNumber);
+////            args.put(ByteBuffer.wrap("login".getBytes()), ByteBuffer.wrap("ansuz".getBytes()));
+//            args.put(ByteBuffer.wrap("password".getBytes()), ByteBuffer.wrap("8fVMl0oo6QI6wKeMneuY26x1MCgRemg".getBytes()));
+//            request3.put(ByteBuffer.wrap("args".getBytes()), args);
 //
 //            request3.put(ByteBuffer.wrap("hash".getBytes()), ByteBuffer.wrap(bytesToHex(dummyHash).getBytes()));
 //            request3.put(ByteBuffer.wrap("cookie".getBytes()), ByteBuffer.wrap(cookie.getBytes()));
@@ -428,25 +316,6 @@ class AdminApi {
 //    }
 
     public int runStuff() throws IOException {
-//        functions(0L);
-//        functions(1L);
-//        functions(2L);
-//        functions(3L);
-//        functions(4L);
-//        functions(5L);
-//        functions(6L);
-//        functions(7L);
-//        functions(8L);
-//        functions(9L);
-//        functions(10L);
-
-        // TODO Not returning interfaceNumber atm.
-//        udpInterfaceNew();
-//        udpInterfaceBeginConnection();
-
-//        Long tunFd = fileNoImport();
-//        coreInitTunFd(tunFd, 1L);
-
         return AdminApi.Core.pid(this).toBlocking().first().intValue();
     }
 
@@ -601,6 +470,42 @@ class AdminApi {
                         put("tunfd", tunfd);
                         put("type", type);
                     }};
+                }
+            });
+        }
+    }
+
+    public static class UdpInterface {
+
+        public static Observable<Long> new0(final AdminApi api, final String bindAddress) {
+            LinkedHashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(wrapString("bindAddress"), wrapString(bindAddress));
+
+            return Observable.create(new BaseOnSubscribe<Long>(api, new Request("UDPInterface_new", args)) {
+                @Override
+                protected Long parseResult(Map response) {
+                    Object interfaceNumber = response.get(wrapString("interfaceNumber"));
+                    if (interfaceNumber instanceof Long) {
+                        return (Long) interfaceNumber;
+                    }
+                    return null;
+                }
+            });
+        }
+
+        public static Observable<Boolean> beginConnection(final AdminApi api, final String publicKey, final String address,
+                                                          final Long interfaceNumber, final String login, final String password) {
+            LinkedHashMap<ByteBuffer, Object> args = new LinkedHashMap<>();
+            args.put(wrapString("publicKey"), wrapString(publicKey));
+            args.put(wrapString("address"), wrapString(address));
+            args.put(wrapString("interfaceNumber"), interfaceNumber);
+//            args.put(wrapString("login"), wrapString(login));
+            args.put(wrapString("password"), wrapString(password));
+
+            return Observable.create(new BaseOnSubscribe<Boolean>(api, new Request("UDPInterface_beginConnection", args)) {
+                @Override
+                protected Boolean parseResult(Map response) {
+                    return Boolean.TRUE;
                 }
             });
         }

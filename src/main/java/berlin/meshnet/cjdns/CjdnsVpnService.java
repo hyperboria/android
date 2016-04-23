@@ -18,6 +18,7 @@ package berlin.meshnet.cjdns;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.net.Network;
 import android.net.VpnService;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
@@ -64,21 +65,44 @@ public class CjdnsVpnService extends VpnService {
         // Start a new session by creating a new thread.
         new Timer().schedule(new TimerTask() {
 
+            private Long first;
+
             @Override
             public void run() {
+
                 // TODO LOOK HERE
-                //        "ip -6 route add default via fc00::1 dev tun0 metric 4096"
                 try {
+                    AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "NONE".getBytes());
+
+                    // Add public peer
+                    Long udpInterfaceNumber = AdminApi.UdpInterface.new0(api, "127.0.0.1:0").toBlocking().first();
+                    Log.d("BEN", "udpInterfaceNumber: " + udpInterfaceNumber);
+                    AdminApi.UdpInterface.beginConnection(api,
+                            "1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k",
+                            "104.200.29.163:53053",
+                            udpInterfaceNumber,
+                            "", // TODO Unused
+                            "8fVMl0oo6QI6wKeMneuY26x1MCgRemg").toBlocking().first();
+
+                    if (mInterface != null) {
+                        try {
+                            mInterface.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        mInterface = null;
+                    }
                     mInterface = new Builder()
                             .setMtu(1304)
                             .addAddress("fce5:c180:6bff:a33f:c0b3:f22a:945d:ca39", 8)
                             .addRoute("fc00::", 8)
+                            .addRoute("::", 0) // Default route
                             .establish();
+
+                    //        "ip -6 route add default via fc00::1 dev tun0 metric 4096"
 
                     final int fd = mInterface.getFd();
                     Log.d("BEN", "VPN fd: " + fd);
-
-                    AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "NONE".getBytes());
 
                     final String path = "/data/data/berlin.meshnet.cjdns/files/" + UUID.randomUUID();
                     new Timer().schedule(new TimerTask() {
@@ -128,6 +152,14 @@ public class CjdnsVpnService extends VpnService {
 
     @Override
     public void onDestroy() {
+        if (mInterface != null) {
+            try {
+                mInterface.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mInterface = null;
+        }
 //        if (mThread != null) {
 //            mThread.interrupt();
 //        }
