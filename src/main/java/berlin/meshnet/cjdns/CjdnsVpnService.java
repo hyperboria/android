@@ -75,7 +75,7 @@ public class CjdnsVpnService extends VpnService {
                     AdminApi api = new AdminApi(InetAddress.getByName("127.0.0.1"), 11234, "NONE".getBytes());
 
                     // Add public peer
-                    Long udpInterfaceNumber = AdminApi.UdpInterface.new0(api, "127.0.0.1:0").toBlocking().first();
+                    Long udpInterfaceNumber = AdminApi.UdpInterface.new0(api, "0.0.0.0:0").toBlocking().first();
                     Log.d("BEN", "udpInterfaceNumber: " + udpInterfaceNumber);
                     AdminApi.UdpInterface.beginConnection(api,
                             "1941p5k8qqvj17vjrkb9z97wscvtgc1vp8pv1huk5120cu42ytt0.k",
