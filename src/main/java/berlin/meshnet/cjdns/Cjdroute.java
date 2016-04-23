@@ -207,7 +207,7 @@ abstract class Cjdroute {
                                 .redirectErrorStream(true)
                                 .start();
 
-                        java.lang.Process process2 = new ProcessBuilder("./cjdroute-init", "/data/data/berlin.meshnet.cjdns/files", pipe, "59ae83c9cd94a18add9d76096ca85a4005683f18ad997236e7ad5660b9b77c4c", "127.0.0.1:11234", "NONE")
+                        java.lang.Process process2 = new ProcessBuilder("./cjdroute-init", "/data/data/berlin.meshnet.cjdns/files", pipe, "069fd9786f2ac066babfda45ad023e9f5dd208bb491a158ab91342b00fbdeb32", "127.0.0.1:11234", "NONE")
                                 .directory(new File("/data/data/berlin.meshnet.cjdns/files"))
                                 .redirectErrorStream(true)
                                 .start();

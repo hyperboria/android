@@ -94,9 +94,10 @@ public class CjdnsVpnService extends VpnService {
                     }
                     mInterface = new Builder()
                             .setMtu(1304)
-                            .addAddress("fce5:c180:6bff:a33f:c0b3:f22a:945d:ca39", 8)
+                            .addAddress("fc61:d253:5376:6abe:a36b:62bb:5031:4568", 8)
                             .addRoute("fc00::", 8)
                             .addRoute("::", 0) // Default route
+                            .addDnsServer("8.8.8.8")
                             .establish();
 
                     //        "ip -6 route add default via fc00::1 dev tun0 metric 4096"
