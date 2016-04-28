@@ -23,6 +23,8 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
+ * TODO Only needed for compat.
+ * <p/>
  * Service for managing cjdroute.
  */
 public class CjdnsService extends Service {

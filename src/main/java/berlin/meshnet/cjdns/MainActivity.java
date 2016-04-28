@@ -1,8 +1,11 @@
 package berlin.meshnet.cjdns;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.VpnService;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -15,6 +18,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +34,7 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,11 +53,12 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Subscription;
 import rx.android.app.AppObservable;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String BUNDLE_KEY_SELECTED_CONTENT = "selectedContent";
 
@@ -169,37 +175,38 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
-        // Set initial state of toggle and click behaviour.
+        // Configure toggle click behaviour.
         final SwitchCompat cjdnsServiceSwitch = (SwitchCompat) MenuItemCompat.getActionView(menu.findItem(R.id.switch_cjdns_service));
-        mSubscriptions.add(AppObservable.bindActivity(this, Cjdroute.running(this)
-                .subscribeOn(Schedulers.io()))
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer pid) {
-                        // Change toggle check state if there is a currently running cjdroute process.
-                        cjdnsServiceSwitch.setChecked(true);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        // Do nothing.
-                    }
-                }, new Action0() {
-                    @Override
-                    public void call() {
-                        // Configure toggle click behaviour.
-                        cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                if (isChecked) {
-                                    mBus.post(new ApplicationEvents.StartCjdnsService());
-                                } else {
-                                    mBus.post(new ApplicationEvents.StopCjdnsService());
-                                }
-                            }
-                        });
-                    }
-                }));
+        cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mBus.post(new ApplicationEvents.StartCjdnsService());
+                } else {
+                    mBus.post(new ApplicationEvents.StopCjdnsService());
+                }
+            }
+        });
+
+        // Set initial state of toggle and click behaviour.
+        try {
+            mSubscriptions.add(AppObservable.bindActivity(this, Cjdroute.running()
+                    .subscribeOn(Schedulers.io()))
+                    .subscribe(new Action1<Long>() {
+                        @Override
+                        public void call(Long pid) {
+                            // Change toggle check state if there is a currently running cjdroute process.
+                            cjdnsServiceSwitch.setChecked(pid != Cjdroute.INVALID_PID);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            cjdnsServiceSwitch.setChecked(false);
+                        }
+                    }));
+        } catch (UnknownHostException e) {
+            Log.e(TAG, "Failed to start AdminApi", e);
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -240,10 +247,21 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Subscribe
     public void handleEvent(ApplicationEvents.StartCjdnsService event) {
         Toast.makeText(getApplicationContext(), "Starting CjdnsService", Toast.LENGTH_SHORT).show();
-        startService(new Intent(getApplicationContext(), CjdnsService.class));
+
+        // Start cjdns VPN.
+        Intent intent = VpnService.prepare(this);
+        if (intent != null) {
+            startActivityForResult(intent, 0);
+        } else {
+            onActivityResult(0, RESULT_OK, null);
+        }
+
+        // TODO Compat.
+//        startService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
     @Subscribe
@@ -251,12 +269,17 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
 
         // Kill cjdroute process.
-        Cjdroute.running(this)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(mCjdroute.terminate());
+        try {
+            Cjdroute.running()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .subscribe(mCjdroute.terminate());
+        } catch (UnknownHostException e) {
+            Log.e(TAG, "Failed to start AdminApi", e);
+        }
 
-        stopService(new Intent(getApplicationContext(), CjdnsService.class));
+        // TODO Compat.
+//        stopService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
     @Subscribe
@@ -315,5 +338,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int request, int result, Intent data) {
+        if (result == RESULT_OK) {
+            startService(new Intent(this, CjdnsVpnService.class));
+        }
     }
 }

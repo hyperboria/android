@@ -219,7 +219,7 @@ public class ConnectionsDialogFragment extends DialogFragment {
                 public void onClick(View v) {
                     List<Credential> connections = new ArrayList<>(Arrays.asList(mPeer.outgoingConnections));
                     connections.remove(credential);
-                    Node.Peer update = new Node.Peer(mPeer.id, mPeer.name, mPeer.publicKey,
+                    Node.Peer update = new Node.Peer(mPeer.id, mPeer.name, "", mPeer.publicKey,
                             connections.toArray(new Credential[connections.size()]));
                     mBus.post(new PeerEvents.Update(update));
                 }
