@@ -104,6 +104,23 @@ public class CjdnsVpnService extends VpnService {
                                     "8fVMl0oo6QI6wKeMneuY26x1MCgRemg");
                         }
                     })
+                    .flatMap(new Func1<Boolean, Observable<Long>>() {
+                        @Override
+                        public Observable<Long> call(Boolean isSuccessful) {
+                            return AdminApi.UdpInterface.new0(api);
+                        }
+                    })
+                    .flatMap(new Func1<Long, Observable<Boolean>>() {
+                        @Override
+                        public Observable<Boolean> call(Long udpInterfaceNumber) {
+                            return AdminApi.UdpInterface.beginConnection(api,
+                                    "2scyvybg4qqms1c5c9nyt50b1cdscxnr6ycpwsxf6pccbmwuynk0.k",
+                                    "159.203.5.91:30664",
+                                    udpInterfaceNumber,
+                                    "android-public",
+                                    "kj1rur4buavtyp2mavch5nghsnd4bpf");
+                        }
+                    })
                     .flatMap(new Func1<Boolean, Observable<Node.Me>>() {
                         @Override
                         public Observable<Node.Me> call(Boolean isSuccessful) {
