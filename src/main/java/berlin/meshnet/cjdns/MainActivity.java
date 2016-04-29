@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Subscription> mSubscriptions = new ArrayList<>();
 
+    private boolean mIsCjdnsRunning = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,15 +177,19 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
+        // TODO Sync toggle properly.
+
         // Configure toggle click behaviour.
         final SwitchCompat cjdnsServiceSwitch = (SwitchCompat) MenuItemCompat.getActionView(menu.findItem(R.id.switch_cjdns_service));
         cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+                if (isChecked && !mIsCjdnsRunning) {
                     mBus.post(new ApplicationEvents.StartCjdnsService());
-                } else {
+                    mIsCjdnsRunning = true;
+                } else if (!isChecked && mIsCjdnsRunning) {
                     mBus.post(new ApplicationEvents.StopCjdnsService());
+                    mIsCjdnsRunning = false;
                 }
             }
         });
@@ -196,12 +202,12 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void call(Long pid) {
                             // Change toggle check state if there is a currently running cjdroute process.
-                            cjdnsServiceSwitch.setChecked(pid != Cjdroute.INVALID_PID);
+                            cjdnsServiceSwitch.setChecked(mIsCjdnsRunning = pid != Cjdroute.INVALID_PID);
                         }
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
-                            cjdnsServiceSwitch.setChecked(false);
+                            cjdnsServiceSwitch.setChecked(mIsCjdnsRunning = false);
                         }
                     }));
         } catch (UnknownHostException e) {

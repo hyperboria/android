@@ -1,7 +1,11 @@
 package berlin.meshnet.cjdns.producer;
 
+import android.content.Context;
+
+import berlin.meshnet.cjdns.CjdrouteConf;
 import berlin.meshnet.cjdns.model.Node;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
 /**
@@ -9,7 +13,19 @@ import rx.subjects.BehaviorSubject;
  */
 public interface MeProducer {
 
-    Observable<Node.Me> stream();
+    Observable<Node.Me> stream(Context context);
+
+    /**
+     * Default implementation of a {@link MeProducer}.
+     */
+    class Default implements MeProducer {
+
+        @Override
+        public Observable<Node.Me> stream(Context context) {
+            return CjdrouteConf.fetch0(context)
+                    .subscribeOn(Schedulers.io());
+        }
+    }
 
     /**
      * Mock implementation of a {@link MeProducer}.
@@ -17,7 +33,7 @@ public interface MeProducer {
     class Mock implements MeProducer {
 
         @Override
-        public Observable<Node.Me> stream() {
+        public Observable<Node.Me> stream(Context context) {
             BehaviorSubject<Node.Me> stream = BehaviorSubject.create();
             return stream.startWith(new Node.Me("Hyperborean", "", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", "LoremipsumdolorsitametpraesentconsequatliberolacusmagnisEratgrav"));
         }

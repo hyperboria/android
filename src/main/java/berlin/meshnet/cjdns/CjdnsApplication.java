@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 
 import com.squareup.otto.Bus;
 
+import java.net.UnknownHostException;
+
 import javax.inject.Singleton;
 
 import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
@@ -105,12 +107,17 @@ public class CjdnsApplication extends Application {
 
         @Provides
         public MeProducer provideMeProducer() {
-            return new MeProducer.Mock();
+            return new MeProducer.Default();
         }
 
         @Provides
         public PeersProducer providePeerListProducer() {
-            return new PeersProducer.Mock();
+            try {
+                return new PeersProducer.Default();
+            } catch (UnknownHostException e) {
+                // TODO
+            }
+            return null;
         }
 
         @Provides

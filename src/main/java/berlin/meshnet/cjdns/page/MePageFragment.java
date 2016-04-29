@@ -73,7 +73,7 @@ public class MePageFragment extends BasePageFragment {
                     }
                 }));
 
-        mSubscriptions.add(AppObservable.bindFragment(this, mMeProducer.stream())
+        mSubscriptions.add(AppObservable.bindFragment(this, mMeProducer.stream(getContext()))
                 .subscribe(new Action1<Node.Me>() {
                     @Override
                     public void call(Node.Me me) {

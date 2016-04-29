@@ -19,15 +19,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import berlin.meshnet.cjdns.model.Node;
 import rx.Observable;
 import rx.Subscriber;
 
 /**
  * API for administration of the cjdns node.
  */
-class AdminApi {
+public class AdminApi {
 
     private static final String TAG = AdminApi.class.getSimpleName();
 
@@ -223,8 +226,30 @@ class AdminApi {
             throw new UnsupportedOperationException("InterfaceController_disconnectPeer is not implemented in " + CLASS_NAME);
         }
 
-        public static Observable<Boolean> peerStatsConnection(final AdminApi api) {
-            throw new UnsupportedOperationException("InterfaceController_peerStats is not implemented in " + CLASS_NAME);
+        public static Observable<List<Node.Peer>> peerStats(final AdminApi api) {
+            return Observable.create(new BaseOnSubscribe<List<Node.Peer>>(api, new Request("InterfaceController_peerStats",
+                    new LinkedHashMap<ByteBuffer, Object>() {{
+                        // TODO Handle paging.
+                        put(wrapString("page"), Long.valueOf(0L));
+                    }})) {
+                @Override
+                protected List<Node.Peer> parseResult(final Map response) {
+                    List<Node.Peer> peers = new LinkedList<>();
+                    List peerStats = (List) response.get(wrapString("peers"));
+                    for (Object entry : peerStats) {
+                        Object user = ((Map) entry).get(wrapString("user"));
+                        Object addr = ((Map) entry).get(wrapString("addr"));
+                        Object publicKey = ((Map) entry).get(wrapString("publicKey"));
+                        peers.add(new Node.Peer(peers.size(),
+                                user != null ? new String(((ByteBuffer) user).array()) : null,
+                                user != null ? new String(((ByteBuffer) addr).array()) : null,
+                                user != null ? new String(((ByteBuffer) publicKey).array()) : null,
+                                null
+                        ));
+                    }
+                    return peers;
+                }
+            });
         }
 
         public static Observable<Boolean> resetPeering(final AdminApi api) {
