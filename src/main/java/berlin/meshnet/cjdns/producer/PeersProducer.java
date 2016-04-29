@@ -78,8 +78,11 @@ public interface PeersProducer {
 
         @Subscribe
         public void handleEvent(PeerEvents.Create event) {
-            Node.Peer peer = new Node.Peer(mPeers.size(), UUID.randomUUID().toString(), "fc::/8",
-                    "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", null);
+            Node.Peer peer = new Node.Peer(mPeers.size(),
+                    UUID.randomUUID().toString(),
+                    "fc00::/8",
+                    "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k",
+                    null);
             mPeers.add(peer);
             mCreateStream.onNext(peer);
         }

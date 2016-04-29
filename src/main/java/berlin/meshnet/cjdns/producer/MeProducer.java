@@ -34,8 +34,11 @@ public interface MeProducer {
 
         @Override
         public Observable<Node.Me> stream(Context context) {
-            BehaviorSubject<Node.Me> stream = BehaviorSubject.create();
-            return stream.startWith(new Node.Me("Hyperborean", "", "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k", "LoremipsumdolorsitametpraesentconsequatliberolacusmagnisEratgrav"));
+            return BehaviorSubject.<Node.Me>create()
+                    .startWith(new Node.Me("Me",
+                            "fc00::/8",
+                            "Loremipsumdolorsitametpharetraeratestvivamusrisusi.k",
+                            "LoremipsumdolorsitametpraesentconsequatliberolacusmagnisEratgrav"));
         }
     }
 }

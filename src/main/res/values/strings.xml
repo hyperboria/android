@@ -33,6 +33,7 @@
     <!-- Settings page -->
     <string name="setting_verbose_enabled_key" translatable="false">setting_verbose_enabled_key</string>
     <string name="setting_encrypt_enabled_key" translatable="false">setting_encrypt_enabled_key</string>
+    <string name="setting_reset_identity_key" translatable="false">setting_reset_identity_key</string>
     <string name="setting_send_apk_key" translatable="false">setting_send_apk_key</string>
     <string name="setting_link_wifi_direct_key" translatable="false">setting_link_wifi_direct_key</string>
     <string name="setting_link_bluetooth_key" translatable="false">setting_link_bluetooth_key</string>
@@ -46,6 +47,8 @@
     <string name="settings_page_setting_encrypt_summary_enabled">Enabled</string>
     <string name="settings_page_setting_encrypt_summary_disabled">Configure device storage encryption</string>
     <string name="settings_page_setting_encrypt_summary_unsupported">Not supported</string>
+    <string name="settings_page_setting_reset_identity_title">Reset Identity</string>
+    <string name="settings_page_setting_reset_identity_summary">Wipe IPv6 of this node</string>
     <string name="settings_page_setting_send_apk_title">Share Application</string>
     <string name="settings_page_setting_send_apk_summary">Send APK to another device</string>
 

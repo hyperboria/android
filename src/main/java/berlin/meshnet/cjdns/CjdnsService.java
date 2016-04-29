@@ -74,6 +74,11 @@ public class CjdnsService extends Service {
                     public void call(JSONObject cjdrouteConf) {
                         startForeground(NOTIFICATION_ID, buildNotification(cjdrouteConf));
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e(TAG, "Failed in subscribe", throwable);
+                    }
                 }));
 
         // Execute cjdroute.

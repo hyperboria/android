@@ -13,6 +13,10 @@
             android:key="@string/setting_encrypt_enabled_key"
             android:title="@string/settings_page_setting_encrypt_title" />
         <Preference
+            android:key="@string/setting_reset_identity_key"
+            android:summary="@string/settings_page_setting_reset_identity_summary"
+            android:title="@string/settings_page_setting_reset_identity_title" />
+        <Preference
             android:key="@string/setting_send_apk_key"
             android:summary="@string/settings_page_setting_send_apk_summary"
             android:title="@string/settings_page_setting_send_apk_title" />

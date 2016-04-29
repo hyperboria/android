@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     @InjectView(R.id.drawer)
     ListView mDrawer;
 
+    private SwitchCompat mSwitch;
+
     private ActionBarDrawerToggle mDrawerToggle;
 
     private ArrayAdapter<String> mDrawerAdapter;
@@ -180,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
         // TODO Sync toggle properly.
 
         // Configure toggle click behaviour.
-        final SwitchCompat cjdnsServiceSwitch = (SwitchCompat) MenuItemCompat.getActionView(menu.findItem(R.id.switch_cjdns_service));
-        cjdnsServiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mSwitch = (SwitchCompat) MenuItemCompat.getActionView(menu.findItem(R.id.switch_cjdns_service));
+        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked && !mIsCjdnsRunning) {
@@ -202,12 +204,12 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void call(Long pid) {
                             // Change toggle check state if there is a currently running cjdroute process.
-                            cjdnsServiceSwitch.setChecked(mIsCjdnsRunning = pid != Cjdroute.INVALID_PID);
+                            mSwitch.setChecked(mIsCjdnsRunning = pid != Cjdroute.INVALID_PID);
                         }
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
-                            cjdnsServiceSwitch.setChecked(mIsCjdnsRunning = false);
+                            mSwitch.setChecked(mIsCjdnsRunning = false);
                         }
                     }));
         } catch (UnknownHostException e) {
@@ -270,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
 //        startService(new Intent(getApplicationContext(), CjdnsService.class));
     }
 
+
     @Subscribe
     public void handleEvent(ApplicationEvents.StopCjdnsService event) {
         Toast.makeText(getApplicationContext(), "Stopping CjdnsService", Toast.LENGTH_SHORT).show();
@@ -283,6 +286,9 @@ public class MainActivity extends AppCompatActivity {
         } catch (UnknownHostException e) {
             Log.e(TAG, "Failed to start AdminApi", e);
         }
+
+        // TODO Do this properly.
+        mSwitch.setChecked(false);
 
         // TODO Compat.
 //        stopService(new Intent(getApplicationContext(), CjdnsService.class));

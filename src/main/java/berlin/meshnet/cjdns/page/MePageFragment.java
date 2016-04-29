@@ -71,6 +71,11 @@ public class MePageFragment extends BasePageFragment {
                     public void call(Theme theme) {
                         mPublicKey.setVisibility(theme.isInternalsVisible ? View.VISIBLE : View.GONE);
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        // TODO
+                    }
                 }));
 
         mSubscriptions.add(AppObservable.bindFragment(this, mMeProducer.stream(getContext()))
@@ -80,6 +85,11 @@ public class MePageFragment extends BasePageFragment {
                         mNameTextView.setText(me.name);
                         mAddressTextView.setText(me.address);
                         mPublicKeyTextView.setText(me.publicKey);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        // TODO
                     }
                 }));
     }

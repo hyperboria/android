@@ -7,10 +7,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+
+import com.squareup.otto.Bus;
 
 import java.io.File;
 
@@ -18,6 +21,7 @@ import javax.inject.Inject;
 
 import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
+import berlin.meshnet.cjdns.event.ApplicationEvents;
 
 /**
  * The page to configure application settings.
@@ -25,6 +29,9 @@ import berlin.meshnet.cjdns.R;
 public class SettingsPageFragment extends PreferenceFragmentCompat {
 
     private static final String TYPE_APK = "image/apk";
+
+    @Inject
+    Bus mBus;
 
     @Inject
     SharedPreferences mSharedPreferences;
@@ -79,6 +86,23 @@ public class SettingsPageFragment extends PreferenceFragmentCompat {
             preference.setSummary(R.string.settings_page_setting_encrypt_summary_unsupported);
             preference.setEnabled(false);
         }
+
+        String resetIdentityKey = getString(R.string.setting_reset_identity_key);
+        getPreferenceManager().findPreference(resetIdentityKey)
+                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        // Wipe node info.
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.clear();
+                        editor.apply();
+
+                        // Shut off node.
+                        mBus.post(new ApplicationEvents.StopCjdnsService());
+
+                        return true;
+                    }
+                });
 
         String sendApkKey = getString(R.string.setting_send_apk_key);
         getPreferenceManager().findPreference(sendApkKey)

@@ -7,6 +7,9 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Locale;
@@ -16,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import berlin.meshnet.cjdns.event.ApplicationEvents;
 import berlin.meshnet.cjdns.model.Node;
 import rx.Observable;
 import rx.Subscriber;
@@ -62,12 +66,18 @@ public class CjdnsVpnService extends VpnService {
     private ParcelFileDescriptor mInterface;
 
     @Inject
+    Bus mBus;
+
+    @Inject
     Cjdroute mCjdroute;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Inject dependencies.
         ((CjdnsApplication) getApplication()).inject(this);
+
+        // Register so we can subscribe to stop events.
+        mBus.register(this);
 
         final String pipePath = String.format(Locale.ENGLISH, SEND_FD_PIPE_PATH_TEMPLATE,
                 getFilesDir().getPath(), UUID.randomUUID());
@@ -203,9 +213,14 @@ public class CjdnsVpnService extends VpnService {
 
     @Override
     public void onDestroy() {
+        mBus.unregister(this);
         close();
-
         // TODO Purge stale pipes.
+    }
+
+    @Subscribe
+    public void handleEvent(ApplicationEvents.StopCjdnsService event) {
+        stopSelf();
     }
 
     /**

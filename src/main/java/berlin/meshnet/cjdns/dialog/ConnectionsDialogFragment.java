@@ -152,6 +152,11 @@ public class ConnectionsDialogFragment extends DialogFragment {
                     mIsInternalsVisible = theme.isInternalsVisible;
                     notifyDataSetChanged();
                 }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
+                }
             }));
 
             mSubscriptions.add(peerStream.subscribe(new Action1<Node.Peer>() {
@@ -159,6 +164,11 @@ public class ConnectionsDialogFragment extends DialogFragment {
                 public void call(Node.Peer peer) {
                     mPeer = peer;
                     notifyDataSetChanged();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
                 }
             }));
         }
