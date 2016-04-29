@@ -1,5 +1,6 @@
 package berlin.meshnet.cjdns.page;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -92,6 +93,29 @@ public class MePageFragment extends BasePageFragment {
                         // TODO
                     }
                 }));
+
+        // Share address on click.
+        mAddressTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMeProducer.stream(getContext())
+                        .subscribe(new Action1<Node.Me>() {
+                            @Override
+                            public void call(Node.Me me) {
+                                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                                intent.setType("text/plain");
+                                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "cjdns IPv6");
+                                intent.putExtra(android.content.Intent.EXTRA_TEXT, me.address);
+                                startActivity(Intent.createChooser(intent, "Share using..."));
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                // TODO
+                            }
+                        });
+            }
+        });
     }
 
     @Override

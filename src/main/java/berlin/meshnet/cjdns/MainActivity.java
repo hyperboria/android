@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
-                            mSwitch.setChecked(mIsCjdnsRunning = false);
+//                            mSwitch.setChecked(mIsCjdnsRunning = false);
                         }
                     }));
         } catch (UnknownHostException e) {
