@@ -23,6 +23,7 @@ import berlin.meshnet.cjdns.event.ApplicationEvents;
 import berlin.meshnet.cjdns.model.Node;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -63,6 +64,9 @@ public class CjdnsVpnService extends VpnService {
      */
     private static final String SEND_FD_PIPE_PATH_TEMPLATE = "%1$s/pipe_%2$s";
 
+    /**
+     * VPN interface.
+     */
     private ParcelFileDescriptor mInterface;
 
     @Inject
@@ -79,6 +83,7 @@ public class CjdnsVpnService extends VpnService {
         // Register so we can subscribe to stop events.
         mBus.register(this);
 
+        // Start cjdns process and VPN.
         final String pipePath = String.format(Locale.ENGLISH, SEND_FD_PIPE_PATH_TEMPLATE,
                 getFilesDir().getPath(), UUID.randomUUID());
         try {
@@ -95,6 +100,12 @@ public class CjdnsVpnService extends VpnService {
                         @Override
                         public Observable<Boolean> call(Boolean isSuccessful) {
                             return AdminApi.Security.setupComplete(api);
+                        }
+                    })
+                    .flatMap(new Func1<Boolean, Observable<Boolean>>() {
+                        @Override
+                        public Observable<Boolean> call(Boolean isSuccessful) {
+                            return close();
                         }
                     })
                     .flatMap(new Func1<Boolean, Observable<Long>>() {
@@ -143,9 +154,6 @@ public class CjdnsVpnService extends VpnService {
                             return Observable.create(new Observable.OnSubscribe<Integer>() {
                                 @Override
                                 public void call(Subscriber<? super Integer> subscriber) {
-                                    // Close any existing session.
-                                    close();
-
                                     // Start new session.
                                     mInterface = new Builder()
                                             .setSession(SESSION_NAME)
@@ -213,27 +221,46 @@ public class CjdnsVpnService extends VpnService {
 
     @Override
     public void onDestroy() {
+        // Unregister from bus.
         mBus.unregister(this);
-        close();
-        // TODO Purge stale pipes.
     }
 
     @Subscribe
     public void handleEvent(ApplicationEvents.StopCjdnsService event) {
-        stopSelf();
+        close().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        stopSelf();
+                    }
+                });
+
+        // TODO Kill native process if VPN service is closed in some other way.
     }
 
     /**
-     * Close any existing session.
+     * Closes any existing session.
      */
-    private void close() {
-        if (mInterface != null) {
-            try {
-                mInterface.close();
-            } catch (IOException e) {
-                // Do nothing.
+    private Observable<Boolean> close() {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                // Close VPN interface.
+                if (mInterface != null) {
+                    try {
+                        mInterface.close();
+                    } catch (IOException e) {
+                        // Do nothing.
+                    }
+                    mInterface = null;
+                }
+
+                // TODO Purge stale pipes.
+
+                subscriber.onNext(Boolean.TRUE);
+                subscriber.onCompleted();
             }
-            mInterface = null;
-        }
+        });
     }
 }
