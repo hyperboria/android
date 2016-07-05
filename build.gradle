@@ -30,6 +30,16 @@ task Clone(type: GitClone) {
 task BuildCJDNS(type: Exec) {
     workingDir file("cjdns")
     commandLine file("cjdns/android_do")
+
+    standardOutput = new ByteArrayOutputStream()
+    errorOutput = standardOutput
+    ignoreExitValue = true
+    doLast {
+        if (execResult.exitValue != 0) {
+            println(standardOutput.toString())
+            throw new GradleException("Exec failed! See output above.")
+        }
+    }
 }
 
 task CopyT(type: Copy) {
