@@ -9,27 +9,15 @@ Meshnet is an Android app that lets you connect to cjdns networks, without the n
 
 Installation
 ------------
-
-1. Install the [Android SDK](http://developer.android.com/sdk/index.html) 
-2. Clone this application repo
-3. Clone [cjdns](https://github.com/hyperboria/cjdns) and build native binaries:
-
-    ```
-    ./android_do
-    ```
-
-4. Copy built artifacts from **./build_android/** into the application repo such that corresponding **cjdroute** binaries are located as such:
-
-    ```
-    ./src/main/assets/armeabi-v7a/cjdroute
-    ./src/main/assets/x86/cjdroute
-    ```
-
-5. Build application and install on device:
+ 
+1. Clone this application repo
+2. Build application and install on device:
 
     ```
     ./gradlew installDebug
     ```
+
+3. (Optional) Install the [Android SDK](http://developer.android.com/sdk/index.html) and open project using it
 
 Contact
 -------
