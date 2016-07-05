@@ -32,7 +32,7 @@ task BuildCJDNS(type: Exec) {
     commandLine file("cjdns/android_do")
 }
 
-task Copy(type: Copy) {
+task CopyT(type: Copy) {
     from 'cjdns/build_android/out/*'
     into 'src/main/assets/'
 }
@@ -74,7 +74,7 @@ afterEvaluate {
 }
 
 Clone.finalizedBy(BuildCJDNS)
-BuildCJDNS.finalizedBy(Copy)
+BuildCJDNS.finalizedBy(CopyT)
 
 dependencies {
     compile 'com.android.support:support-v4:24.0.0'
