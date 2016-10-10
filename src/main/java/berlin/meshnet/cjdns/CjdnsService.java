@@ -23,6 +23,8 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
+ * TODO Only needed for compat.
+ * <p/>
  * Service for managing cjdroute.
  */
 public class CjdnsService extends Service {
@@ -71,6 +73,11 @@ public class CjdnsService extends Service {
                     @Override
                     public void call(JSONObject cjdrouteConf) {
                         startForeground(NOTIFICATION_ID, buildNotification(cjdrouteConf));
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e(TAG, "Failed in subscribe", throwable);
                     }
                 }));
 

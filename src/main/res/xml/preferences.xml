@@ -13,29 +13,33 @@
             android:key="@string/setting_encrypt_enabled_key"
             android:title="@string/settings_page_setting_encrypt_title" />
         <Preference
+            android:key="@string/setting_reset_identity_key"
+            android:summary="@string/settings_page_setting_reset_identity_summary"
+            android:title="@string/settings_page_setting_reset_identity_title" />
+        <Preference
             android:key="@string/setting_send_apk_key"
             android:summary="@string/settings_page_setting_send_apk_summary"
             android:title="@string/settings_page_setting_send_apk_title" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/settings_page_category_connectivity_title">
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/setting_link_wifi_direct_key"
-            android:summaryOff="@string/settings_page_setting_link_summary_off"
-            android:summaryOn="@string/settings_page_setting_link_summary_on"
-            android:title="@string/settings_page_setting_link_wifi_direct_title" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/setting_link_bluetooth_key"
-            android:summaryOff="@string/settings_page_setting_link_summary_off"
-            android:summaryOn="@string/settings_page_setting_link_summary_on"
-            android:title="@string/settings_page_setting_link_bluetooth_title" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/setting_link_overlay_key"
-            android:summaryOff="@string/settings_page_setting_link_summary_off"
-            android:summaryOn="@string/settings_page_setting_link_summary_on"
-            android:title="@string/settings_page_setting_link_overlay_title" />
-    </PreferenceCategory>
+    <!--<PreferenceCategory android:title="@string/settings_page_category_connectivity_title">-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="true"-->
+            <!--android:key="@string/setting_link_wifi_direct_key"-->
+            <!--android:summaryOff="@string/settings_page_setting_link_summary_off"-->
+            <!--android:summaryOn="@string/settings_page_setting_link_summary_on"-->
+            <!--android:title="@string/settings_page_setting_link_wifi_direct_title" />-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="true"-->
+            <!--android:key="@string/setting_link_bluetooth_key"-->
+            <!--android:summaryOff="@string/settings_page_setting_link_summary_off"-->
+            <!--android:summaryOn="@string/settings_page_setting_link_summary_on"-->
+            <!--android:title="@string/settings_page_setting_link_bluetooth_title" />-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="true"-->
+            <!--android:key="@string/setting_link_overlay_key"-->
+            <!--android:summaryOff="@string/settings_page_setting_link_summary_off"-->
+            <!--android:summaryOn="@string/settings_page_setting_link_summary_on"-->
+            <!--android:title="@string/settings_page_setting_link_overlay_title" />-->
+    <!--</PreferenceCategory>-->
 </PreferenceScreen>

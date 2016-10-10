@@ -185,6 +185,11 @@ public class CredentialsPageFragment extends BasePageFragment {
                     mIsInternalsVisible = theme.isInternalsVisible;
                     notifyDataSetChanged();
                 }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
+                }
             }));
 
             mSubscriptions.add(createStream.subscribe(new Action1<Credential.Authorized>() {
@@ -192,6 +197,11 @@ public class CredentialsPageFragment extends BasePageFragment {
                 public void call(Credential.Authorized credential) {
                     mCredentials.add(credential);
                     notifyDataSetChanged();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
                 }
             }));
 
@@ -204,6 +214,11 @@ public class CredentialsPageFragment extends BasePageFragment {
                         notifyDataSetChanged();
                     }
                 }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
+                }
             }));
 
             mSubscriptions.add(removeStream.subscribe(new Action1<Credential.Authorized>() {
@@ -214,6 +229,11 @@ public class CredentialsPageFragment extends BasePageFragment {
                         notifyItemRemoved(position);
                         notifyDataSetChanged();
                     }
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
                 }
             }));
         }

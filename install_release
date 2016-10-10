@@ -1,0 +1,4 @@
+#!/bin/sh
+
+ndk-build NDK_DEBUG=false NDK_PROJECT_PATH=src/main/
+./gradlew installRelease

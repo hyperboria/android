@@ -7,14 +7,14 @@ public abstract class Node {
 
     public final String name;
 
-    public final String publicKey;
-
     public final String address;
 
-    public Node(String name, String publicKey) {
+    public final String publicKey;
+
+    public Node(String name, String address, String publicKey) {
         this.name = name;
+        this.address = address;
         this.publicKey = publicKey;
-        this.address = "fc00:0000:0000:0000:0000:0000:0000:0000";
     }
 
     /**
@@ -26,8 +26,8 @@ public abstract class Node {
 
         public final Stats.Me stats;
 
-        public Me(String name, String publicKey, String privateKey) {
-            super(name, publicKey);
+        public Me(String name, String address, String publicKey, String privateKey) {
+            super(name, address, publicKey);
             this.privateKey = privateKey;
             this.stats = new Stats.Me("", true, 0L, 0, 0, 0, 0, 0, 0);
         }
@@ -44,8 +44,8 @@ public abstract class Node {
 
         public final Stats stats;
 
-        public Peer(int id, String name, String publicKey, Credential[] outgoingConnections) {
-            super(name, publicKey);
+        public Peer(int id, String name, String address, String publicKey, Credential[] outgoingConnections) {
+            super(name, address, publicKey);
             this.id = id;
             this.outgoingConnections = outgoingConnections;
             this.stats = new Stats("", true, 0L, 0, 0, 0, 0, 0);

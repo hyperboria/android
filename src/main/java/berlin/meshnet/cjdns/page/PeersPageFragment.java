@@ -158,6 +158,11 @@ public class PeersPageFragment extends BasePageFragment {
                     mIsInternalsVisible = theme.isInternalsVisible;
                     notifyDataSetChanged();
                 }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
+                }
             }));
 
             mSubscriptions.add(createStream.subscribe(new Action1<Node.Peer>() {
@@ -165,6 +170,11 @@ public class PeersPageFragment extends BasePageFragment {
                 public void call(Node.Peer peer) {
                     mPeers.add(peer);
                     notifyDataSetChanged();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
                 }
             }));
 
@@ -177,6 +187,11 @@ public class PeersPageFragment extends BasePageFragment {
                         notifyDataSetChanged();
                     }
                 }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
+                }
             }));
 
             mSubscriptions.add(removeStream.subscribe(new Action1<Node.Peer>() {
@@ -187,6 +202,11 @@ public class PeersPageFragment extends BasePageFragment {
                         notifyItemRemoved(position);
                         notifyDataSetChanged();
                     }
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    // TODO
                 }
             }));
         }

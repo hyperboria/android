@@ -29,6 +29,9 @@
         </activity>
 
         <service android:name=".CjdnsService" />
+        <service
+            android:name=".CjdnsVpnService"
+            android:permission="android.permission.BIND_VPN_SERVICE" />
 
     </application>
 </manifest>
