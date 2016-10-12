@@ -17,7 +17,7 @@ android:
     - 'google-gdk-license-.+'
 
 jdk:
-  - oraclejdk8
+    - oraclejdk8
 
 before_script:
     - export NDK_VERSION=android-ndk-r11c
