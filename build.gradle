@@ -55,7 +55,7 @@ android {
         versionCode 1
         versionName "1.0.0-SNAPSHOT"
     }
-
+    
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir 'src/main/libs'
