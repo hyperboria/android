@@ -1,6 +1,7 @@
 .gradle/
 .idea/
 build/
+cjdns/
 local.properties
 *.iml
 *.class

@@ -5,7 +5,7 @@ android:
     - tools
 
     # The BuildTools version used by your project
-    - build-tools-24.0.0
+    - build-tools-24.0.3
 
     # The SDK version used to compile your project
     - android-24
@@ -18,4 +18,11 @@ android:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 
-script: ./gradlew assembleDebug
+before_script:
+    - export NDK_VERSION=android-ndk-r11c
+    - curl -L https://dl.google.com/android/repository/${NDK_VERSION}-linux-x86_64.zip -O
+    - unzip -q ${NDK_VERSION}-linux-x86_64.zip
+    - export ANDROID_NDK_HOME=`pwd`/${NDK_VERSION}
+    - export PATH=${ANDROID_NDK_HOME}:${PATH}
+
+script: ./install_debug
