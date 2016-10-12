@@ -26,4 +26,4 @@ before_script:
     - export ANDROID_NDK_HOME=`pwd`/${NDK_VERSION}
     - export PATH=${ANDROID_NDK_HOME}:${PATH}
 
-script: ./install_debug
+script: ./assemble_debug
