@@ -1,13 +1,11 @@
 language: android
+
 android:
   components:
     - platform-tools
     - tools
 
-    # The BuildTools version used by your project
     - build-tools-24.0.3
-
-    # The SDK version used to compile your project
     - android-24
     
     - extra-google-google_play_services
@@ -17,6 +15,9 @@ android:
   licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
+
+jdk:
+  - oraclejdk8
 
 before_script:
     - export NDK_VERSION=android-ndk-r11c
