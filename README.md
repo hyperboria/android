@@ -5,42 +5,26 @@ cjdns for Android
 
 Meshnet is an Android app that lets you connect to cjdns networks, without the need for a rooted phone—thanks to the android.net.VpnService API introduced with Android 4.0 (Ice Cream Sandwich). Older versions still require root and routes through a TUN device.
 
-**Current state:** App starts and stops cjdroute for rooted devices with Android 4.4 (KitKat) and below. A public peer is added by default, so you should be able to browse websites and reach services on Hyperboria just by starting the cjdns service with the toggle. All other menus are only populated with mock data at the moment and you cannot add additional peers.
+**Current state:** App starts and stops cjdroute and sets up a VPN to access Hyperboria for non-rooted devices. Two public peers are added by default, so you should be able to browse websites and reach services on Hyperboria just by starting the cjdns service with the toggle. All other menus are only populated with mock data at the moment and you cannot add additional peers.
 
 Installation
 ------------
 
-1. Install the [Android SDK](http://developer.android.com/sdk/index.html) 
-2. Clone this application repo
-3. Clone [cjdns](https://github.com/hyperboria/cjdns) and build native binaries:
+1. Install the [Android SDK](http://developer.android.com/sdk/index.html)
+ 
+1. Clone this application repo
 
-    ```
-    ./android_do
-    ```
+1. Optionally download the [Android NDK](https://developer.android.com/ndk/index.html) version r11c and set `ANDROID_NDK_HOME` to its path
 
-4. Copy built artifacts from **./build_android/** into the application repo such that corresponding **cjdroute** binaries are located as such:
+1. Build application and install on device by running `./install_debug`. This will also clone the [cjdns repo](https://github.com/cjdelisle/cjdns) and build the native artifacts for Android. If `ANDROID_NDK_HOME` is not set or the version is incorrect, the Android NDK will also be downloaded.
 
-    ```
-    ./src/main/assets/armeabi-v7a/cjdroute
-    ./src/main/assets/x86/cjdroute
-    ```
-
-5. Build application and install on device:
-
-    ```
-    ./gradlew installDebug
-    ```
+**Note:** The cjdns repo is currently cloned from a fork until patches are merged into **cjdelisle/cjdns**.
 
 Contact
 -------
 
 - Find out how to help by visiting our [issue tracker](https://github.com/hyperboria/android/issues)
-- IRC channel for this project: **#android on [HypeIRC](irc://irc.hypeirc.net)**
-
-    ```
-    fc13:6176:aaca:8c7f:9f55:924f:26b3:4b14
-    fcbf:7bbc:32e4:0716:bd00:e936:c927:fc14
-    ```
+- [Matrix](https://matrix.org) chat room for this project: [#android:tomesh.net](https://chat.tomesh.net/#/room/#android:tomesh.net)
 
 Notes
 -----

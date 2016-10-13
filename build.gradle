@@ -8,49 +8,90 @@ allprojects {
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'org.ajoberstar:gradle-git:0.2.3'
     }
+}
+
+ext {
+    supportVersion = '24.2.1'
+}
+
+import org.ajoberstar.gradle.git.tasks.*
+
+task cloneCjdns(type: GitClone) {
+    def destination = file("cjdns")
+
+    uri = "https://github.com/benhylau/cjdns" // Use this repo until patch is merged in cjdelisle/cjdns
+    destinationPath = destination
+    bare = false
+    enabled = !destination.exists() // Clone only on first run
+}
+
+task buildCjdns(type: Exec) {
+    workingDir file("cjdns")
+    commandLine file("cjdns/android_do")
+}
+
+task copyNativeArtifacts(type: Copy) {
+    from 'cjdns/build_android/out/*'
+    into 'src/main/assets/'
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'checkstyle'
 
 android {
-    buildToolsVersion '23.0.2'
-    compileSdkVersion 23
+    buildToolsVersion "24.0.3"
+    compileSdkVersion 24
+
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0.0-SNAPSHOT"
     }
+    
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir 'src/main/libs'
     }
+
     signingConfigs {
         release
     }
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
         }
     }
+
     lintOptions {
         disable 'InvalidPackage'
     }
 }
 
+afterEvaluate {
+  android.applicationVariants.all { variant ->
+    variant.javaCompiler.dependsOn(cloneCjdns)
+  }
+}
+
+cloneCjdns.finalizedBy(buildCjdns)
+buildCjdns.finalizedBy(copyNativeArtifacts)
+
 dependencies {
-    compile 'com.android.support:support-v4:23.1.1'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:cardview-v7:23.1.1'
-    compile 'com.android.support:recyclerview-v7:23.1.1'
-    compile 'com.android.support:preference-v7:23.1.1'
-    compile 'com.android.support:preference-v14:23.1.1'
+    compile "com.android.support:support-v4:$supportVersion"
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:cardview-v7:$supportVersion"
+    compile "com.android.support:recyclerview-v7:$supportVersion"
+    compile "com.android.support:preference-v7:$supportVersion"
+    compile "com.android.support:preference-v14:$supportVersion"
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.joanzapata.android:android-iconify:1.0.9'
     compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
