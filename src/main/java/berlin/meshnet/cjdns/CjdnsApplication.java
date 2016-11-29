@@ -1,128 +1,36 @@
 package berlin.meshnet.cjdns;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.preference.PreferenceManager;
 
-import com.squareup.otto.Bus;
-
-import java.net.UnknownHostException;
-
-import javax.inject.Singleton;
-
-import berlin.meshnet.cjdns.dialog.ConnectionsDialogFragment;
-import berlin.meshnet.cjdns.page.AboutPageFragment;
-import berlin.meshnet.cjdns.page.CredentialsPageFragment;
-import berlin.meshnet.cjdns.page.MePageFragment;
-import berlin.meshnet.cjdns.page.PeersPageFragment;
-import berlin.meshnet.cjdns.page.SettingsPageFragment;
-import berlin.meshnet.cjdns.producer.CredentialsProducer;
-import berlin.meshnet.cjdns.producer.MeProducer;
-import berlin.meshnet.cjdns.producer.PeersProducer;
-import berlin.meshnet.cjdns.producer.SettingsProducer;
-import dagger.Module;
-import dagger.ObjectGraph;
-import dagger.Provides;
+import berlin.meshnet.cjdns.dagger.CoreComponent;
+import berlin.meshnet.cjdns.dagger.DaggerCoreComponent;
+import berlin.meshnet.cjdns.dagger.DefaultModule;
 
 /**
  * The {@link android.app.Application}.
  */
 public class CjdnsApplication extends Application {
 
-    private ObjectGraph mObjectGraph;
+    CoreComponent mCoreComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mObjectGraph = ObjectGraph.create(new DefaultModule(this));
+
+        // Set module to provide dependencies and build core component.
+        mCoreComponent = DaggerCoreComponent.builder()
+                .defaultModule(new DefaultModule(this))
+                .build();
+
+        // Set default values for user preferences.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }
 
     /**
-     * Injects the dependencies of {@code object} from the {@link dagger.ObjectGraph}.
-     *
-     * @param object The object instance to inject dependencies.
+     * Gets the {@link CoreComponent} holding the all dependencies.
      */
-    public void inject(Object object) {
-        mObjectGraph.inject(object);
-    }
-
-    /**
-     * {@link dagger.Module} providing default dependencies.
-     */
-    @Module(
-            injects = {
-                    MainActivity.class,
-                    CjdnsVpnService.class,
-                    CjdnsService.class,
-                    MePageFragment.class,
-                    PeersPageFragment.class,
-                    CredentialsPageFragment.class,
-                    SettingsPageFragment.class,
-                    ConnectionsDialogFragment.class,
-                    AboutPageFragment.class
-            }
-    )
-    public static class DefaultModule {
-
-        private Context mContext;
-
-        private DefaultModule(Context context) {
-            mContext = context;
-        }
-
-        @Singleton
-        @Provides
-        public Context provideContext() {
-            return mContext;
-        }
-
-        @Singleton
-        @Provides
-        public SharedPreferences provideSharedPreferences(Context context) {
-            return PreferenceManager.getDefaultSharedPreferences(context);
-        }
-
-        @Singleton
-        @Provides
-        public Bus provideBus() {
-            return new Bus();
-        }
-
-        @Singleton
-        @Provides
-        public Cjdroute provideCjdroute(Context context) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                return new Cjdroute.Compat(context.getApplicationContext());
-            }
-            return new Cjdroute.Default(context.getApplicationContext());
-        }
-
-        @Provides
-        public SettingsProducer provideSettingsProducer(Context context, SharedPreferences sharedPreferences) {
-            return new SettingsProducer.Default(context, sharedPreferences);
-        }
-
-        @Provides
-        public MeProducer provideMeProducer() {
-            return new MeProducer.Default();
-        }
-
-        @Provides
-        public PeersProducer providePeerListProducer() {
-            try {
-                return new PeersProducer.Default();
-            } catch (UnknownHostException e) {
-                // TODO
-            }
-            return null;
-        }
-
-        @Provides
-        public CredentialsProducer provideCredentialListProducer() {
-            return new CredentialsProducer.Mock();
-        }
+    public CoreComponent getComponent() {
+        return mCoreComponent;
     }
 }

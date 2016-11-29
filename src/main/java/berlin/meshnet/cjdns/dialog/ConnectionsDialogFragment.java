@@ -71,7 +71,7 @@ public class ConnectionsDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        ((CjdnsApplication) getActivity().getApplication()).inject(this);
+        ((CjdnsApplication) getActivity().getApplication()).getComponent().inject(this);
 
         Bundle args = getArguments();
         final int peerId = args.getInt(FRAGMENT_BUNDLE_KEY_PEER_ID);

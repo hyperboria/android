@@ -48,7 +48,7 @@ public class SettingsPageFragment extends PreferenceFragmentCompat {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((CjdnsApplication) getActivity().getApplication()).inject(this);
+        ((CjdnsApplication) getActivity().getApplication()).getComponent().inject(this);
 
         String encryptEnabledKey = getString(R.string.setting_encrypt_enabled_key);
         SharedPreferences.Editor editor = mSharedPreferences.edit();

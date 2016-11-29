@@ -78,7 +78,7 @@ public class CjdnsVpnService extends VpnService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Inject dependencies.
-        ((CjdnsApplication) getApplication()).inject(this);
+        ((CjdnsApplication) getApplication()).getComponent().inject(this);
 
         // Register so we can subscribe to stop events.
         mBus.register(this);

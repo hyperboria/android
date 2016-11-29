@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.event.ApplicationEvents;
 import berlin.meshnet.cjdns.event.AuthorizedCredentialEvents;
@@ -46,7 +47,7 @@ import rx.functions.Action1;
 /**
  * The page representing the list of credentials authorized credentials.
  */
-public class CredentialsPageFragment extends BasePageFragment {
+public class CredentialsPageFragment extends Fragment {
 
     @Inject
     Bus mBus;
@@ -79,6 +80,8 @@ public class CredentialsPageFragment extends BasePageFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ((CjdnsApplication) getActivity().getApplication()).getComponent().inject(this);
+
         mCredentialsRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {

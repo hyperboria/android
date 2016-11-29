@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
 import berlin.meshnet.cjdns.model.Node;
 import berlin.meshnet.cjdns.model.Theme;
@@ -29,7 +30,7 @@ import rx.functions.Action1;
 /**
  * The page representing the self node.
  */
-public class MePageFragment extends BasePageFragment {
+public class MePageFragment extends Fragment {
 
     @Inject
     SettingsProducer mSettingsProducer;
@@ -65,6 +66,7 @@ public class MePageFragment extends BasePageFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ((CjdnsApplication) getActivity().getApplication()).getComponent().inject(this);
 
         mSubscriptions.add(AppObservable.bindFragment(this, mSettingsProducer.themeStream())
                 .subscribe(new Action1<Theme>() {

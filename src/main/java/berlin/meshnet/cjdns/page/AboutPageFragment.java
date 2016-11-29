@@ -11,13 +11,14 @@ import android.widget.TextView;
 
 import java.util.regex.Pattern;
 
+import berlin.meshnet.cjdns.CjdnsApplication;
 import berlin.meshnet.cjdns.R;
 import butterknife.ButterKnife;
 
 /**
  * The page explaining what the application is about.
  */
-public class AboutPageFragment extends BasePageFragment {
+public class AboutPageFragment extends Fragment {
 
     private View mView;
 
@@ -35,6 +36,7 @@ public class AboutPageFragment extends BasePageFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ((CjdnsApplication) getActivity().getApplication()).getComponent().inject(this);
 
         TextView version = (TextView) mView.findViewById(R.id.version);
         TextView ln1 = (TextView) mView.findViewById(R.id.ln1);

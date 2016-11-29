@@ -28,7 +28,7 @@ import rx.schedulers.Schedulers;
 /**
  * Methods for managing the execution of cjdroute.
  */
-abstract class Cjdroute {
+public abstract class Cjdroute {
 
     /**
      * The filename for the cjdroute executable.
@@ -93,7 +93,7 @@ abstract class Cjdroute {
      * super user permission.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    static class Default extends Cjdroute {
+    public static class Default extends Cjdroute {
 
         /**
          * Log tag.
@@ -102,7 +102,7 @@ abstract class Cjdroute {
 
         private Context mContext;
 
-        Default(Context context) {
+        public Default(Context context) {
             mContext = context;
         }
 
@@ -262,7 +262,7 @@ abstract class Cjdroute {
      * Compat implementation of {@link Cjdroute}. This allows cjdroute to create a TUN device and
      * requires super user permission.
      */
-    static class Compat extends Cjdroute {
+    public static class Compat extends Cjdroute {
 
         /**
          * Log tag.
@@ -301,7 +301,7 @@ abstract class Cjdroute {
 
         private Context mContext;
 
-        Compat(Context context) {
+        public Compat(Context context) {
             mContext = context;
         }
 

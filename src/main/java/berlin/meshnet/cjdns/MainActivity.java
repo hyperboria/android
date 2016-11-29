@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         mActionBar = getSupportActionBar();
 
         // Inject dependencies.
-        ((CjdnsApplication) getApplication()).inject(this);
+        ((CjdnsApplication) getApplication()).getComponent().inject(this);
         ButterKnife.inject(this);
 
         final TypedArray drawerIcons = getResources().obtainTypedArray(R.array.drawer_icons);

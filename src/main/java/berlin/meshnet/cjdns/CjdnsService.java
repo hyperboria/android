@@ -63,7 +63,7 @@ public class CjdnsService extends Service {
         super.onCreate();
 
         // Inject dependencies.
-        ((CjdnsApplication) getApplication()).inject(this);
+        ((CjdnsApplication) getApplication()).getComponent().inject(this);
 
         // Start foreground service.
         mSubscriptions.add(CjdrouteConf.fetch(this)
