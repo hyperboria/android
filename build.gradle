@@ -21,24 +21,25 @@ ext {
     supportVersion = '25.0.1'
 }
 
-import org.ajoberstar.gradle.git.tasks.*
+import org.ajoberstar.gradle.git.tasks.GitClone
 
 task cloneCjdns(type: GitClone) {
-    def destination = file("cjdns")
+    def destination = file("cjdns-src")
 
-    uri = "https://github.com/benhylau/cjdns" // Use this repo until patch is merged in cjdelisle/cjdns
+    uri = "https://github.com/benhylau/cjdns"
+    // Use this repo until patch is merged in cjdelisle/cjdns
     destinationPath = destination
     bare = false
     enabled = !destination.exists() // Clone only on first run
 }
 
 task buildCjdns(type: Exec) {
-    workingDir file("cjdns")
-    commandLine file("cjdns/android_do")
+    workingDir file("cjdns-src")
+    commandLine file("cjdns-src/android_do")
 }
 
 task copyNativeArtifacts(type: Copy) {
-    from 'cjdns/build_android/out/*'
+    from 'cjdns-src/build_android/out/*'
     into 'src/main/assets/'
 }
 
@@ -55,7 +56,7 @@ android {
         versionCode 1
         versionName "1.0.0-SNAPSHOT"
     }
-    
+
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir 'src/main/libs'
@@ -71,21 +72,17 @@ android {
         }
     }
 
-    compileOptions {
-        incremental = false
-    }
-
     lintOptions {
         disable 'InvalidPackage'
     }
 }
 
 afterEvaluate {
-  if (COMPILE_CJDNS_NATIVE_ARTIFACTS.toBoolean()) {
-    android.applicationVariants.all { variant ->
-      variant.javaCompiler.dependsOn(cloneCjdns)
+    if (COMPILE_CJDNS_NATIVE_ARTIFACTS.toBoolean()) {
+        android.applicationVariants.all { variant ->
+            variant.javaCompiler.dependsOn(cloneCjdns)
+        }
     }
-  }
 }
 
 cloneCjdns.finalizedBy(buildCjdns)
