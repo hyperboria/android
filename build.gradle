@@ -77,8 +77,10 @@ android {
 }
 
 afterEvaluate {
-  android.applicationVariants.all { variant ->
-    variant.javaCompiler.dependsOn(cloneCjdns)
+  if (COMPILE_CJDNS_NATIVE_ARTIFACTS.toBoolean()) {
+    android.applicationVariants.all { variant ->
+      variant.javaCompiler.dependsOn(cloneCjdns)
+    }
   }
 }
 
